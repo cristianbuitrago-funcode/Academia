@@ -54,8 +54,15 @@ android {
     }
 }
 
+// Configuración de las pruebas JVM (incluidas las de Robolectric).
 // Muestra en la consola (y en el registro del CI) el detalle de las pruebas que fallen.
 tasks.withType<Test>().configureEach {
+    // Robolectric, al simular Android 16 (API 36), accede a clases internas del JDK.
+    jvmArgs(
+        "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED",
+        "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+    )
     testLogging {
         events("failed")
         exceptionFormat = TestExceptionFormat.FULL
