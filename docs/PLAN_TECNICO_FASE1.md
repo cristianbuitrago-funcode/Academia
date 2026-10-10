@@ -1,7 +1,7 @@
 # Funcode Academy — Plan técnico (Fase 1: Planificación y arquitectura)
 
 > **Estado:** plan con las decisiones D1–D8 **aprobadas por el responsable del proyecto (2026-10-10)**.
-> No existe todavía código de la aplicación. La Fase 2 **no** está autorizada.
+> P1 y P3 resueltas y Fase 2 autorizada (2026-10-10). El estado real de la implementación está en `docs/ESTADO_PROYECTO.md`.
 
 ---
 
@@ -60,7 +60,7 @@
 | Asincronía | Kotlin Coroutines + `Flow` | Lecturas y escrituras de la base de datos sin bloquear la UI. |
 | Inyección de dependencias | Manual (`AppContainer`) | Un objeto que crea y comparte los repositorios; sin bibliotecas extra. |
 | Pruebas | JUnit (dominio); pruebas de Room y de UI (ver P3 en §14) | — |
-| Versiones | `minSdk 26`; `compileSdk`/`targetSdk`, AGP, Kotlin y Compose BOM: la última combinación **estable y compatible entre sí** en el momento de la Fase 2, registrada en `gradle/libs.versions.toml` | Evita versiones *alpha/beta*. |
+| Versiones | `minSdk 26`; versiones fijadas en la Fase 2 en `gradle/libs.versions.toml` (tabla en `docs/ESTADO_PROYECTO.md`) | Evita versiones *alpha/beta*. |
 
 No hay ninguna dependencia de pago ni servicio remoto.
 
@@ -377,10 +377,10 @@ Los criterios 17–18 dependen de una verificación del responsable; hasta enton
 
 | # | Cuestión | Propuesta | Cuándo hace falta |
 |---|---|---|---|
-| **P1** | Rama principal: el repositorio solo tiene `ccr-db27c4de-czvzgb` como rama por defecto. ¿Crear `main` como rama estable y trabajar con *pull requests*? | Sí: `main` estable y cambios por PR con CI obligatorio. | Antes de la Fase 2. |
+| ~~P1~~ | Rama principal | **Aprobado (2026-10-10):** `main` estable y cambios por PR. Ver `docs/FLUJO_DE_TRABAJO.md`. | Resuelto |
 | **P2** | ¿Cómo se comportan los borradores (`DRAFT`) en la app? | Se muestran con la etiqueta "Borrador" solo en las compilaciones de depuración; las de publicación los excluyen. | Fase 3. |
-| **P3** | Pruebas de Room y de UI: ¿**Robolectric** (en la JVM, rápido, una dependencia más) o **emulador en GitHub Actions** (más real, más lento)? | Robolectric en cada *push*; emulador más adelante, cuando haya flujos completos que probar. | Fase 2. |
-| **P4** | Permisos del *workflow*: subir archivos a `.github/workflows/` puede requerir que la integración de GitHub tenga el permiso *workflows*. | Si el *push* falla, crearás tú el archivo desde la web de GitHub con el contenido que te entregue. | Fase 2. |
+| ~~P3~~ | Pruebas de Room y de UI | **Aprobado con condiciones (2026-10-10):** Robolectric cuando aporte valor comprobable; no sustituye la prueba en dispositivo. | Resuelto |
+| ~~P4~~ | Permisos del *workflow* | **Resuelto:** el *push* del *workflow* funcionó. | Resuelto |
 | **P5** | Avatar: ¿ilustraciones propias, iconos de Material o una biblioteca con licencia libre? | Iconos/formas de Material en el MVP; ilustraciones después. | Fase 5. |
 | **P6** | Valores de XP: XP base por dificultad, penalización por pista, curva de niveles y umbral de evaluación (propuesta 80 %). | Se propondrán con ejemplos numéricos. | Fase 5 (umbral: Fase 4). |
 | **P7** | Versión de Java de referencia del contenido. | Java 17 LTS (sintaxis estable y ampliamente instalada); mencionar novedades de 21 solo cuando aporten. | Fase 3. |
@@ -403,3 +403,6 @@ Los criterios 17–18 dependen de una verificación del responsable; hasta enton
 | 2026-10-10 | `minSdk 26` (D6) | Compatibilidad amplia y APIs modernas. |
 | 2026-10-10 | Contenido como borrador hasta su revisión (D7) | Control de calidad pedagógica y técnica. |
 | 2026-10-10 | `com.funcode.academy` (D8) | Identificador aprobado. |
+| 2026-10-10 | AGP 9.4 con Kotlin integrado; todos los plugins declarados en el archivo raíz | Versión estable actual; un único *classloader* evita errores entre los plugins de Kotlin y Android (detectado en CI). |
+| 2026-10-10 | JDK 21 en CI y `targetSdk` 36 | Requisitos de Robolectric para simular Android 16. |
+| 2026-10-10 | Modo "solo dominio" (`-Pfuncode.domainOnly=true`) | Permite probar las reglas sin Android SDK (p. ej., en el contenedor de Claude). |

@@ -7,10 +7,12 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | Archivo | Función |
 |---|---|
 | `settings.gradle.kts` | Declara los módulos (`:app`, `:core:domain`) y los repositorios de dependencias. Con `-Pfuncode.domainOnly=true` incluye solo el dominio, para poder probarlo sin Android SDK. |
-| `build.gradle.kts` (raíz) | Fija una sola versión de los plugins de Kotlin para todos los módulos. |
+| `build.gradle.kts` (raíz) | Declara todos los plugins (Android, Kotlin, KSP, Room) una sola vez, para que se carguen juntos y con la misma versión. |
+| `build-domain-only.gradle.kts` | Archivo raíz alternativo del modo solo dominio: no declara plugins de Android. |
 | `gradle/libs.versions.toml` | **Catálogo de versiones**: único lugar donde se escriben las versiones de las bibliotecas. |
 | `gradle/wrapper/*`, `gradlew` | *Gradle Wrapper*: descarga y usa siempre Gradle 9.6.1 (con suma de comprobación SHA-256), así todos compilan igual. |
 | `gradle.properties` | Opciones globales (memoria, caché, AndroidX). |
+| `.github/workflows/ci.yml` | Integración continua: pruebas, lint, APK, control del esquema de Room y resumen de resultados. |
 
 ## `:core:domain` (Kotlin puro, sin Android)
 

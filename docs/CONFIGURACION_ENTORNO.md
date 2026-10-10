@@ -1,6 +1,6 @@
 # Funcode Academy — Preparación de Android Studio y GitHub Actions
 
-Requisitos y pasos que el responsable del proyecto debe hacer **antes o durante la Fase 2**. Todo es gratuito.
+Requisitos y pasos que el responsable del proyecto debe hacer **antes o durante la Fase 2**. Todo es gratuito. La sección 4 explica cómo abrir y probar la Fase 2.
 
 ---
 
@@ -21,7 +21,7 @@ Requisitos y pasos que el responsable del proyecto debe hacer **antes o durante 
    - Uno con una versión reciente de Android (para el uso normal).
    - Uno con **API 26 (Android 8.0)** para comprobar la versión mínima.
 5. (Opcional) Dispositivo físico: activa *Opciones de desarrollador* (toca 7 veces "Número de compilación") y la *Depuración por USB*.
-6. Clona el repositorio cuando exista el proyecto de la Fase 2: **File → New → Project from Version Control** → `https://github.com/cristianbuitrago-funcode/Academia.git`, y selecciona la rama que se indique.
+6. Clona el repositorio: ver la sección 4.
 7. Espera a que termine **Gradle Sync**. Si aparece un error, copia el mensaje completo para analizarlo; no aceptes actualizaciones automáticas de versiones (AGP, Kotlin) sin consultarlo (D6).
 8. Ejecuta la app con el botón ▶ sobre el emulador y anota el resultado de los criterios 17–18 de la Fase 2.
 
@@ -29,7 +29,7 @@ Requisitos y pasos que el responsable del proyecto debe hacer **antes o durante 
 
 ## 2. GitHub Actions (en GitHub)
 
-El repositorio es **público**, así que los minutos de los *runners* estándar de GitHub son gratuitos. Los *runners* `ubuntu-latest` ya incluyen el Android SDK y JDK, así que no hay que instalar nada.
+El repositorio es **público**, así que los minutos de los *runners* estándar de GitHub son gratuitos. Los *runners* `ubuntu-latest` ya incluyen el Android SDK; el *workflow* instala JDK 21.
 
 ### Pasos
 1. **Activar Actions:** en el repositorio, **Settings → Actions → General → Actions permissions** → "Allow all actions and reusable workflows" (o, más restrictivo, permitir solo las acciones de GitHub y de creadores verificados: el *workflow* usará `actions/checkout`, `actions/setup-java`, `gradle/actions/setup-gradle` y `actions/upload-artifact`).
@@ -49,8 +49,46 @@ El repositorio es **público**, así que los minutos de los *runners* estándar 
 
 | Comprobación | Contenedor de Claude | GitHub Actions | Android Studio |
 |---|---|---|---|
-| Pruebas de `:core:domain` | Sí (si Maven Central responde) | Sí | Sí |
+| Pruebas de `:core:domain` | Sí, en modo solo dominio (si Maven Central responde) | Sí | Sí |
 | Compilar el APK | **No** (sin Android SDK) | Sí | Sí |
 | Pruebas JVM de `:app` (incl. Robolectric si se aprueba) | No | Sí | Sí |
 | Ejecutar la app y revisar la interfaz | No | No (salvo emulador en CI, P3) | **Sí** |
 | Accesibilidad con TalkBack | No | No | Sí (en dispositivo o emulador) |
+
+---
+
+## 4. Abrir y probar la Fase 2 en Android Studio
+
+### Requisitos adicionales
+- Android Studio estable que admita **Android Gradle Plugin 9.4** (cualquier versión estable publicada desde septiembre de 2026). Si tu versión es anterior, Android Studio avisará al sincronizar: actualízalo en lugar de bajar la versión del plugin.
+- **JDK 17 o superior** para Gradle (el JDK que trae Android Studio sirve). Las pruebas con Robolectric necesitan **JDK 21**: el de Android Studio (JetBrains Runtime 21) es suficiente.
+- Plataforma Android **API 37** (Android Studio la descargará al sincronizar si falta).
+
+### Pasos
+1. *File → New → Project from Version Control* → `https://github.com/cristianbuitrago-funcode/Academia.git`.
+2. Cambia a la rama de la fase: menú *Git → Branches* → `origin/ccr-db27c4de-czvzgb` → *Checkout* (hasta que se fusione en `main`).
+3. Espera a que termine **Gradle Sync**. Si aparece un error, copia el mensaje completo.
+4. Comprueba el JDK de Gradle: *Settings → Build, Execution, Deployment → Build Tools → Gradle → Gradle JDK* = el JDK 21 de Android Studio (*jbr-21*).
+5. **Pruebas automáticas:** en la terminal de Android Studio ejecuta `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `gradlew.bat`). Debe terminar en `BUILD SUCCESSFUL`.
+6. **Ejecutar la app:** elige un emulador en la barra superior y pulsa ▶ (*Run 'app'*).
+
+### Comprobaciones manuales (criterios 17–18 y parte de 5 y 9)
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 1 | Abrir la app en el emulador con Android reciente | Se ve "Te damos la bienvenida a Funcode Academy" y "XP total: 0". |
+| 2 | Tocar Mapa, Perfil, Ajustes e Inicio | Cada pantalla muestra su título; Mapa y Perfil dicen "Disponible en una próxima versión". |
+| 3 | Desde Perfil, pulsar Atrás | Vuelve a Inicio; otro Atrás cierra la app. |
+| 4 | En Ajustes, elegir "Persona adulta" | Queda marcada. |
+| 5 | Girar el emulador (botón de rotación) | Sigue en la misma pantalla, con la opción marcada. |
+| 6 | Cerrar la app (deslizarla en Recientes) y volver a abrirla → Ajustes | "Persona adulta" sigue marcada. |
+| 7 | Activar el modo oscuro del sistema | La app cambia a colores oscuros legibles. |
+| 8 | Ajustes del sistema → tamaño de fuente al máximo | Los textos crecen y nada queda cortado sin poder desplazarse. |
+| 9 | (Opcional) Activar TalkBack y recorrer la barra inferior | Lee "Inicio", "Mapa", "Perfil", "Ajustes" y las opciones como botones de opción. |
+| 10 | Repetir 1–6 en el emulador con **API 26** | Igual que arriba, sin cierres. |
+| 11 | *app/src/main/AndroidManifest.xml* → pestaña *Merged Manifest* | No aparece `android.permission.INTERNET`. |
+
+Anota cualquier fallo con el número de la comprobación, el dispositivo y, si es posible, una captura.
+
+### Instalar el APK sin compilar
+En la ejecución de CI (pestaña *Actions* → ejecución en verde → *Artifacts*) descarga `funcode-academy-debug-apk`, descomprímelo y arrastra el `.apk` al emulador. Es un APK de **depuración**: no sirve para publicar.
