@@ -1,6 +1,35 @@
 # Funcode Academy — Plan técnico (Fase 1: Planificación y arquitectura)
 
-> Estado: **propuesta pendiente de aprobación**. Este documento no implica que exista código de la aplicación.
+> **Estado:** plan con las decisiones D1–D8 **aprobadas por el responsable del proyecto (2026-10-10)**.
+> No existe todavía código de la aplicación. La Fase 2 **no** está autorizada.
+
+---
+
+## 0. Decisiones aprobadas (D1–D8)
+
+| # | Decisión aprobada | Consecuencias en este plan |
+|---|---|---|
+| **D1** | **Kotlin + Jetpack Compose + Material 3.** Dos módulos iniciales: `:app` y `:core:domain`, con capas de interfaz, dominio y datos separadas. La app se escribe en Kotlin, pero **enseña Java de forma auténtica**. Las decisiones técnicas importantes se documentan brevemente. | §2, §3, §4. Registro de decisiones en §15. Todo el código Java que aparezca en lecciones debe ser Java válido y compilable (§8.4). |
+| **D2** | **Opción A para el MVP:** ejercicios con respuestas comprobadas, **sin ejecutar Java real**. Tipos: selección y relación de conceptos, predecir salida, completar código, ordenar instrucciones, identificar errores y respuestas escritas validables con reglas estructurales. Cada ejercicio debe tener una respuesta verificable, retroalimentación y pruebas de sus reglas. Se diseña la interfaz `CodeRunner` sin implementarla. La Fase 8 investiga la ejecución real. | §8. La interfaz nunca dice "ejecutado" (§8.5). |
+| **D3** | **MVP: una ruta para adolescentes y adultos principiantes.** El modelo de contenido admite las variantes `kids`, `teens` y `adults` sin redactarlas todas ahora. La adaptación cambia el lenguaje, los ejemplos, las actividades y la presentación, **nunca** los conceptos ni los criterios de evaluación. Sin fecha de nacimiento ni datos innecesarios. La ruta infantil requerirá una revisión previa de accesibilidad, privacidad y normativa. | §6.1, §9, §10. |
+| **D4** | **Español inicial.** Textos de interfaz en recursos de Android (`strings.xml`); contenido educativo separado de la lógica, organizado por idioma. | §4, §6.1. |
+| **D5** | **GitHub Actions + Android Studio**, sin servicios de pago. Las pruebas de `:core:domain` verifican las reglas aunque no se pueda compilar Android en el contenedor. No se afirma que la app compila o funciona sin evidencia real. No se insiste en instalar el SDK aquí. | §1, §12 y `docs/CONFIGURACION_ENTORNO.md`. |
+| **D6** | **`minSdk 26`** (Android 8.0), si las dependencias lo permiten. Versiones estables y compatibles fijadas en `gradle/libs.versions.toml` en la Fase 2; sin actualizaciones innecesarias. | §2. |
+| **D7** | Claude redacta **borradores** en JSON; el responsable los revisa. Antes de integrar un bloque se presenta un resumen (objetivos, conceptos, ejemplos y tipos de ejercicio). Nada se marca como aprobado sin revisión. Las ambigüedades técnicas se señalan, no se inventan soluciones. | §6.1 (`reviewStatus`), §11 (flujo de contenido). |
+| **D8** | Identificador **`com.funcode.academy`** (`applicationId` y paquete raíz de Kotlin). | §4. |
+
+### Condiciones permanentes de desarrollo
+
+1. Desarrollo por fases, con autorización explícita antes de cada una.
+2. Sin funcionalidades simuladas (una pantalla o unos datos ficticios no son una funcionalidad).
+3. Pruebas verificables: se ejecutan, se informan los resultados reales y se registran los errores.
+4. XP solo por actividades verificadas; la base de datos impide cobrar dos veces la misma actividad.
+5. Progreso persistente en Room (fuente de verdad).
+6. MVP sin conexión: sin cuentas, servidores ni suscripciones.
+7. Costes controlados: antes de proponer algo con coste se explican su necesidad y las alternativas.
+8. Accesibilidad y privacidad desde el principio.
+9. `docs/ESTADO_PROYECTO.md` distingue entre **planificado, implementado, probado, aprobado y pendiente**.
+10. Protección del alcance: nada fuera del MVP por iniciativa propia.
 
 ---
 
@@ -8,45 +37,32 @@
 
 | Elemento | Resultado | Impacto |
 |---|---|---|
-| Repositorio `Academia` | Vacío, sin commits previos | No hay funcionalidades existentes que preservar ni conflictos. |
-| JDK | OpenJDK 21.0.12 (`java`, `javac`) | Sirve para compilar y probar módulos JVM puros (dominio, validadores). |
-| Gradle | 8.14.3 instalado en `/opt/gradle` (Kotlin DSL 2.0.21 embebido) | Suficiente para el *wrapper* del proyecto. |
-| Android SDK (`ANDROID_HOME`, `sdkmanager`, `adb`) | **No instalado** | No se puede compilar un APK ni ejecutar emulador en este contenedor. |
-| `dl.google.com` (descarga del SDK) | **Bloqueado (403 del proxy de red)** | Impide instalar el Android SDK aquí. |
-| `maven.google.com` (AGP, AndroidX) | Accesible | Dependencias Android resolubles si hubiera SDK. |
-| `plugins.gradle.org`, `services.gradle.org` | Accesibles | — |
-| Maven Central (`repo.maven.apache.org`) | Respondió **429 (límite de peticiones)** en repetidas pruebas | Riesgo para descargar JUnit, Kotlin, etc. Hay que volver a comprobarlo en la Fase 2. |
-| Hardware | 4 CPU, 15 GB RAM | Suficiente para compilar; sin aceleración para emulador. |
-
-**Conclusión:** en este entorno en la nube **no es posible compilar ni probar la app Android**. Opciones para la Fase 2 (decisión pendiente D5):
-
-1. Añadir `dl.google.com` a los dominios permitidos del entorno (Configuración del entorno → *Network access* → *Allowed domains*; ver https://code.claude.com/docs/en/cloud-environments#network-access) para instalar el SDK aquí.
-2. Compilar y ejecutar en tu equipo con Android Studio (necesario de todos modos para probar en emulador o dispositivo real).
-3. Compilar y ejecutar pruebas en GitHub Actions (los *runners* de Ubuntu traen el Android SDK).
-
-Lo recomendado es **2 + 3**: Android Studio para desarrollo visual y pruebas manuales, y GitHub Actions para tener una verificación automática y reproducible de cada cambio. La opción 1 es complementaria.
+| Repositorio `cristianbuitrago-funcode/Academia` | **Público**; solo contiene esta documentación. Rama por defecto actual: `ccr-db27c4de-czvzgb` (no existe `main`). | En repositorios públicos, GitHub Actions es gratuito con los *runners* estándar. |
+| JDK | OpenJDK 21.0.12 | Permite compilar y probar `:core:domain` en el contenedor. |
+| Gradle | 8.14.3 en `/opt/gradle` | Sirve para generar el *wrapper*. |
+| Android SDK | **No instalado**; `dl.google.com` bloqueado por la política de red (403) | **No se compilará Android en este contenedor** (aceptado en D5). |
+| `maven.google.com`, `plugins.gradle.org` | Accesibles | — |
+| Maven Central | Respondió **429** en las pruebas | Puede impedir incluso las pruebas de `:core:domain` aquí. Si persiste, la evidencia vendrá de GitHub Actions y se dejará registrado. |
 
 ---
 
-## 2. Tecnologías recomendadas
+## 2. Tecnologías
 
-| Área | Recomendación | Motivo | Alternativa |
-|---|---|---|---|
-| Lenguaje de la app | **Kotlin** | Lenguaje oficial preferente de Android, menos código repetitivo, corrutinas para trabajo asíncrono. | Java (ver decisión D1). |
-| Interfaz | **Jetpack Compose + Material 3** | Estándar actual, adaptable a tamaños de pantalla, temas (por edad) y accesibilidad más sencillos. | Vistas XML (solo si se elige Java). |
-| Arquitectura | **MVVM + capas (UI / dominio / datos)**, una sola *Activity* | Separación clara, fácil de probar, recomendada por Google. | — |
-| Navegación | **Navigation Compose** (rutas tipadas) | Oficial, soporta *back stack* y *deep links*. | — |
-| Persistencia del progreso | **Room (SQLite)** | Datos relacionales (progreso por ejercicio, intentos, logros), consultas, migraciones. | — |
-| Preferencias | **DataStore (Preferences)** | Ajustes de perfil, accesibilidad, tema. Reemplazo moderno de SharedPreferences. | — |
-| Contenido educativo | **Archivos JSON versionados en `assets/`** | Funciona sin conexión, revisable en Git, independiente del lenguaje enseñado. | Descarga remota en el futuro. |
-| Inyección de dependencias | **Manual (`AppContainer`)** al inicio | Evita dependencias y complejidad innecesarias en un proyecto de aprendizaje. | Hilt cuando el proyecto crezca. |
-| Serialización | **kotlinx.serialization** | Ligera, sin reflexión, oficial de Kotlin. | Moshi / Gson. |
-| Resaltado de código | Implementación propia sencilla (tokenizador de palabras clave Java → `AnnotatedString`) | Evita una dependencia pesada; solo hace falta resaltar. | Biblioteca de terceros si se requiere un editor avanzado. |
-| Pruebas | JUnit (dominio), pruebas de Room, pruebas de UI de Compose, Robolectric opcional | Las reglas de XP, desbloqueo y validación deben estar cubiertas por pruebas. | — |
-| Compatibilidad | `minSdk 26` (Android 8.0), `targetSdk`/`compileSdk` = el más reciente estable en la Fase 2 | Cubre la gran mayoría de dispositivos activos. | `minSdk 24` si se necesita más alcance. |
-| Servicios de pago | **Ninguno** en el MVP | Requisito del proyecto. | — |
+| Área | Elección | Para qué sirve |
+|---|---|---|
+| Lenguaje | Kotlin | Lenguaje de la app (no del contenido). |
+| Interfaz | Jetpack Compose + Material 3 | La UI se describe con funciones Kotlin que se redibujan cuando cambia el estado. |
+| Arquitectura | MVVM en capas, una sola `Activity` | El *ViewModel* conserva el estado de la pantalla y llama al dominio; la UI solo muestra ese estado. |
+| Navegación | Navigation Compose (rutas tipadas) | Gestiona el cambio de pantallas y el botón "Atrás". |
+| Progreso | Room (SQLite) | Base de datos local; **fuente de verdad** del progreso y del XP. |
+| Ajustes | DataStore (Preferences) | Pares clave/valor para ajustes (tamaño de texto, público…). |
+| Contenido | JSON en `assets/` + kotlinx.serialization | Lecciones legibles y revisables en Git; se cargan sin conexión. |
+| Asincronía | Kotlin Coroutines + `Flow` | Lecturas y escrituras de la base de datos sin bloquear la UI. |
+| Inyección de dependencias | Manual (`AppContainer`) | Un objeto que crea y comparte los repositorios; sin bibliotecas extra. |
+| Pruebas | JUnit (dominio); pruebas de Room y de UI (ver P3 en §14) | — |
+| Versiones | `minSdk 26`; `compileSdk`/`targetSdk`, AGP, Kotlin y Compose BOM: la última combinación **estable y compatible entre sí** en el momento de la Fase 2, registrada en `gradle/libs.versions.toml` | Evita versiones *alpha/beta*. |
 
-Las versiones exactas (AGP, Kotlin, Compose BOM) se fijarán y verificarán al crear el proyecto en la Fase 2, usando un *version catalog* (`gradle/libs.versions.toml`).
+No hay ninguna dependencia de pago ni servicio remoto.
 
 ---
 
@@ -58,280 +74,332 @@ Las versiones exactas (AGP, Kotlin, Compose BOM) se fijarán y verificarán al c
 │                                          │                      │
 │                       Repositorios (interfaces del dominio)     │
 │                                          │                      │
-│        Implementaciones: Room · DataStore · ContentLoader(JSON) │
+│   Implementaciones: Room · DataStore · ContentLoader (JSON)     │
 └─────────────────────────────────────────────────────────────────┘
             ▲ depende de
 ┌──────────── :core:domain (Kotlin/JVM puro, sin Android) ────────┐
-│ Modelos · Reglas de XP y niveles · Reglas de desbloqueo ·       │
-│ Validadores de ejercicios · Interfaces de repositorio           │
+│ Modelos · Validadores de ejercicios · Reglas de XP, niveles y   │
+│ desbloqueo · Interfaces de repositorio · Interfaz CodeRunner    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-Decisiones clave:
-
-- **El dominio es un módulo JVM puro.** Las reglas que más importan (validar respuestas, otorgar XP, desbloquear contenido) se pueden probar con JUnit sin Android, incluso en este contenedor.
-- **El contenido es independiente del lenguaje enseñado.** Cada curso tiene `languageId` (`"java"`), y los ejercicios usan tipos genéricos. Añadir Python más adelante significa añadir contenido JSON (y, si existe, un ejecutor), no reescribir la app.
-- **La adaptación por edad es una capa de presentación del contenido.** Una lección tiene un núcleo técnico común y variantes de texto/ejemplos por perfil (`kids`, `teens`, `adults`). Los conceptos y los criterios de evaluación son los mismos en todas las variantes, así la adaptación no puede ocultar contenido obligatorio.
-- **Fuente única de verdad:** el progreso se guarda en Room y la UI lo observa mediante `Flow`.
-
-Se empieza con solo dos módulos (`:app`, `:core:domain`). Dividir en más módulos por funcionalidad solo si el tamaño lo justifica.
+- **`:core:domain` no conoce Android.** Las reglas educativas y de gamificación se prueban con JUnit en cualquier máquina con JDK.
+- **Las dependencias apuntan hacia el dominio:** `:app` implementa las interfaces que el dominio declara (patrón de *repositorio*), así que cambiar Room por otra cosa no tocaría las reglas.
+- **El contenido es independiente del lenguaje enseñado** (`languageId: "java"`) y del idioma (`locale: "es"`).
 
 ---
 
-## 4. Estructura de carpetas propuesta
+## 4. Estructura de carpetas
 
 ```
 Academia/
-├── settings.gradle.kts
-├── build.gradle.kts
-├── gradle/libs.versions.toml
+├── .github/workflows/ci.yml          (Fase 2)
+├── settings.gradle.kts · build.gradle.kts · gradle/libs.versions.toml · gradlew
 ├── docs/
-│   ├── PLAN_TECNICO_FASE1.md        ← este documento
-│   ├── ESTADO_PROYECTO.md           ← registro de calidad
-│   └── contenido/GUIA_AUTORES.md    ← formato de lecciones (Fase 3)
-├── core/domain/
-│   └── src/main/kotlin/com/funcode/academy/domain/
-│       ├── model/        (Course, Module, Lesson, Exercise, Profile, Progress, Achievement…)
-│       ├── content/      (interfaz ContentRepository)
-│       ├── exercise/     (ExerciseValidator y validadores por tipo)
-│       ├── progress/     (XpPolicy, LevelCurve, UnlockPolicy, MasteryPolicy)
-│       └── usecase/
-│   └── src/test/kotlin/…  (pruebas unitarias JVM)
-└── app/
-    └── src/main/
-        ├── assets/content/java/
-        │   ├── course.json
-        │   └── modules/01-intro/lesson-01.json …
-        ├── java/com/funcode/academy/
-        │   ├── FuncodeApp.kt, MainActivity.kt, AppContainer.kt
-        │   ├── data/
-        │   │   ├── local/   (Room: entidades, DAOs, AppDatabase, migraciones)
-        │   │   ├── prefs/   (DataStore)
-        │   │   └── content/ (lectura de JSON desde assets)
-        │   └── ui/
-        │       ├── theme/   (tema por edad, tipografía escalable, alto contraste)
-        │       ├── navigation/
-        │       ├── components/ (CodeBlock, XpBar, HintPanel…)
-        │       └── screens/ (onboarding, home, map, lesson, exercise, result,
-        │                     profile, achievements, settings)
-        └── res/
+│   ├── PLAN_TECNICO_FASE1.md · ESTADO_PROYECTO.md · CONFIGURACION_ENTORNO.md
+│   └── contenido/GUIA_AUTORES.md      (Fase 3)
+├── core/domain/src/
+│   ├── main/kotlin/com/funcode/academy/domain/
+│   │   ├── model/      content/    exercise/    progress/    runner/    usecase/
+│   └── test/kotlin/com/funcode/academy/domain/
+└── app/src/
+    ├── main/
+    │   ├── assets/content/es/java/   course.json · modules/…/lesson-XX.json
+    │   ├── java/com/funcode/academy/
+    │   │   ├── FuncodeApp.kt · MainActivity.kt · AppContainer.kt
+    │   │   ├── data/  local/ (Room) · prefs/ (DataStore) · content/ (carga de JSON)
+    │   │   └── ui/    theme/ · navigation/ · components/ · screens/
+    │   └── res/values/strings.xml    (español; otros idiomas en values-xx/)
+    ├── test/            (pruebas JVM de :app)
+    └── androidTest/     (pruebas en dispositivo o emulador)
 ```
 
 ---
 
-## 5. Navegación y pantallas principales
+## 5. Navegación y pantallas
 
 ```
-Onboarding (primera vez) ──► Inicio
-                               │
-       ┌───────────────┬───────┴────────┬──────────────┐
-       ▼               ▼                ▼              ▼
-  Mapa de ruta     Misiones          Perfil        Ajustes
-       │          (Fase 6)         (avatar, XP,   (edad, tamaño
-       ▼                            logros)        de texto, contraste)
-  Módulo ──► Lección (teoría + ejemplos comentados)
-                 │
-                 ▼
-            Ejercicios (uno por pantalla, pistas progresivas)
-                 │
-                 ▼
-            Resultado / retroalimentación ──► Evaluación del módulo ──► Desbloqueo
+Onboarding (1.ª vez) ──► Inicio ──┬── Mapa de ruta ──► Módulo ──► Lección ──► Ejercicios ──► Resultado
+                                  │                                                  │
+                                  │                                   Evaluación del módulo ──► Desbloqueo
+                                  ├── Perfil (avatar, XP, logros)
+                                  └── Ajustes (texto, contraste, animaciones, borrar progreso)
 ```
 
-| Pantalla | Propósito | Fase |
-|---|---|---|
-| Onboarding | Apodo, franja de edad (no fecha de nacimiento), avatar básico, nivel previo | 2–4 |
-| Inicio | Continuar donde se quedó, resumen de XP y nivel | 2 |
-| Mapa de ruta | Los 15 módulos de Java con su estado (bloqueado / disponible / completado / dominado) | 2–3 |
-| Lección | Objetivos, explicación, ejemplos comentados línea por línea | 3 |
-| Ejercicio | Tipos validados (ver §8), pistas, retroalimentación explicada | 3 |
-| Evaluación | Prueba práctica del módulo; desbloquea el siguiente | 4 |
-| Perfil y logros | Avatar, nivel, XP, insignias | 5 |
-| Misiones/retos | Retos y proyectos por etapa | 6 |
-| Ajustes | Público, tamaño de texto, alto contraste, reducir animaciones, borrar datos | 2 + 7 |
+| Pantalla | Fase en que se vuelve funcional |
+|---|---|
+| Inicio, Mapa, Perfil, Ajustes (estructura y navegación) | 2 |
+| Lección, Ejercicio, Resultado | 3 |
+| Evaluación y desbloqueo | 4 |
+| Perfil con XP, niveles y logros | 5 |
+| Misiones, retos y proyectos | 6 |
+| Onboarding completo y ajustes de accesibilidad | 2 (mínimo) + 7 |
 
-Navegación inferior con 4 destinos (Inicio, Mapa, Perfil, Ajustes) en teléfonos; *navigation rail* en tabletas y pantallas grandes (*window size classes*).
+Barra de navegación inferior en teléfonos y *navigation rail* en pantallas anchas (*window size classes*).
 
 ---
 
 ## 6. Modelo de datos
 
-### 6.1 Contenido (JSON de solo lectura, en `assets`)
+### 6.1 Contenido (JSON de solo lectura)
 
 ```
-Course      { id, languageId, title, version, modules[] }
-Module      { id, order, title, objectives[], lessons[], assessmentId, project? }
-Lesson      { id, order, objectives[], sections[], exercises[],
-              variants: { kids?, teens?, adults } }   // texto adaptado; mismo núcleo
-Section     { type: text | code | callout, content, codeLines?[{code, comment}] }
-Exercise    { id, type, difficulty(1-5), prompt, payload(según tipo),
-              hints[] (progresivas), feedback{correct, incorrect, perOption?}, xp }
-Assessment  { id, exerciseIds[], passThreshold (p. ej. 0.8) }
-Achievement { id, title, description, condition }
+Course      { id, languageId, locale, version, title, modules[] }
+Module      { id, order, title, objectiveIds[], lessons[], assessment, challenge? }
+Lesson      { id, order, reviewStatus: DRAFT | APPROVED,
+              objectives[{id, text}],            // núcleo común a todos los públicos
+              presentations: {                   // adaptación por público
+                default: { sections[] },         // obligatoria (MVP: adolescentes y adultos)
+                kids?:   { sections[] },         // futuro
+                teens?:  { sections[] },         // opcional
+                adults?: { sections[] }          // opcional
+              },
+              exercises[] }
+Section     { type: text | code | callout, text?, code?, lineComments?[{line, comment}] }
+Exercise    { id, type, difficulty (1-5), objectiveIds[], prompt, payload (según tipo),
+              hints[] (progresivas), feedback { correct, incorrect, perOption? }, baseXp }
+Assessment  { id, exerciseIds[], passThreshold }
 ```
 
-Ejemplo de ejercicio (tipo "predecir la salida"):
+**Reglas que protegen D3** (verificadas con pruebas automáticas sobre los JSON):
 
-```json
-{
-  "id": "java.m02.l01.e03",
-  "type": "PREDICT_OUTPUT",
-  "difficulty": 1,
-  "prompt": "¿Qué imprime este programa?",
-  "payload": {
-    "code": "System.out.println(\"Hola\");\nSystem.out.println(2 + 3);",
-    "expected": "Hola\n5"
-  },
-  "hints": ["println imprime y salta de línea.", "2 + 3 son números, no texto."],
-  "feedback": {
-    "correct": "Correcto: la segunda línea suma dos enteros antes de imprimir.",
-    "incorrect": "Revisa: \"2 + 3\" sin comillas es una operación aritmética."
-  },
-  "xp": 10
-}
-```
+- Los objetivos, los ejercicios evaluables y `passThreshold` pertenecen al **núcleo**, no a las variantes; una variante no puede cambiarlos.
+- Si falta la variante de un público, se usa `default`.
+- Cada variante debe cubrir todos los `objectiveIds` de la lección.
+- `kids` puede añadir ejercicios de práctica, pero no sustituir a los evaluables (pendiente de concretar cuando se diseñe esa ruta).
 
-### 6.2 Progreso del usuario (Room)
+**`reviewStatus` (D7):** todo el contenido nuevo entra como `DRAFT`; solo el responsable lo cambia a `APPROVED`. Cómo se comportan los borradores en la app está pendiente (P2).
+
+### 6.2 Tipos de ejercicio del MVP (D2)
+
+| Tipo | Respuesta verificable | Regla de validación |
+|---|---|---|
+| `SINGLE_CHOICE` / `MULTI_CHOICE` | Índice(s) correcto(s) | Igualdad exacta del conjunto. |
+| `MATCH_PAIRS` (relacionar conceptos) | Pares correctos | Todos los pares coinciden. |
+| `PREDICT_OUTPUT` | Texto esperado | Comparación tras normalizar saltos de línea (`\r\n`→`\n`) y espacios finales de línea. Mayúsculas y espacios internos **sí** cuentan, porque en Java importan. |
+| `FILL_IN_CODE` | Valor(es) del hueco | Lista cerrada de respuestas aceptadas por hueco, comparadas por tokens (ignora los espacios que no afectan al significado). |
+| `ORDER_LINES` | Orden correcto | Secuencia exacta, o varios órdenes válidos declarados explícitamente. |
+| `FIND_ERROR` | Línea(s) con error y, opcionalmente, tipo de error | Igualdad con la línea o el tipo declarados. |
+| `STRUCTURAL_CODE` (respuesta escrita) | Reglas declaradas | Solo reglas que se puedan comprobar de forma fiable sobre los tokens: "declara una variable `int` llamada `edad`", "usa `System.out.println`", "contiene un `if`". **No** se usa para programas cuyo resultado dependa de su ejecución. |
+
+Cada validador tendrá pruebas unitarias con respuestas correctas, incorrectas y casos límite. Si una pregunta admite varias respuestas razonables que la regla no puede distinguir, se reformula la pregunta; no se acepta una regla dudosa.
+
+### 6.3 Progreso del usuario (Room)
 
 | Tabla | Campos principales |
 |---|---|
-| `profile` | id, nickname, ageBand (`KIDS`/`TEENS`/`ADULTS`), avatarId, createdAt |
-| `exercise_attempt` | id, exerciseId, timestamp, correct, hintsUsed, answer (texto) |
-| `exercise_progress` | exerciseId (PK), firstSolvedAt, bestScore, xpAwarded |
+| `profile` | id, nickname, audience (`KIDS`/`TEENS`/`ADULTS`; en el MVP solo `TEENS`/`ADULTS`), avatarId, createdAt |
+| `exercise_attempt` | id, exerciseId, timestamp, correct, hintsUsed |
+| `exercise_progress` | exerciseId (PK), firstSolvedAt, hintsUsedOnFirstSolve |
 | `lesson_progress` | lessonId (PK), status, completedAt |
-| `module_progress` | moduleId (PK), status (LOCKED/AVAILABLE/COMPLETED/MASTERED), assessmentBestScore |
-| `xp_ledger` | id, sourceType, sourceId, amount, timestamp — **UNIQUE(sourceType, sourceId)** |
+| `module_progress` | moduleId (PK), status (`LOCKED`/`AVAILABLE`/`COMPLETED`/`MASTERED`), bestAssessmentScore |
+| `xp_ledger` | id, sourceType, sourceId, amount, timestamp — **`UNIQUE(sourceType, sourceId)`** |
 | `achievement_unlocked` | achievementId (PK), unlockedAt |
 
-El XP total y el nivel **se calculan** a partir de `xp_ledger`; no se guardan como un número editable. La restricción `UNIQUE` impide a nivel de base de datos que una misma actividad otorgue XP dos veces.
+- El XP total y el nivel se **calculan** a partir de `xp_ledger`; no hay un contador que se pueda editar.
+- La restricción `UNIQUE` hace que la base de datos rechace un segundo registro de XP para la misma actividad (condición 4).
+- No se guarda el texto libre de las respuestas, para minimizar datos.
 
-### 6.3 Reglas anti-abuso (sistema RPG)
+### 6.4 Reglas de gamificación
 
-- El XP se otorga solo la **primera vez** que se resuelve correctamente un ejercicio, una lección o una evaluación.
-- Usar pistas reduce el XP de ese ejercicio (p. ej. −25 % por pista, con un mínimo).
-- Repetir un ejercicio ya resuelto sirve para practicar, pero da 0 XP.
-- Un módulo se desbloquea al **aprobar la evaluación** del anterior (≥ 80 %), no por tiempo ni por número de pulsaciones.
-- Los logros se basan en hitos de aprendizaje (p. ej. "primer bucle correcto sin pistas"), no en la actividad bruta.
-
----
-
-## 7. Persistencia y funcionamiento sin conexión
-
-- Todo el MVP funciona **100 % sin conexión**: contenido en `assets` y progreso en Room.
-- Migraciones de Room versionadas desde el primer esquema (con `exportSchema = true` y esquemas en Git).
-- El contenido tiene `version`; si un ejercicio cambia de id, se mantiene una tabla de equivalencias para no perder progreso.
-- Copia de seguridad: Android Auto Backup activado solo para la base de datos de progreso (sin datos sensibles).
-- La sincronización en la nube **no** forma parte del MVP (requeriría cuentas y un backend).
+- XP solo en la **primera** resolución correcta de un ejercicio, lección o evaluación.
+- Las pistas reducen el XP del ejercicio (valores exactos: P6).
+- Repetir un ejercicio ya resuelto sirve de práctica, pero da 0 XP.
+- Un módulo se desbloquea al aprobar la evaluación del anterior (`passThreshold`, propuesta 0,8; P6).
+- Los logros son hitos de aprendizaje, no de actividad bruta.
 
 ---
 
-## 8. Ejecución de código Java: análisis de opciones
+## 7. Persistencia y modo sin conexión
 
-Android no incluye `javac` y su máquina virtual (ART) ejecuta *bytecode* DEX, no `.class`. Ejecutar Java de verdad no es trivial.
+- Contenido en `assets` y progreso en Room: el MVP funciona **100 % sin conexión**.
+- Esquema de Room versionado desde el principio (`exportSchema = true`, esquemas en Git) y migraciones probadas.
+- Los IDs de contenido son estables; si un ejercicio cambia de ID, se añade una equivalencia para no perder el progreso.
+- La copia de seguridad automática de Android incluye solo la base de datos de progreso.
+- Sin sincronización en la nube en el MVP.
 
-### Opción A — Ejercicios validados sin ejecución (recomendada para el MVP)
+---
 
-Tipos: opción múltiple, completar huecos en código, ordenar líneas, predecir la salida, encontrar el error, verdadero/falso, emparejar conceptos. Para la escritura libre de código, una **validación estructural** (comparación normalizada de tokens o reglas como "debe declarar un `int` llamado `edad`").
+## 8. Ejecución de código Java
 
-- ✅ Sin conexión, sin riesgos de seguridad, sin costes, retroalimentación precisa y explicada.
-- ❌ El estudiante no ve su propio programa ejecutarse; la escritura libre se valida de forma limitada.
-- La interfaz nunca dirá "ejecutado": dirá "respuesta comprobada".
+### 8.1 Decisión (D2)
 
-### Opción B — Servicio de ejecución aislado (remoto)
+MVP: **opción A** (respuestas comprobadas sin ejecución). Las opciones B (servicio remoto aislado) y C (compilación en el dispositivo en un proceso aislado) se estudiarán en la Fase 8, con mediciones y pruebas de seguridad antes de decidir.
 
-Un servidor recibe el código, lo compila y ejecuta en un contenedor efímero y devuelve stdout/stderr.
+### 8.2 Interfaz `CodeRunner` (solo diseño; sin implementación en el MVP)
 
-- Variantes: servidor propio con contenedores endurecidos (sin red, límites de CPU/memoria/tiempo/procesos, sistema de archivos de solo lectura, gVisor o nsjail); o **Judge0** (código abierto, autoalojable).
-- ✅ Ejecución real con un JDK completo; permite casos de prueba ocultos para corregir programas.
-- ❌ Requiere conexión, un servidor (coste de alojamiento, aunque sea bajo), mantenimiento y seguridad operativa; el código del estudiante sale del dispositivo (hay que informarlo en la política de privacidad, más sensible con menores).
-- Las API públicas gratuitas de terceros no son fiables para producción y no deberían usarse sin evaluar sus condiciones.
+Se ubicará en `core/domain/.../runner/`:
 
-### Opción C — Compilación y ejecución en el dispositivo
+```kotlin
+interface CodeRunner {
+    /** Qué puede hacer este ejecutor; la UI decide si ofrece "Ejecutar". */
+    val capabilities: RunnerCapabilities
 
-Empaquetar un compilador Java (p. ej. ECJ de Eclipse) y D8 para convertir a DEX, y cargarlo con `DexClassLoader` dentro de un **servicio en un proceso aislado** (`android:isolatedProcess="true"`) con límite de tiempo.
+    suspend fun run(request: RunRequest): RunResult
+}
 
-- ✅ Sin conexión y con ejecución real.
-- ❌ Alta complejidad técnica; aumenta mucho el tamaño del APK; hay que proporcionar las clases de la biblioteca estándar que el compilador necesita; Android 14+ exige que el código cargado dinámicamente sea de solo lectura; hay que simular `System.in`; el aislamiento depende del proceso aislado y de un *watchdog* para bucles infinitos. Viabilidad no comprobada.
+data class RunnerCapabilities(val canExecute: Boolean, val supportsStdin: Boolean)
 
-### Recomendación
+data class RunRequest(
+    val languageId: String,          // "java"
+    val sourceFiles: Map<String, String>,
+    val stdin: String = "",
+    val limits: RunLimits = RunLimits()
+)
 
-1. **MVP: opción A** (Fases 3–4).
-2. **Fase 8: prueba técnica acotada** de la opción C *y/o* de la opción B, con criterios medibles (tamaño del APK, tiempo de compilación, aislamiento demostrado ante bucles infinitos y acceso a archivos/red). Decidir según los resultados.
-3. La interfaz `CodeRunner` del dominio se definirá desde el principio para que la opción elegida pueda enchufarse sin cambiar las pantallas.
+data class RunLimits(val timeoutMs: Long = 3_000, val maxOutputChars: Int = 10_000)
+
+sealed interface RunResult {
+    data class Completed(val stdout: String, val stderr: String, val exitCode: Int) : RunResult
+    data class CompilationFailed(val diagnostics: List<String>) : RunResult
+    data class TimedOut(val partialStdout: String) : RunResult
+    data class Unavailable(val reason: String) : RunResult
+}
+```
+
+- En el MVP **no se registra ninguna implementación** y la UI no muestra ningún botón "Ejecutar". No se crean ejecutores falsos.
+- La interfaz se añadirá en el módulo de dominio cuando se autorice la fase correspondiente (propuesta: Fase 3, junto a los validadores), solo como contrato documentado.
+
+### 8.3 Fase 8 (se conserva)
+
+Prototipos de B y/o C con criterios medibles: tamaño del APK, tiempo de compilación y ejecución, comportamiento ante bucles infinitos, intentos de acceder a archivos o a la red, consumo de memoria y, en el caso de B, coste mensual estimado y datos que salen del dispositivo. Ninguna opción se integra sin pruebas de aislamiento superadas.
+
+### 8.4 Autenticidad del Java enseñado
+
+- Todo fragmento Java de las lecciones debe ser válido para **Java 17 o posterior** (versión LTS de referencia: pendiente P7).
+- Una prueba automática extraerá los fragmentos marcados como "programa completo" de los JSON y los **compilará con `javac`** en CI, y comparará su salida real con la `expected` de los ejercicios `PREDICT_OUTPUT`. Esto se ejecuta **en la máquina de pruebas, no en el teléfono**, y sirve para garantizar que las respuestas son correctas. No contradice D2 (propuesta pendiente P8).
+
+### 8.5 Mensajes en la interfaz
+
+- Se dice "Respuesta comprobada" o "Correcto/Incorrecto", **nunca** "Programa ejecutado" ni "Salida del programa" para algo que no se ejecutó.
+- En los ejercicios de salida se habla de "salida esperada".
 
 ---
 
 ## 9. Seguridad y privacidad
 
-- Sin cuentas, sin correo y sin fecha de nacimiento en el MVP: solo apodo y franja de edad.
-- Sin publicidad ni SDK de analítica de terceros en el MVP.
-- Datos solo en el dispositivo; opción en Ajustes para "borrar todo mi progreso".
-- Si la app se dirige a niños, en Google Play hay que cumplir la *Families Policy* (y COPPA/GDPR-K según el país). Esto condiciona futuras decisiones (anuncios, analítica, inicio de sesión).
-- `android:allowBackup` configurado para incluir solo la base de datos de progreso.
-- Si llega la opción B: HTTPS, sin identificadores personales en las peticiones y límites de uso.
+- Sin cuentas, correo ni fecha de nacimiento: solo apodo opcional y público (adolescente/adulto).
+- Sin publicidad, analítica de terceros ni permiso `INTERNET` en el MVP (no hace falta).
+- Datos solo en el dispositivo; opción "Borrar todo mi progreso".
+- La ruta infantil exige antes de publicarse una revisión específica: Families Policy de Google Play, COPPA/GDPR (consentimiento para menores) y accesibilidad para niños (D3).
+- Sin claves ni secretos en el repositorio; la firma de versiones de publicación queda fuera del MVP.
 
 ---
 
-## 10. Accesibilidad y adaptación
+## 10. Accesibilidad e internacionalización
 
-- Tipografía escalable (respeta el tamaño de fuente del sistema), contraste AA, modo de alto contraste, "reducir animaciones".
-- `contentDescription` en todos los elementos interactivos; objetivos táctiles ≥ 48 dp.
-- Bloques de código con fuente monoespaciada, desplazamiento horizontal y lectura compatible con TalkBack.
-- Temas visuales por público (más ilustrado para niños, más sobrio para adultos) con los mismos componentes.
+- Todo texto de interfaz en `strings.xml`, nada escrito directamente en el código (D4). El contenido educativo, en JSON por idioma.
+- Respeta el tamaño de fuente del sistema; contraste AA; objetivos táctiles de al menos 48 dp; `contentDescription` en los elementos interactivos.
+- Bloques de código en fuente monoespaciada, con desplazamiento horizontal y legibles con TalkBack.
+- Opción de reducir animaciones; temas por público diseñados con los mismos componentes.
 
 ---
 
-## 11. Plan por fases y criterios de aceptación
+## 11. Flujo de creación y revisión de contenido (D7)
 
-Cada fase termina con pruebas ejecutadas y documentadas en `docs/ESTADO_PROYECTO.md`, y espera tu autorización.
+1. Claude presenta un **resumen del bloque**: objetivos, conceptos, ejemplos previstos, tipos de ejercicio, evaluación y dudas técnicas detectadas.
+2. El responsable aprueba o corrige el resumen.
+3. Claude redacta los JSON con `reviewStatus: "DRAFT"` y pasa las validaciones automáticas (esquema, cobertura de objetivos, compilación de fragmentos si se aprueba P8).
+4. El responsable revisa y cambia a `APPROVED`, o pide cambios.
+5. `ESTADO_PROYECTO.md` registra el estado de cada bloque.
 
-| Fase | Objetivo | Criterios de aceptación |
+Ruta de Java (15 módulos): lógica de programación → primer programa → variables, tipos y operadores → entrada de datos → condicionales → bucles → métodos → arreglos y colecciones → POO → encapsulamiento, herencia y polimorfismo → excepciones → archivos → estructuras de datos y algoritmos → depuración, pruebas y buenas prácticas → proyectos integradores.
+
+---
+
+## 12. Compilación y pruebas (D5)
+
+| Dónde | Qué se comprueba | Evidencia |
 |---|---|---|
-| **1. Planificación** (actual) | Este plan | Plan entregado; decisiones pendientes respondidas por ti. |
-| **2. Esqueleto del proyecto** | Proyecto Gradle (`:app`, `:core:domain`), tema, navegación entre pantallas vacías (Inicio, Mapa, Perfil, Ajustes), Room y DataStore configurados, CI en GitHub Actions | `./gradlew assembleDebug` y `./gradlew test` pasan en CI; la app abre en emulador/dispositivo y navega entre las 4 pantallas; rotar la pantalla no rompe nada. |
-| **3. Motor de lecciones y ejercicios** | Cargar contenido JSON; pantalla de lección; 4 tipos de ejercicio validados; pistas progresivas; retroalimentación; guardar intentos | Pruebas unitarias de cada validador (respuestas correctas, incorrectas y casos límite); el progreso persiste tras cerrar la app; JSON inválido muestra un error controlado, no un cierre. |
-| **4. Contenido de los módulos 1–3 + evaluación** | Lecciones de introducción, primer programa y variables (variantes por edad); evaluaciones; desbloqueo por dominio | El módulo 2 permanece bloqueado hasta aprobar la evaluación 1 con ≥ 80 % (probado); revisión técnica del contenido; las variantes de edad cubren los mismos objetivos. |
-| **5. Sistema RPG básico** | XP, niveles, perfil con avatar, logros, mapa de progreso visual | Pruebas: repetir un ejercicio no da XP; las pistas reducen el XP; el nivel se calcula correctamente; los logros se otorgan una sola vez. |
-| **6. Misiones, retos y proyectos** | Retos por módulo y proyecto integrador por etapa | Cada reto está ligado a objetivos de aprendizaje y completarlo exige respuestas validadas. |
-| **7. Personalización y accesibilidad** | Ajustes por edad, tamaño de texto, contraste, animaciones; diseño para tabletas | Verificación con TalkBack y escalado de fuente al 200 %; capturas en teléfono y tableta. |
-| **8. Prueba técnica de ejecución de Java** | Prototipo de la opción C y/o B | Informe con mediciones reales; decisión documentada; nada se publica como "ejecución" sin pruebas de aislamiento. |
-| **9+. Contenido de los módulos 4–15** | En bloques de 2–3 módulos | Mismos criterios que la Fase 4. |
-| **Posterior** | Otros lenguajes, sincronización en la nube, publicación en Google Play | Se planificarán por separado. |
+| Contenedor de Claude | `./gradlew :core:domain:test` (si Maven Central responde) | Salida de la consola copiada al registro. |
+| GitHub Actions | `:core:domain:test`, pruebas JVM de `:app`, *lint* y `assembleDebug` | Enlace a la ejecución del *workflow* y su estado. |
+| Android Studio (responsable) | Ejecución en emulador o dispositivo, revisión visual, TalkBack | Confirmación del responsable y, si es posible, capturas. |
+
+Los pasos de preparación están en **`docs/CONFIGURACION_ENTORNO.md`**.
 
 ---
 
-## 12. Riesgos y dependencias
+## 13. Plan por fases y criterios de aceptación
 
-| Riesgo | Probabilidad / impacto | Mitigación |
+| Fase | Objetivo |
+|---|---|
+| 1. Planificación | ✔ Plan y decisiones D1–D8 aprobados. |
+| **2. Esqueleto y CI** | Proyecto Gradle, navegación básica, Room/DataStore, CI. |
+| 3. Motor de lecciones y ejercicios | Carga de JSON, 7 tipos de ejercicio con validadores, pistas, retroalimentación, registro de intentos; contrato `CodeRunner`. |
+| 4. Contenido de los módulos 1–3 + evaluación | Contenido revisado (D7); desbloqueo por dominio. |
+| 5. RPG básico | XP, niveles, perfil, avatar y logros. |
+| 6. Misiones, retos y proyectos | Retos ligados a objetivos. |
+| 7. Personalización y accesibilidad | Ajustes, tabletas, auditoría con TalkBack. |
+| 8. Investigación de la ejecución real | Prototipos B/C con mediciones. |
+| 9+. Contenido de los módulos 4–15 | Por bloques, con el flujo de §11. |
+
+### 13.1 Criterios de aceptación de la Fase 2
+
+**A. Estructura y configuración**
+1. Proyecto con módulos `:app` (Android) y `:core:domain` (Kotlin/JVM, sin dependencias de Android).
+2. `applicationId` y paquete raíz `com.funcode.academy`; `minSdk 26`.
+3. Todas las versiones en `gradle/libs.versions.toml`, solo versiones estables; *Gradle wrapper* incluido en el repositorio.
+4. Sin dependencias de pago ni permiso `INTERNET`.
+
+**B. Interfaz mínima (sin funciones simuladas)**
+5. Tema Material 3 con soporte de modo claro/oscuro y respeto del tamaño de fuente del sistema.
+6. Navegación entre Inicio, Mapa, Perfil y Ajustes con barra inferior; el botón "Atrás" se comporta correctamente.
+7. Las pantallas aún sin funcionalidad muestran un estado vacío honesto ("Disponible en una próxima versión") y no datos ficticios presentados como reales.
+8. Todos los textos visibles en `strings.xml` (español).
+9. Elementos interactivos con descripción para accesibilidad.
+
+**C. Persistencia**
+10. Base de datos Room creada con el esquema inicial (§6.3), incluida la restricción `UNIQUE` de `xp_ledger`; esquema exportado a Git.
+11. Una prueba automatizada demuestra que insertar dos veces XP para la misma actividad **no** duplica el XP.
+12. DataStore guarda al menos un ajuste real (p. ej., el público elegido) y una prueba comprueba que persiste.
+
+**D. Dominio**
+13. `:core:domain` contiene los modelos básicos y las interfaces de repositorio, con pruebas unitarias que pasan.
+
+**E. Integración continua**
+14. `.github/workflows/ci.yml` se ejecuta en cada *push* y *pull request*: `:core:domain:test`, pruebas de `:app`, *lint* y `assembleDebug`.
+15. La ejecución de CI termina en **verde** en la rama de trabajo, con enlace registrado en `ESTADO_PROYECTO.md`.
+16. El APK de depuración queda disponible como artefacto de la ejecución.
+
+**F. Verificación manual (responsable)**
+17. El responsable abre el proyecto en Android Studio, lo sincroniza sin errores y ejecuta la app en un emulador o dispositivo con API 26 o superior.
+18. Navegación entre las 4 pantallas, rotación de pantalla y cierre/reapertura sin cierres inesperados; el ajuste guardado se conserva.
+
+**G. Documentación**
+19. `ESTADO_PROYECTO.md` actualizado con lo implementado, probado (con evidencia), pendiente y limitaciones.
+20. Breve explicación de los componentes creados (qué hace cada archivo principal).
+
+Los criterios 17–18 dependen de una verificación del responsable; hasta entonces la Fase 2 se registrará como "implementada y probada en CI, pendiente de verificación en dispositivo", no como "aprobada".
+
+---
+
+## 14. Cuestiones técnicas pendientes de decisión
+
+| # | Cuestión | Propuesta | Cuándo hace falta |
+|---|---|---|---|
+| **P1** | Rama principal: el repositorio solo tiene `ccr-db27c4de-czvzgb` como rama por defecto. ¿Crear `main` como rama estable y trabajar con *pull requests*? | Sí: `main` estable y cambios por PR con CI obligatorio. | Antes de la Fase 2. |
+| **P2** | ¿Cómo se comportan los borradores (`DRAFT`) en la app? | Se muestran con la etiqueta "Borrador" solo en las compilaciones de depuración; las de publicación los excluyen. | Fase 3. |
+| **P3** | Pruebas de Room y de UI: ¿**Robolectric** (en la JVM, rápido, una dependencia más) o **emulador en GitHub Actions** (más real, más lento)? | Robolectric en cada *push*; emulador más adelante, cuando haya flujos completos que probar. | Fase 2. |
+| **P4** | Permisos del *workflow*: subir archivos a `.github/workflows/` puede requerir que la integración de GitHub tenga el permiso *workflows*. | Si el *push* falla, crearás tú el archivo desde la web de GitHub con el contenido que te entregue. | Fase 2. |
+| **P5** | Avatar: ¿ilustraciones propias, iconos de Material o una biblioteca con licencia libre? | Iconos/formas de Material en el MVP; ilustraciones después. | Fase 5. |
+| **P6** | Valores de XP: XP base por dificultad, penalización por pista, curva de niveles y umbral de evaluación (propuesta 80 %). | Se propondrán con ejemplos numéricos. | Fase 5 (umbral: Fase 4). |
+| **P7** | Versión de Java de referencia del contenido. | Java 17 LTS (sintaxis estable y ampliamente instalada); mencionar novedades de 21 solo cuando aporten. | Fase 3. |
+| **P8** | ¿Compilar en CI con `javac` los fragmentos Java del contenido para verificar las respuestas (§8.4)? | Sí: garantiza la corrección técnica sin ejecutar nada en el teléfono. | Fase 4. |
+| **P9** | Licencia del código y del contenido (p. ej., código abierto o "todos los derechos reservados"); el repositorio es público. | Decisión tuya; mientras no exista, nadie tiene permiso legal para reutilizarlo. | Antes de publicar. |
+| **P10** | Identidad visual: nombre visible, icono y paleta de colores. | Paleta provisional de Material 3 hasta definirla. | Fase 2 (provisional) / 7. |
+
+---
+
+## 15. Registro de decisiones técnicas
+
+| Fecha | Decisión | Motivo breve |
 |---|---|---|
-| No se puede compilar Android en este entorno | Seguro / alto | CI en GitHub Actions + Android Studio local; o permitir `dl.google.com`. |
-| Maven Central limitado (429) desde este entorno | Media / medio | Volver a comprobarlo; caché de Gradle; CI como fuente fiable de compilación. |
-| Volumen de contenido (15 módulos × lecciones × variantes por edad) | Alta / alto | Formato JSON con guía de autoría; producir por bloques; validar los JSON con pruebas automáticas. |
-| Expectativa de "ejecutar código real" | Alta / medio | Ser transparentes en la UI; prototipo en la Fase 8. |
-| Seguridad de la ejecución de código | Media / alto | Nada de ejecución sin aislamiento demostrado. |
-| Cumplimiento normativo con menores | Media / alto | Sin datos personales, sin anuncios ni analítica; revisar la Families Policy antes de publicar. |
-| Gamificación que distraiga del aprendizaje | Media / medio | XP ligado a resultados validados; reglas probadas con pruebas unitarias. |
-| Cambios en el contenido que rompan el progreso guardado | Media / medio | IDs estables, versionado y tabla de equivalencias. |
-
-Dependencias externas previstas (todas gratuitas y de código abierto): AndroidX (Compose, Navigation, Room, DataStore, Lifecycle), kotlinx.serialization, kotlinx.coroutines, JUnit. Ninguna de pago.
-
----
-
-## 13. Decisiones pendientes (necesito tu respuesta)
-
-| # | Decisión | Mi recomendación |
-|---|---|---|
-| **D1** | Lenguaje de la app: **Kotlin + Compose** o **Java + Vistas XML** | Kotlin + Compose. Si tu prioridad es practicar Java tú mismo mientras construyes la app, Java + XML es viable, aunque con más código y menos soporte moderno. |
-| **D2** | Estrategia de ejecución de Java | Opción A en el MVP; prototipo de C/B en la Fase 8. |
-| **D3** | Públicos del MVP | Empezar con **adolescentes/adultos** (una variante) y añadir la variante infantil en la Fase 7, por el esfuerzo de contenido y el cumplimiento normativo. |
-| **D4** | Idioma de la interfaz y del contenido | Español primero, con los textos de la UI en `strings.xml` para poder traducir. |
-| **D5** | Dónde compilar y probar | GitHub Actions + tu Android Studio (y, si lo deseas, permitir `dl.google.com` en el entorno). |
-| **D6** | `minSdk` | 26 (Android 8.0). |
-| **D7** | ¿Quién redacta y revisa el contenido educativo? | Yo redacto borradores en JSON y tú los revisas antes de integrarlos. |
-| **D8** | Nombre del paquete | `com.funcode.academy` (cámbialo si tienes un dominio propio). |
-
----
-
-## 14. Prueba técnica mínima
-
-No se ha construido ninguna prueba técnica en esta fase. La única que valdría la pena aquí (compilar un módulo de dominio JVM con un validador y pruebas JUnit) depende de que se resuelva D1 y de que Maven Central responda; además, la parte de mayor riesgo (Android y la ejecución de Java) no puede probarse en este contenedor. Se propone hacerla al inicio de la Fase 2.
+| 2026-10-10 | Kotlin + Compose + Material 3 (D1) | Estándar actual de Android; menos código; adaptación visual sencilla. |
+| 2026-10-10 | Módulos `:app` y `:core:domain` (D1) | Reglas probables sin Android; separación de capas. |
+| 2026-10-10 | Ejercicios comprobados sin ejecución en el MVP; interfaz `CodeRunner` sin implementación (D2) | Seguridad, funcionamiento sin conexión y coste cero; la ejecución real necesita investigación. |
+| 2026-10-10 | Variantes de contenido por público con núcleo común (D3) | La adaptación no puede alterar los objetivos ni la evaluación. |
+| 2026-10-10 | `strings.xml` + contenido JSON por idioma (D4) | Traducción futura sin rehacer la app. |
+| 2026-10-10 | GitHub Actions + Android Studio (D5) | El contenedor no tiene Android SDK; CI gratuito en un repositorio público. |
+| 2026-10-10 | `minSdk 26` (D6) | Compatibilidad amplia y APIs modernas. |
+| 2026-10-10 | Contenido como borrador hasta su revisión (D7) | Control de calidad pedagógica y técnica. |
+| 2026-10-10 | `com.funcode.academy` (D8) | Identificador aprobado. |
