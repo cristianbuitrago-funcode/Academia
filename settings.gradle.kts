@@ -28,6 +28,8 @@ include(":core:domain")
 // En máquinas sin Android SDK se puede compilar y probar solo el dominio:
 //   ./gradlew -Pfuncode.domainOnly=true :core:domain:test
 // Por defecto (Android Studio y CI) se incluye también la app.
-if (providers.gradleProperty("funcode.domainOnly").orNull != "true") {
+if (providers.gradleProperty("funcode.domainOnly").orNull == "true") {
+    rootProject.buildFileName = "build-domain-only.gradle.kts"
+} else {
     include(":app")
 }
