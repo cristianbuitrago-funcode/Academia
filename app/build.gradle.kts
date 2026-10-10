@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+
 // Módulo de la aplicación Android: interfaz (Compose), datos (Room, DataStore)
 // e inyección de dependencias manual. Las reglas viven en :core:domain.
 //
@@ -49,6 +51,14 @@ android {
     lint {
         abortOnError = true
         warningsAsErrors = false
+    }
+}
+
+// Muestra en la consola (y en el registro del CI) el detalle de las pruebas que fallen.
+tasks.withType<Test>().configureEach {
+    testLogging {
+        events("failed")
+        exceptionFormat = TestExceptionFormat.FULL
     }
 }
 
