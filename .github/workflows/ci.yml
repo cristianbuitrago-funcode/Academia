@@ -53,6 +53,7 @@ jobs:
           git status --porcelain app/schemas
           if [ -n "$(git status --porcelain app/schemas)" ]; then
             echo "::error::El esquema de Room generado no coincide con el guardado en app/schemas. Contenido generado:"
+            git diff app/schemas
             find app/schemas -name '*.json' -exec sh -c 'echo "== $1"; cat "$1"' _ {} \;
             exit 1
           fi
