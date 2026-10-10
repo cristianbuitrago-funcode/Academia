@@ -58,6 +58,30 @@ jobs:
             exit 1
           fi
 
+      - name: Resumen de pruebas y lint
+        if: always()
+        run: |
+          python3 - <<'EOF' | tee -a "$GITHUB_STEP_SUMMARY"
+          import glob, json, xml.etree.ElementTree as ET
+          print("### Pruebas")
+          total = {"tests": 0, "failures": 0, "errors": 0, "skipped": 0}
+          for f in sorted(glob.glob("core/domain/build/test-results/test/*.xml") + glob.glob("app/build/test-results/testDebugUnitTest/*.xml")):
+              s = ET.parse(f).getroot()
+              counts = {k: int(s.get(k, 0)) for k in total}
+              for k in total:
+                  total[k] += counts[k]
+              print(f"- {s.get('name')}: {counts['tests']} pruebas, {counts['failures']} fallos, {counts['errors']} errores, {counts['skipped']} omitidas")
+          print(f"\n**Total:** {total['tests']} pruebas, {total['failures']} fallos, {total['errors']} errores, {total['skipped']} omitidas\n")
+          print("### Lint")
+          for f in glob.glob("app/build/reports/lint-results-debug.sarif"):
+              results = json.load(open(f))["runs"][0].get("results", [])
+              levels = {}
+              for r in results:
+                  levels[r.get("level", "?")] = levels.get(r.get("level", "?"), 0) + 1
+                  print(f"- [{r.get('level')}] {r.get('ruleId')}: {r['message']['text'][:160]}")
+              print(f"\n**Total de avisos de lint:** {len(results)} {levels}")
+          EOF
+
       - name: Publicar el APK de depuración
         uses: actions/upload-artifact@v4
         with:
