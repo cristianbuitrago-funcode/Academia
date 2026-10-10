@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Funcode Academy</string>
+
+    <!-- Navegación -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_map">Mapa</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="nav_settings">Ajustes</string>
+
+    <!-- Inicio -->
+    <string name="home_title">Te damos la bienvenida a Funcode Academy</string>
+    <string name="home_intro">Aprende a programar en Java desde cero, paso a paso.</string>
+    <string name="home_total_xp">XP total: %1$d</string>
+    <string name="home_xp_explanation">Ganarás XP al resolver ejercicios y aprobar evaluaciones.</string>
+
+    <!-- Pantallas pendientes -->
+    <string name="coming_soon">Disponible en una próxima versión</string>
+    <string name="map_title">Mapa de aprendizaje</string>
+    <string name="map_pending_description">Aquí verás los módulos de la ruta de Java y tu avance en cada uno.</string>
+    <string name="profile_title">Tu perfil</string>
+    <string name="profile_pending_description">Aquí verás tu avatar, tu nivel y tus logros.</string>
+
+    <!-- Ajustes -->
+    <string name="settings_title">Configuración</string>
+    <string name="settings_audience_title">¿Para quién adaptamos las explicaciones?</string>
+    <string name="settings_audience_description">Cambia el estilo de las explicaciones y los ejemplos, no los contenidos ni las evaluaciones.</string>
+    <string name="settings_audience_not_chosen">Aún no has elegido una opción.</string>
+    <string name="audience_teens">Adolescente</string>
+    <string name="audience_adults">Persona adulta</string>
+</resources>

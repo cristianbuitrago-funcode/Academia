@@ -1,0 +1,73 @@
+# Integración continua de Funcode Academy.
+# Se ejecuta en cada push y pull request: pruebas del dominio, pruebas JVM de la
+# app (incluye Robolectric), lint y compilación del APK de depuración.
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Pruebas y compilación
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v5
+
+      - name: Instalar JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurar Gradle (con caché y validación del wrapper)
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Pruebas de :core:domain
+        run: ./gradlew :core:domain:test --stacktrace
+
+      - name: Pruebas JVM de :app (Robolectric)
+        run: ./gradlew :app:testDebugUnitTest --stacktrace
+
+      - name: Lint
+        run: ./gradlew :app:lintDebug --stacktrace
+
+      - name: Compilar APK de depuración
+        run: ./gradlew :app:assembleDebug --stacktrace
+
+      - name: Comprobar que el esquema de Room está guardado en Git
+        run: |
+          git status --porcelain app/schemas
+          if [ -n "$(git status --porcelain app/schemas)" ]; then
+            echo "::error::El esquema de Room generado no coincide con el guardado en app/schemas. Contenido generado:"
+            find app/schemas -name '*.json' -exec sh -c 'echo "== $1"; cat "$1"' _ {} \;
+            exit 1
+          fi
+
+      - name: Publicar el APK de depuración
+        uses: actions/upload-artifact@v4
+        with:
+          name: funcode-academy-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Publicar informes de pruebas y lint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informes
+          path: |
+            core/domain/build/reports/
+            app/build/reports/
+          if-no-files-found: ignore
