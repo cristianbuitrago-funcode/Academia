@@ -1,6 +1,6 @@
 # Funcode Academy — Registro de estado del proyecto
 
-_Última actualización: 2026-10-10_
+_Última actualización: 2026-10-12_
 
 **Significado de los estados**
 - **Planificado:** descrito en un documento; no hay código.
@@ -16,7 +16,7 @@ _Última actualización: 2026-10-10_
 | Fase | Estado | Notas |
 |---|---|---|
 | 1. Planificación y arquitectura | **Aprobado** (2026-10-10) | D1–D8, P1 y P3 resueltas. |
-| 2. Esqueleto y CI | **Implementado y probado en CI — pendiente de verificación en dispositivo y de aprobación** | Ver detalle abajo. Faltan los criterios 17–18 (verificación manual). |
+| 2. Esqueleto y CI | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en dispositivo y de aprobación** | Faltan los criterios 17–18; la verificación manual está bloqueada por el emulador y por el fallo de Room en el equipo del responsable. |
 | 3–9 | Planificado — sin autorizar | — |
 
 ## Decisiones
@@ -87,10 +87,10 @@ Aporta valor comprobable: permite probar **Room real** (la restricción única d
 | 11 | Prueba: el XP no se duplica | ✔ Cumplido (3 pruebas) |
 | 12 | DataStore guarda un ajuste real y una prueba lo comprueba | ✔ Cumplido |
 | 13 | Modelos e interfaces del dominio con pruebas | ✔ Cumplido |
-| 14 | *Workflow* de CI en cada *push*/PR | ✔ Cumplido |
+| 14 | *Workflow* de CI en cada *push*/PR | ✔ Cumplido (Linux: pruebas, lint, APK; Windows: pruebas) |
 | 15 | CI en verde con enlace registrado | ✔ Cumplido: https://github.com/cristianbuitrago-funcode/Academia/actions/runs/38077143387 |
 | 16 | APK de depuración como artefacto | ✔ Cumplido |
-| 17 | Abrir en Android Studio y ejecutar en API ≥ 26 | **Pendiente** (responsable) |
+| 17 | Abrir en Android Studio y ejecutar en API ≥ 26 | Parcial: el proyecto se abre y sincroniza; **bloqueado** el arranque del emulador |
 | 18 | Navegar, rotar y cerrar/reabrir sin cierres; ajuste conservado | **Pendiente** (responsable). Robolectric lo cubre parcialmente; no lo sustituye. |
 | 19 | `ESTADO_PROYECTO.md` actualizado | ✔ Este documento |
 | 20 | Explicación de componentes | ✔ `docs/COMPONENTES.md` |
@@ -111,10 +111,16 @@ Aporta valor comprobable: permite probar **Room real** (la restricción única d
 | 2026-10-10 | CI #5 | Control del esquema de Room | **Fallo esperado**: el esquema aún no estaba en Git. Se guardó a partir de la salida del CI. |
 | 2026-10-10 | CI 38076992682 | Todo | **Verde** |
 | 2026-10-10 | CI 38077143387 | Todo + resumen | **Verde: 22/22 pruebas** (7 dominio, 5 Room, 4 DataStore, 6 interfaz); lint sin errores, **1 aviso**; APK generado |
+| 2026-10-12 | Equipo Windows del responsable | `:core:domain:test :app:testDebugUnitTest` | **5 de 15 fallos** en `:app`: `UnsatisfiedLinkError` en `SQLiteConnection.nativeOpen` (SQLite nativo de Robolectric). Gradle Sync correcto. Emulador: "failed to connect within 5 minutes". |
+| 2026-10-12 | CI, nuevo trabajo Windows (38318582592) | Pruebas en Windows | Room **pasa**; **falla** `DataStoreSettingsRepositoryTest.cambiarDePublicoReemplazaElAnterior` (`Unable to rename ... settings.preferences_pb`): en la JVM de Windows `FileStorage` no puede reemplazar un archivo existente. |
+| 2026-10-12 | CI Windows con rutas con espacios (38319034324) | Hipótesis "espacio en la ruta" | Room **pasa** con espacios en el proyecto y en TEMP → hipótesis descartada. |
+| 2026-10-12 | CI 38319271182 | Linux + Windows | **Verde en ambos** tras usar `OkioStorage` en la prueba de DataStore (la app sigue usando `FileStorage`, correcto en Android). |
 
 ## Errores conocidos
 
-Ninguno abierto en el código.
+- **Abierto (entorno del responsable):** las pruebas de Room fallan en su equipo Windows con `UnsatisfiedLinkError` (SQLite nativo de Robolectric), aunque pasan en Windows y Linux de CI. Causa sin confirmar; pendiente de `gradlew --version` (JDK y arquitectura usados por la terminal).
+- **Abierto (entorno del responsable):** el emulador no arranca ("failed to connect within 5 minutes"); pendiente de comprobar la virtualización.
+- **Corregido:** fallo de la prueba de DataStore en la JVM de Windows (ver tabla de pruebas).
 
 ## Limitaciones y avisos conocidos
 
