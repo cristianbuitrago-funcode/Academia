@@ -1,6 +1,8 @@
 package com.funcode.academy.data
 
+import androidx.datastore.core.okio.OkioStorage
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.PreferencesSerializer
 import com.funcode.academy.data.settings.DataStoreSettingsRepository
 import com.funcode.academy.domain.model.Audience
 import kotlinx.coroutines.CoroutineScope
@@ -9,6 +11,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import okio.FileSystem
 import okio.Path.Companion.toPath
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -17,7 +20,10 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
 
-/** Pruebas de DataStore sobre un archivo real en una carpeta temporal (sin Android). */
+/**
+ * Pruebas de DataStore sobre un archivo real en una carpeta temporal (sin Android).
+ * Comprueban la lógica del repositorio y que los datos persisten al reabrir.
+ */
 class DataStoreSettingsRepositoryTest {
 
     @get:Rule
@@ -28,11 +34,16 @@ class DataStoreSettingsRepositoryTest {
     /** Abre el archivo, ejecuta [block] y cierra el DataStore, como si la app se cerrara. */
     private fun <T> withRepository(block: suspend (DataStoreSettingsRepository) -> T): T = runBlocking {
         val job = Job()
-        // Mismo almacenamiento que la app (createSettingsDataStore), con un ámbito
-        // propio para poder cerrarlo y simular que la app se cierra.
-        val dataStore = PreferenceDataStoreFactory.createWithPath(
+        // Almacenamiento basado en Okio: en la JVM de Windows el almacenamiento por
+        // defecto (FileStorage, File.renameTo) no puede reemplazar un archivo existente.
+        // En Android la app usa FileStorage, donde renombrar sí reemplaza el archivo.
+        val dataStore = PreferenceDataStoreFactory.create(
+            storage = OkioStorage(
+                fileSystem = FileSystem.SYSTEM,
+                serializer = PreferencesSerializer,
+                producePath = { file().absolutePath.toPath() },
+            ),
             scope = CoroutineScope(Dispatchers.IO + job),
-            produceFile = { file().absolutePath.toPath() },
         )
         try {
             block(DataStoreSettingsRepository(dataStore))

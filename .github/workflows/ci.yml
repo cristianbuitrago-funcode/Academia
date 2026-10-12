@@ -102,8 +102,8 @@ jobs:
   windows:
     # Windows es el sistema de desarrollo del responsable: las pruebas JVM
     # (incluido Robolectric con SQLite nativo) deben pasar también aquí.
-    # Se usan rutas con espacios (proyecto y carpeta temporal) para reproducir
-    # un perfil de usuario como "C:\Users\nombre apellido".
+    # Se usan rutas con espacios (proyecto y carpeta temporal), como en un perfil
+    # de usuario "C:\Users\nombre apellido", para detectar problemas de rutas.
     name: Pruebas en Windows
     runs-on: windows-latest
     timeout-minutes: 45

@@ -2,33 +2,20 @@ package com.funcode.academy.data.settings
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.funcode.academy.domain.model.Audience
 import com.funcode.academy.domain.settings.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import okio.Path.Companion.toPath
-import java.io.File
 import java.io.IOException
 
-/**
- * Crea el DataStore de ajustes sobre [file]. Debe existir una sola instancia por
- * archivo (en la app la crea `AppContainer`).
- *
- * Usa el almacenamiento basado en Okio, que reemplaza el archivo de forma atómica
- * también en la JVM de Windows (donde se ejecutan las pruebas); el almacenamiento
- * por defecto falla allí al sobrescribir un archivo existente.
- */
-fun createSettingsDataStore(file: File): DataStore<Preferences> =
-    PreferenceDataStoreFactory.createWithPath(produceFile = { file.absolutePath.toPath() })
-
 /** Archivo de ajustes: files/datastore/settings.preferences_pb */
-fun Context.settingsDataStoreFile(): File = File(filesDir, "datastore/settings.preferences_pb")
+val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 /** Implementación de [SettingsRepository] sobre DataStore (pares clave/valor). */
 class DataStoreSettingsRepository(

@@ -5,8 +5,7 @@ import androidx.room.Room
 import com.funcode.academy.data.local.FuncodeDatabase
 import com.funcode.academy.data.progress.RoomProgressRepository
 import com.funcode.academy.data.settings.DataStoreSettingsRepository
-import com.funcode.academy.data.settings.createSettingsDataStore
-import com.funcode.academy.data.settings.settingsDataStoreFile
+import com.funcode.academy.data.settings.settingsDataStore
 import com.funcode.academy.domain.progress.ProgressRepository
 import com.funcode.academy.domain.settings.SettingsRepository
 
@@ -27,6 +26,6 @@ class AppContainer(context: Context) {
     }
 
     val settingsRepository: SettingsRepository by lazy {
-        DataStoreSettingsRepository(createSettingsDataStore(appContext.settingsDataStoreFile()))
+        DataStoreSettingsRepository(appContext.settingsDataStore)
     }
 }
