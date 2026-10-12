@@ -9,6 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import okio.Path.Companion.toPath
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Rule
@@ -27,9 +28,11 @@ class DataStoreSettingsRepositoryTest {
     /** Abre el archivo, ejecuta [block] y cierra el DataStore, como si la app se cerrara. */
     private fun <T> withRepository(block: suspend (DataStoreSettingsRepository) -> T): T = runBlocking {
         val job = Job()
-        val dataStore = PreferenceDataStoreFactory.create(
+        // Mismo almacenamiento que la app (createSettingsDataStore), con un ámbito
+        // propio para poder cerrarlo y simular que la app se cierra.
+        val dataStore = PreferenceDataStoreFactory.createWithPath(
             scope = CoroutineScope(Dispatchers.IO + job),
-            produceFile = ::file,
+            produceFile = { file().absolutePath.toPath() },
         )
         try {
             block(DataStoreSettingsRepository(dataStore))
