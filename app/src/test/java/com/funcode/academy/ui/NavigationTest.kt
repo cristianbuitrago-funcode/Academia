@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.funcode.academy.R
 import com.funcode.academy.domain.model.Audience
+import com.funcode.academy.testing.FakeContentRepository
 import com.funcode.academy.testing.FakeProgressRepository
 import com.funcode.academy.testing.FakeSettingsRepository
 import com.funcode.academy.ui.theme.FuncodeTheme
@@ -39,7 +40,11 @@ class NavigationTest {
     private fun setApp(settings: FakeSettingsRepository = FakeSettingsRepository()) {
         rule.setContent {
             FuncodeTheme {
-                FuncodeAppUi(progressRepository = FakeProgressRepository(initialXp = 0), settingsRepository = settings)
+                FuncodeAppUi(
+                    progressRepository = FakeProgressRepository(initialXp = 0),
+                    settingsRepository = settings,
+                    contentRepository = FakeContentRepository(),
+                )
             }
         }
     }
@@ -105,7 +110,11 @@ class NavigationTest {
         val restorationTester = StateRestorationTester(rule)
         restorationTester.setContent {
             FuncodeTheme {
-                FuncodeAppUi(progressRepository = FakeProgressRepository(), settingsRepository = FakeSettingsRepository())
+                FuncodeAppUi(
+                    progressRepository = FakeProgressRepository(),
+                    settingsRepository = FakeSettingsRepository(),
+                    contentRepository = FakeContentRepository(),
+                )
             }
         }
         clickTab(R.string.nav_map)

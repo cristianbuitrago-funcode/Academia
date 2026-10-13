@@ -19,6 +19,7 @@ class MainActivity : ComponentActivity() {
                 FuncodeAppUi(
                     progressRepository = container.progressRepository,
                     settingsRepository = container.settingsRepository,
+                    contentRepository = container.contentRepository,
                 )
             }
         }

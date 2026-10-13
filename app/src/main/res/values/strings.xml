@@ -28,4 +28,71 @@
     <string name="settings_audience_not_chosen">Aún no has elegido una opción.</string>
     <string name="audience_teens">Adolescente</string>
     <string name="audience_adults">Persona adulta</string>
+
+    <!-- Inicio: lecciones -->
+    <string name="home_lessons_title">Lecciones disponibles</string>
+    <string name="home_open_lesson">Abrir lección</string>
+    <string name="home_no_lessons">No hay lecciones disponibles.</string>
+    <string name="home_lesson_exercises">Ejercicios: %1$d</string>
+    <string name="draft_label">Borrador: contenido pendiente de revisión.</string>
+
+    <!-- Lección -->
+    <string name="lesson_loading">Cargando la lección…</string>
+    <string name="lesson_not_found">No se encontró esta lección.</string>
+    <string name="lesson_invalid">Esta lección tiene un error en su contenido y no se puede mostrar.</string>
+    <string name="lesson_back_home">Volver al inicio</string>
+    <string name="lesson_objectives_title">Objetivos de aprendizaje</string>
+    <string name="lesson_theory_title">Explicación</string>
+    <string name="lesson_code_comments_title">Comentarios línea por línea</string>
+    <string name="lesson_line_comment">Línea %1$d: %2$s</string>
+    <string name="lesson_start_exercises">Empezar ejercicios</string>
+    <string name="lesson_exercise_progress">Ejercicio %1$d de %2$d</string>
+    <string name="lesson_difficulty">Dificultad: %1$d de 5</string>
+    <string name="lesson_check">Comprobar respuesta</string>
+    <string name="lesson_show_hint">Ver una pista (%1$d de %2$d)</string>
+    <string name="lesson_hint">Pista %1$d: %2$s</string>
+    <string name="lesson_try_again">Intentar de nuevo</string>
+    <string name="lesson_next">Siguiente ejercicio</string>
+    <string name="lesson_skip">Continuar sin resolver</string>
+    <string name="lesson_see_summary">Ver resumen</string>
+
+    <!-- Retroalimentación -->
+    <string name="feedback_correct_title">¡Correcto! Respuesta comprobada.</string>
+    <string name="feedback_incorrect_title">Todavía no es correcto.</string>
+    <string name="feedback_partial">Has acertado %1$d de %2$d.</string>
+    <string name="feedback_validation_note">Tu respuesta se comprueba con las reglas del ejercicio; el código no se ejecuta.</string>
+    <string name="incomplete_nothing_selected">Elige una respuesta antes de comprobar.</string>
+    <string name="incomplete_empty_blanks">Completa todos los huecos antes de comprobar.</string>
+    <string name="incomplete_empty_output">Escribe la salida antes de comprobar.</string>
+    <string name="incomplete_not_all_pairs">Relaciona todos los conceptos antes de comprobar.</string>
+    <string name="incomplete_duplicated_pair">Cada descripción solo puede usarse una vez.</string>
+    <string name="incomplete_invalid_order">El orden no es válido: usa cada línea una sola vez.</string>
+
+    <!-- Tipos de ejercicio -->
+    <string name="answer_true">Verdadero</string>
+    <string name="answer_false">Falso</string>
+    <string name="choice_select_all">Marca todas las respuestas correctas.</string>
+    <string name="blank_label">Hueco %1$d</string>
+    <string name="order_instructions">Usa los botones de flecha para mover cada línea.</string>
+    <string name="order_move_up">Subir la línea %1$d</string>
+    <string name="order_move_down">Bajar la línea %1$d</string>
+    <string name="output_label">Salida que mostraría el programa</string>
+    <string name="find_error_instructions">Marca la línea o líneas con error.</string>
+    <string name="find_error_line">Línea %1$d: %2$s</string>
+    <string name="match_choose">Elegir…</string>
+    <string name="match_pick_for">Elige la descripción para: %1$s</string>
+
+    <!-- Resumen -->
+    <string name="summary_title">Resumen de la sesión</string>
+    <string name="summary_total">Ejercicios: %1$d</string>
+    <string name="summary_first_try">Resueltos al primer intento: %1$d</string>
+    <string name="summary_retries">Resueltos tras varios intentos: %1$d</string>
+    <string name="summary_unsolved">Sin resolver: %1$d</string>
+    <string name="summary_hints">Pistas usadas: %1$d</string>
+    <string name="summary_exercise_solved">Ejercicio %1$d: resuelto (intentos: %2$d)</string>
+    <string name="summary_exercise_unsolved">Ejercicio %1$d: sin resolver</string>
+    <string name="summary_assessment_passed">Evaluación de la lección: aprobada.</string>
+    <string name="summary_assessment_failed">Evaluación de la lección: no aprobada todavía.</string>
+    <string name="summary_note">Los resultados se han comprobado con las reglas de cada ejercicio; no se ha ejecutado ningún código.</string>
+    <string name="summary_repeat">Repetir los ejercicios</string>
 </resources>

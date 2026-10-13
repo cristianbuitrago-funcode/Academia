@@ -11,6 +11,9 @@ import kotlinx.serialization.Serializable
 @Serializable data object ProfileRoute
 @Serializable data object SettingsRoute
 
+/** Pantalla de una lección (Fase 3). No es un destino de la barra inferior. */
+@Serializable data class LessonDestination(val lessonId: String)
+
 /** Destinos de la barra de navegación inferior. */
 enum class TopLevelDestination(
     val route: Any,

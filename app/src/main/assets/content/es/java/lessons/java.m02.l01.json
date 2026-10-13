@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m02.l01",
+  "moduleId": "java.m02",
+  "languageId": "java",
+  "locale": "es",
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "title": "Tu primer programa: mostrar texto en pantalla",
+  "description": "Escribe y lee un programa Java que muestra mensajes con System.out.println.",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "Usar System.out.println para mostrar texto en pantalla y predecir qué mostrará un programa sencillo."
+    }
+  ],
+  "presentations": {
+    "default": [
+      {
+        "type": "text",
+        "text": "Un programa es una lista de instrucciones que el ordenador sigue en orden, de arriba abajo. En Java, esas instrucciones se escriben dentro de una clase y empiezan a ejecutarse en un método especial llamado main."
+      },
+      {
+        "type": "text",
+        "text": "Para mostrar un mensaje en pantalla se usa System.out.println(...). Escribe el texto que pongas entre los paréntesis y después salta a la línea siguiente. El texto va entre comillas dobles: \"así\". Cada instrucción termina con punto y coma (;)."
+      },
+      {
+        "type": "code",
+        "code": "public class HolaMundo {\n    public static void main(String[] args) {\n        System.out.println(\"¡Hola, mundo!\");\n        System.out.println(\"Estoy aprendiendo Java.\");\n    }\n}",
+        "lineComments": [
+          {
+            "line": 1,
+            "comment": "Declara una clase llamada HolaMundo. Todo programa Java vive dentro de una clase."
+          },
+          {
+            "line": 2,
+            "comment": "El método main: aquí empieza la ejecución del programa."
+          },
+          {
+            "line": 3,
+            "comment": "Muestra ¡Hola, mundo! y salta a la línea siguiente. Fíjate en las comillas y en el punto y coma."
+          },
+          {
+            "line": 4,
+            "comment": "Muestra un segundo mensaje, en una línea nueva."
+          },
+          {
+            "line": 5,
+            "comment": "Cierra el método main."
+          },
+          {
+            "line": 6,
+            "comment": "Cierra la clase."
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "text": "Al ejecutarlo, este programa mostraría dos líneas: primero «¡Hola, mundo!» y después «Estoy aprendiendo Java.»."
+      },
+      {
+        "type": "callout",
+        "text": "Java distingue mayúsculas de minúsculas: System no es lo mismo que system. Un solo carácter distinto hace que el programa no compile."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "java.m02.l01.e01",
+      "type": "trueFalse",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 1,
+      "prompt": "¿Verdadero o falso?",
+      "statement": "En Java, una instrucción como System.out.println(\"Hola\") termina con punto y coma (;).",
+      "correct": true,
+      "hints": [
+        "Vuelve a mirar el final de las líneas 3 y 4 del ejemplo."
+      ],
+      "explanation": "Verdadero. El punto y coma marca el final de cada instrucción en Java.",
+      "incorrectFeedback": "Revisa el ejemplo: todas las instrucciones println acaban con el mismo símbolo."
+    },
+    {
+      "id": "java.m02.l01.e02",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 1,
+      "prompt": "¿Qué instrucción muestra el texto Hola en pantalla y salta a la línea siguiente?",
+      "options": [
+        {
+          "text": "System.out.println(\"Hola\");",
+          "feedback": null
+        },
+        {
+          "text": "system.out.println(\"Hola\");",
+          "feedback": "Casi: Java distingue mayúsculas y minúsculas. Se escribe System, con S mayúscula."
+        },
+        {
+          "text": "System.out.println(Hola);",
+          "feedback": "Sin comillas, Java no lo trata como texto, sino como el nombre de algo que no existe."
+        },
+        {
+          "text": "print \"Hola\";",
+          "feedback": "Así no se escribe en Java. Necesitas System.out.println y paréntesis."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "hints": [
+        "Fíjate en las mayúsculas y en las comillas.",
+        "El texto debe ir entre comillas dobles y dentro de paréntesis."
+      ],
+      "explanation": "System.out.println(\"Hola\"); tiene la S mayúscula, el texto entre comillas dobles, los paréntesis y el punto y coma final.",
+      "incorrectFeedback": "Compara cada opción con el ejemplo de la lección, carácter por carácter."
+    },
+    {
+      "id": "java.m02.l01.e03",
+      "type": "matchPairs",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 2,
+      "prompt": "Relaciona cada parte del programa con su función.",
+      "left": [
+        "public class HolaMundo",
+        "public static void main(String[] args)",
+        "System.out.println(...)",
+        "\"¡Hola!\"",
+        ";"
+      ],
+      "right": [
+        "Muestra un texto y salta a la línea siguiente",
+        "Marca el final de una instrucción",
+        "Declara la clase que contiene el programa",
+        "Texto escrito entre comillas dobles",
+        "Método donde empieza la ejecución"
+      ],
+      "pairs": [
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "hints": [
+        "Empieza por las que ya conoces del ejemplo comentado.",
+        "Las comillas dobles indican un texto literal."
+      ],
+      "explanation": "La clase contiene el programa, main es el punto de inicio, println muestra texto, las comillas delimitan el texto y el punto y coma termina la instrucción.",
+      "incorrectFeedback": "Revisa los comentarios línea por línea del ejemplo."
+    },
+    {
+      "id": "java.m02.l01.e04",
+      "type": "fillInBlanks",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 2,
+      "prompt": "Completa el programa para que muestre «Buenos días» y salte a la línea siguiente.",
+      "template": "public class Saludo {\n    public static void main(String[] args) {\n        System.out.{{0}}(\"Buenos días\"){{1}}\n    }\n}",
+      "blanks": [
+        [
+          "println"
+        ],
+        [
+          ";"
+        ]
+      ],
+      "hints": [
+        "El primer hueco es el nombre del método que muestra texto y salta de línea.",
+        "El segundo hueco es el símbolo que termina cada instrucción."
+      ],
+      "explanation": "System.out.println(\"Buenos días\"); muestra el texto y salta a la línea siguiente; el punto y coma termina la instrucción.",
+      "incorrectFeedback": "Mira la línea 3 del ejemplo: tiene la misma forma."
+    },
+    {
+      "id": "java.m02.l01.e05",
+      "type": "orderLines",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 3,
+      "prompt": "Ordena las líneas para que el programa muestre primero «Uno» y después «Dos».",
+      "lines": [
+        "public class Contar {",
+        "public static void main(String[] args) {",
+        "System.out.println(\"Uno\");",
+        "System.out.println(\"Dos\");",
+        "}",
+        "}"
+      ],
+      "hints": [
+        "Un programa empieza declarando la clase.",
+        "Las instrucciones se ejecutan de arriba abajo, en orden."
+      ],
+      "explanation": "Primero la clase, luego main, después las instrucciones en el orden en que deben mostrarse y, al final, las dos llaves de cierre.",
+      "incorrectFeedback": "Piensa en la estructura del ejemplo: clase, main, instrucciones y cierres."
+    },
+    {
+      "id": "java.m02.l01.e06",
+      "type": "predictOutput",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 3,
+      "prompt": "¿Qué mostraría este programa? Escribe la salida exactamente, una línea por cada mensaje.",
+      "code": "public class Ejemplo {\n    public static void main(String[] args) {\n        System.out.println(\"Java\");\n        System.out.println(\"es\");\n        System.out.println(\"divertido\");\n    }\n}",
+      "acceptedOutputs": [
+        "Java\nes\ndivertido"
+      ],
+      "hints": [
+        "Cada println muestra su texto y salta a una línea nueva.",
+        "Escribe solo el texto que está entre comillas, sin las comillas."
+      ],
+      "explanation": "Cada println escribe su texto en una línea distinta, en el orden del programa: Java, es, divertido.",
+      "incorrectFeedback": "Recuerda: println salta de línea después de cada mensaje y las comillas no se muestran."
+    },
+    {
+      "id": "java.m02.l01.e07",
+      "type": "findError",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 4,
+      "prompt": "Este programa no compila. Marca la línea que contiene el error.",
+      "code": "public class Mensaje {\n    public static void main(String[] args) {\n        System.out.println(\"Primera línea\");\n        System.out.println(\"Segunda línea\")\n    }\n}",
+      "errorLines": [
+        4
+      ],
+      "hints": [
+        "Compara el final de las líneas 3 y 4."
+      ],
+      "explanation": "En la línea 4 falta el punto y coma al final de la instrucción. Sin él, Java no sabe dónde termina y el programa no compila.",
+      "incorrectFeedback": "El error es pequeño: busca un símbolo que falta al final de una instrucción."
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.funcode.academy.data.local.FuncodeDatabase
 import com.funcode.academy.data.local.XpLedgerEntity
 import com.funcode.academy.data.progress.RoomProgressRepository
+import com.funcode.academy.domain.progress.ExerciseAttempt
 import com.funcode.academy.domain.progress.XpAward
 import com.funcode.academy.domain.progress.XpAwardResult
 import com.funcode.academy.domain.progress.XpSource
@@ -34,7 +35,7 @@ class RoomProgressRepositoryTest {
         database = Room.inMemoryDatabaseBuilder(context, FuncodeDatabase::class.java)
             .allowMainThreadQueries()
             .build()
-        repository = RoomProgressRepository(database.xpLedgerDao(), clock = { 1_000L })
+        repository = RoomProgressRepository(database.xpLedgerDao(), database.exerciseAttemptDao(), clock = { 1_000L })
     }
 
     @After
@@ -83,5 +84,17 @@ class RoomProgressRepositoryTest {
         assertEquals(true, dao.insert(entry) > 0)
         assertEquals(-1L, dao.insert(entry.copy(amount = 99)))
         assertEquals(5, dao.observeTotalXp().first())
+    }
+
+    @Test
+    fun losIntentosSeGuardanSinElTextoDeLaRespuesta() = runTest {
+        repository.recordAttempt(ExerciseAttempt("java.m02.l01.e01", correct = false, hintsUsed = 1))
+        repository.recordAttempt(ExerciseAttempt("java.m02.l01.e01", correct = true, hintsUsed = 1))
+        repository.recordAttempt(ExerciseAttempt("java.m02.l01.e02", correct = true, hintsUsed = 0))
+
+        val attempts = database.exerciseAttemptDao().attemptsFor("java.m02.l01.e01")
+        assertEquals(listOf(false, true), attempts.map { it.correct })
+        assertEquals(listOf(1, 1), attempts.map { it.hintsUsed })
+        assertEquals(1, database.exerciseAttemptDao().attemptsFor("java.m02.l01.e02").size)
     }
 }

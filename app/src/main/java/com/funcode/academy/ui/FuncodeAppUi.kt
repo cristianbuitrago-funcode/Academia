@@ -18,14 +18,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.progress.ProgressRepository
 import com.funcode.academy.domain.settings.SettingsRepository
 import com.funcode.academy.ui.navigation.HomeRoute
+import com.funcode.academy.ui.navigation.LessonDestination
 import com.funcode.academy.ui.navigation.MapRoute
 import com.funcode.academy.ui.navigation.ProfileRoute
 import com.funcode.academy.ui.navigation.SettingsRoute
 import com.funcode.academy.ui.navigation.TopLevelDestination
 import com.funcode.academy.ui.screens.home.HomeRoute as HomeScreenRoute
+import com.funcode.academy.ui.screens.lesson.LessonRoute as LessonScreenRoute
 import com.funcode.academy.ui.screens.map.MapScreen
 import com.funcode.academy.ui.screens.profile.ProfileScreen
 import com.funcode.academy.ui.screens.settings.SettingsRoute as SettingsScreenRoute
@@ -35,6 +39,7 @@ import com.funcode.academy.ui.screens.settings.SettingsRoute as SettingsScreenRo
 fun FuncodeAppUi(
     progressRepository: ProgressRepository,
     settingsRepository: SettingsRepository,
+    contentRepository: ContentRepository,
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -68,10 +73,25 @@ fun FuncodeAppUi(
             startDestination = HomeRoute,
             modifier = Modifier.padding(innerPadding),
         ) {
-            composable<HomeRoute> { HomeScreenRoute(progressRepository) }
+            composable<HomeRoute> {
+                HomeScreenRoute(
+                    progressRepository = progressRepository,
+                    contentRepository = contentRepository,
+                    onOpenLesson = { lessonId -> navController.navigate(LessonDestination(lessonId)) },
+                )
+            }
             composable<MapRoute> { MapScreen() }
             composable<ProfileRoute> { ProfileScreen() }
             composable<SettingsRoute> { SettingsScreenRoute(settingsRepository) }
+            composable<LessonDestination> { entry ->
+                LessonScreenRoute(
+                    lessonId = entry.toRoute<LessonDestination>().lessonId,
+                    contentRepository = contentRepository,
+                    progressRepository = progressRepository,
+                    settingsRepository = settingsRepository,
+                    onExit = { navController.popBackStack() },
+                )
+            }
         }
     }
 }

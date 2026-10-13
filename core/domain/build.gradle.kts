@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 // Contiene los modelos y las reglas, y se prueba con JUnit en cualquier JDK.
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 java {
@@ -20,6 +21,8 @@ kotlin {
 dependencies {
     // Flow: permite que la UI observe cambios (XP, ajustes) de forma reactiva.
     api(libs.kotlinx.coroutines.core)
+    // Lectura del formato JSON del contenido educativo (pura JVM, sin Android).
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

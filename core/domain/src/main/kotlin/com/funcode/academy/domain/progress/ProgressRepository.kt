@@ -12,4 +12,7 @@ interface ProgressRepository {
 
     /** Registra XP para una actividad. Devuelve [XpAwardResult.AlreadyGranted] si ya se había concedido. */
     suspend fun award(award: XpAward): XpAwardResult
+
+    /** Registra un intento comprobado (correcto o incorrecto) de un ejercicio. */
+    suspend fun recordAttempt(attempt: ExerciseAttempt)
 }
