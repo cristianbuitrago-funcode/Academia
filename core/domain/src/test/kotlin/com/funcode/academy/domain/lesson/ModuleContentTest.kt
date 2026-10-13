@@ -11,13 +11,27 @@ class ModuleContentTest {
     private val module get() = ContentFiles.modules.single { it.id == "java.m01" }
 
     @Test fun `todas las lecciones y modulos del indice son validos`() {
-        assertEquals(8, ContentFiles.lessons.size)
+        assertEquals(9, ContentFiles.lessons.size)
         assertEquals(1, ContentFiles.modules.size)
     }
 
     @Test fun `el modulo 1 tiene siete lecciones en orden y una evaluacion`() {
         assertEquals((1..7).map { "java.m01.l%02d".format(it) }, module.lessons.map { it.id })
         assertEquals("java.m01.eval", module.assessment?.id)
+    }
+
+    @Test fun `el reto del modulo es un borrador guiado con pistas, dificultad creciente y todos los objetivos practicados`() {
+        assertEquals("java.m01.reto", module.challenge?.id)
+        val challenge = ContentFiles.lessons.single { it.id == "java.m01.reto" }
+        assertEquals(LessonKind.CHALLENGE, challenge.kind)
+        assertEquals(ReviewStatus.DRAFT, challenge.reviewStatus)
+        assertEquals(null, challenge.assessment)
+        assertTrue(challenge.exercises.size >= 5)
+        assertTrue(challenge.exercises.all { it.hints.isNotEmpty() })
+        val difficulties = challenge.exercises.map { it.difficulty }
+        assertEquals(difficulties.sorted(), difficulties)
+        assertTrue(challenge.exercises.map { it.content::class }.toSet().size >= 4)
+        challenge.objectives.forEach { o -> assertTrue(o.id, challenge.exercises.any { o.id in it.objectiveIds }) }
     }
 
     @Test fun `todo el contenido nuevo sigue en borrador`() {

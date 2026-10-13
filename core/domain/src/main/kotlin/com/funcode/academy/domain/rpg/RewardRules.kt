@@ -9,6 +9,8 @@ package com.funcode.academy.domain.rpg
  * - Lección completada (todos sus ejercicios resueltos): 20 XP.
  * - Evaluación aprobada (umbral del contenido, 80 %): 100 XP, una sola vez.
  *   Las preguntas de la evaluación no dan XP por separado.
+ * - Reto del módulo superado (todos sus pasos, con las lecciones completadas): 50 XP,
+ *   una sola vez (Fase 6). Los pasos del reto no dan XP por separado.
  * - Los fallos no restan ni suman XP; repetir una actividad recompensada da 0 XP.
  */
 object RewardRules {
@@ -16,6 +18,7 @@ object RewardRules {
     const val MAX_DIFFICULTY = 5
     const val LESSON_XP = 20
     const val ASSESSMENT_PASS_XP = 100
+    const val CHALLENGE_XP = 50
 
     private const val HINT_PENALTY_PERCENT = 25
     private const val MIN_PERCENT = 50

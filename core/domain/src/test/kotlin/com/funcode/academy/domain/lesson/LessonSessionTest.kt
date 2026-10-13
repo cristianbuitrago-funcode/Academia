@@ -114,4 +114,19 @@ class LessonSessionTest {
         val s = evaluation.next().next().next()
         assertEquals(AssessmentScore(0, 3), s.summary().assessmentScore)
     }
+
+    @Test fun `un reto permite pistas y reintentos como una leccion`() {
+        val challenge = TestLessons.lesson(
+            TestLessons.exercise("s1", ExerciseContent.TrueFalse("S", correct = true), hints = listOf("Piensa")),
+            kind = LessonKind.CHALLENGE,
+        )
+        val session = LessonSession(challenge)
+        assertTrue(session.allowsRetries)
+        val withHint = session.revealHint()
+        assertEquals(1, withHint.currentProgress.hintsRevealed)
+        val failed = withHint.submit(Answer.TrueFalse(false)).session
+        val solved = failed.submit(Answer.TrueFalse(true))
+        assertEquals(AnswerResult.Correct, solved.result)
+        assertEquals(2, solved.session.currentProgress.attempts)
+    }
 }

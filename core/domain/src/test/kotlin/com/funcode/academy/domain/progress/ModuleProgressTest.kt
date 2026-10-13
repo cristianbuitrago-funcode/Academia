@@ -48,4 +48,29 @@ class ModuleProgressTest {
         val solved = setOf("m.l1.e1", "m.l1.e2", "m.l1.e1")
         assertEquals(1, ModuleProgress.of(module, solved, emptyMap()).completedLessons)
     }
+
+    private val reto = summary("m.reto", LessonKind.CHALLENGE, "m.reto.s1", "m.reto.s2")
+    private val withChallenge = module.copy(challenge = reto)
+    private val allLessons = setOf("m.l1.e1", "m.l1.e2", "m.l2.e1")
+
+    @Test fun `el reto esta cerrado hasta completar todas las lecciones`() {
+        val p = ModuleProgress.of(withChallenge, setOf("m.l1.e1", "m.l1.e2"), emptyMap()).challenge!!
+        assertEquals(false, p.unlocked)
+        assertEquals(1, p.lessonsRemaining)
+        assertEquals(true, ModuleProgress.of(withChallenge, allLessons, emptyMap()).challenge!!.unlocked)
+    }
+
+    @Test fun `tras la evaluacion toca el reto y al superarlo el modulo esta terminado`() {
+        val evaluated = ModuleProgress.of(withChallenge, allLessons + "m.reto.s1", mapOf("m" to 0.9))
+        assertEquals(NextActivity.Challenge(reto), evaluated.next)
+        assertEquals(1, evaluated.challenge!!.solvedSteps)
+        assertEquals(false, evaluated.challenge!!.completed)
+        val done = ModuleProgress.of(withChallenge, allLessons + setOf("m.reto.s1", "m.reto.s2"), mapOf("m" to 0.9))
+        assertEquals(true, done.challenge!!.completed)
+        assertEquals(NextActivity.ModuleDone, done.next)
+    }
+
+    @Test fun `un modulo sin reto no tiene estado de reto`() {
+        assertNull(ModuleProgress.of(module, allLessons, emptyMap()).challenge)
+    }
 }

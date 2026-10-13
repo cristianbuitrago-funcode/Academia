@@ -13,9 +13,11 @@ import com.funcode.academy.domain.lesson.Lesson
 import com.funcode.academy.domain.lesson.LessonKind
 import com.funcode.academy.domain.lesson.LessonLoadResult
 import com.funcode.academy.domain.lesson.LessonSession
+import com.funcode.academy.domain.lesson.ModuleLoadResult
 import com.funcode.academy.domain.lesson.Section
 import com.funcode.academy.domain.lesson.SessionSummary
 import com.funcode.academy.domain.progress.ExerciseAttempt
+import com.funcode.academy.domain.progress.ModuleProgress
 import com.funcode.academy.domain.progress.ProgressRepository
 import com.funcode.academy.domain.progress.XpSourceType
 import com.funcode.academy.domain.rpg.Achievement
@@ -40,6 +42,9 @@ sealed interface LessonUiState {
 
     data class Intro(val lesson: Lesson, val sections: List<Section>) : LessonUiState
 
+    /** Reto aún cerrado: faltan [lessonsRemaining] lecciones del módulo por completar. */
+    data class Locked(val lesson: Lesson, val lessonsRemaining: Int) : LessonUiState
+
     data class Exercising(
         val session: LessonSession,
         /** Respuesta que el estudiante está preparando (aún no comprobada). */
@@ -56,6 +61,7 @@ data class RewardNotice(
     val xpGained: Int,
     val lessonCompleted: Boolean,
     val assessmentPassed: Boolean,
+    val challengeCompleted: Boolean,
     /** Nuevo nivel alcanzado, o `null` si no se ha subido de nivel. */
     val newLevel: Int?,
     val achievements: List<Achievement>,
@@ -69,6 +75,7 @@ data class RewardNotice(
                 xpGained = outcome.xpGained,
                 lessonCompleted = XpSourceType.LESSON in types,
                 assessmentPassed = XpSourceType.ASSESSMENT in types,
+                challengeCompleted = XpSourceType.CHALLENGE in types,
                 newLevel = outcome.levelAfter.takeIf { outcome.leveledUp },
                 achievements = outcome.newAchievements,
                 alreadyRewarded = exerciseId != null &&
@@ -109,13 +116,33 @@ class LessonViewModel(
         viewModelScope.launch {
             _uiState.value = when (val result = contentRepository.loadLesson(lessonId)) {
                 is LessonLoadResult.Loaded -> {
-                    val audience = settingsRepository.audience.first()
-                    LessonUiState.Intro(result.lesson, result.lesson.sectionsFor(audience))
+                    val lesson = result.lesson
+                    val remaining = if (lesson.kind == LessonKind.CHALLENGE) lessonsRemainingFor(lesson) else 0
+                    if (remaining > 0) {
+                        LessonUiState.Locked(lesson, remaining)
+                    } else {
+                        val audience = settingsRepository.audience.first()
+                        LessonUiState.Intro(lesson, lesson.sectionsFor(audience))
+                    }
                 }
                 LessonLoadResult.NotFound -> LessonUiState.NotFound
                 is LessonLoadResult.Invalid -> LessonUiState.InvalidContent
             }
         }
+    }
+
+    /**
+     * Lecciones que faltan para abrir un reto, según el progreso guardado. Se comprueba
+     * aquí además de en la pantalla del módulo, para que no se pueda abrir de otra forma.
+     */
+    private suspend fun lessonsRemainingFor(challenge: Lesson): Int {
+        val module = (contentRepository.loadModule(challenge.moduleId) as? ModuleLoadResult.Loaded)?.module ?: return 0
+        val progress = ModuleProgress.of(
+            module,
+            progressRepository.observeSolvedExerciseIds().first(),
+            progressRepository.observeBestAssessmentScores().first(),
+        )
+        return progress.challenge?.lessonsRemaining ?: 0
     }
 
     /** Empieza (o repite) los ejercicios desde el primero. */
@@ -153,7 +180,10 @@ class LessonViewModel(
                 val saved = runCatching { progressRepository.recordAttempt(attempt) }.isSuccess
                 // Las recompensas se calculan a partir de lo guardado; en una evaluación,
                 // solo al terminarla.
-                if (saved && attempt.correct && state.session.allowsRetries) syncRewards(exercise.id)
+                if (saved && attempt.correct && state.session.allowsRetries) {
+                    // Los pasos de un reto no dan XP por separado: no se avisa de "ya recompensado".
+                    syncRewards(exercise.id.takeIf { state.session.lesson.kind == LessonKind.LESSON })
+                }
             }
         }
     }

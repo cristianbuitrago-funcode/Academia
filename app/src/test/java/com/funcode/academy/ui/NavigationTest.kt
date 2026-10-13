@@ -82,8 +82,8 @@ class NavigationTest {
         rule.onNodeWithText(text(R.string.level_title, 1)).assertIsDisplayed()
         rule.onNodeWithText(text(R.string.home_total_xp, 0)).assertIsDisplayed()
         rule.onNodeWithText(text(R.string.profile_no_rewards)).assertIsDisplayed()
-        rule.onNodeWithText(text(R.string.profile_achievements_title, 0, 5)).assertExists()
-        assertEquals(5, rule.onAllNodes(hasText(text(R.string.achievement_locked))).fetchSemanticsNodes().size)
+        rule.onNodeWithText(text(R.string.profile_achievements_title, 0, 6)).assertExists()
+        assertEquals(6, rule.onAllNodes(hasText(text(R.string.achievement_locked))).fetchSemanticsNodes().size)
     }
 
     @Test

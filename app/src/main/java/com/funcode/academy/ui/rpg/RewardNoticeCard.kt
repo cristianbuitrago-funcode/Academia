@@ -33,6 +33,7 @@ fun RewardNoticeCard(notice: RewardNotice, modifier: Modifier = Modifier) {
             }
             if (notice.lessonCompleted) Text(stringResource(R.string.reward_lesson_completed), style = MaterialTheme.typography.bodyLarge)
             if (notice.assessmentPassed) Text(stringResource(R.string.reward_assessment_passed), style = MaterialTheme.typography.bodyLarge)
+            if (notice.challengeCompleted) Text(stringResource(R.string.reward_challenge_completed), style = MaterialTheme.typography.bodyLarge)
             notice.newLevel?.let { Text(stringResource(R.string.reward_level_up, it), style = MaterialTheme.typography.titleMedium) }
             notice.achievements.forEach {
                 Text(stringResource(R.string.reward_achievement, stringResource(it.titleRes)), style = MaterialTheme.typography.bodyLarge)

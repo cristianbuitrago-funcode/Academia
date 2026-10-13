@@ -81,7 +81,7 @@ object LessonParser {
         if (lessons.isEmpty()) errors += "El módulo necesita al menos una lección"
         if (errors.isNotEmpty()) return ModuleParseResult.Invalid(errors)
         return ModuleParseResult.Valid(
-            ModuleDefinition(id!!, order!!, raw.title!!, raw.description!!, status!!, lessons, raw.assessment),
+            ModuleDefinition(id!!, order!!, raw.title!!, raw.description!!, status!!, lessons, raw.assessment, raw.challenge),
         )
     }
 
@@ -105,8 +105,9 @@ object LessonParser {
             val kind = when (raw.kind) {
                 null, "lesson" -> LessonKind.LESSON
                 "assessment" -> LessonKind.ASSESSMENT
+                "challenge" -> LessonKind.CHALLENGE
                 else -> {
-                    errors += "kind debe ser 'lesson' o 'assessment' (recibido: ${raw.kind})"
+                    errors += "kind debe ser 'lesson', 'assessment' o 'challenge' (recibido: ${raw.kind})"
                     LessonKind.LESSON
                 }
             }
@@ -130,6 +131,9 @@ object LessonParser {
                 exercises.filter { it.hints.isNotEmpty() }.forEach {
                     errors += "${it.id}: los ejercicios de una evaluación no pueden tener pistas"
                 }
+            }
+            if (kind == LessonKind.CHALLENGE && raw.assessment != null) {
+                errors += "Un reto no puede tener bloque 'assessment': se supera resolviendo todos sus pasos"
             }
 
             if (errors.isNotEmpty()) return LessonParseResult.Invalid(errors.toList())

@@ -102,7 +102,7 @@ fun FuncodeAppUi(
                     onExit = { navController.popBackStack() },
                 )
             }
-            composable<ProfileRoute> { ProfileScreenRoute(progressRepository) }
+            composable<ProfileRoute> { ProfileScreenRoute(progressRepository, rewardEngine) }
             composable<SettingsRoute> { SettingsScreenRoute(settingsRepository) }
             composable<LessonDestination> { entry ->
                 LessonScreenRoute(

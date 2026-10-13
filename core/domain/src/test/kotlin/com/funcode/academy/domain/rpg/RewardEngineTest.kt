@@ -136,7 +136,7 @@ class RewardEngineTest {
         val outcome = engine.sync()
         assertEquals(910, outcome.xpGained)
         assertEquals(4, outcome.levelAfter)
-        assertEquals(Achievement.entries.toSet(), outcome.newAchievements.toSet())
+        assertEquals(Achievement.entries.toSet() - Achievement.FIRST_CHALLENGE, outcome.newAchievements.toSet())
         // Sincronizar otra vez no cambia nada.
         val again = engine.sync()
         assertTrue(again.granted.isEmpty())
@@ -150,5 +150,25 @@ class RewardEngineTest {
         assertEquals(1, outcomes.count { it.granted.isNotEmpty() })
         assertEquals(progress.ledger.value.map { it.source }.distinct().size, progress.ledger.value.size)
         assertEquals(1, progress.achievements.value.size)
+    }
+
+    private val challenge = ContentFiles.lessons.single { it.id == "java.m01.reto" }
+
+    @Test fun `el reto resuelto antes de completar las lecciones no da XP`() = runTest {
+        challenge.exercises.forEach { solve(it.id) }
+        assertEquals(0, engine.sync().xpGained)
+    }
+
+    @Test fun `el modulo completo con el reto suma 960 XP y desbloquea todos los logros`() = runTest {
+        lessons.indices.forEach { solveLesson(it) }
+        progress.recordAssessmentResult("java.m01", AssessmentScore(10, 10))
+        assertEquals(910, engine.sync().xpGained)
+        challenge.exercises.forEach { solve(it.id, hints = 3) } // las pistas no afectan al XP del reto
+        val outcome = engine.sync()
+        assertEquals(RewardRules.CHALLENGE_XP, outcome.xpGained)
+        assertEquals(listOf(Achievement.FIRST_CHALLENGE), outcome.newAchievements)
+        assertEquals(960, progress.ledger.value.sumOf { it.amount })
+        assertTrue(engine.sync().granted.isEmpty())
+        assertTrue(engine.missions().filter { it.mission != Mission.SOLVE_5_NO_HINTS }.all { it.completed })
     }
 }

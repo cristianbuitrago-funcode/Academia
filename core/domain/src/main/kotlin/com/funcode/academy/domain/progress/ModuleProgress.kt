@@ -11,12 +11,28 @@ data class LessonProgress(val lesson: LessonSummary, val solvedExercises: Int) {
     val completed: Boolean get() = solvedExercises == totalExercises
 }
 
+/**
+ * Estado del reto del módulo. Se abre cuando todas las lecciones están completadas
+ * (decisión del responsable, Fase 6); se supera al resolver todos sus pasos.
+ */
+data class ChallengeProgress(
+    val challenge: LessonSummary,
+    val solvedSteps: Int,
+    /** Lecciones que faltan por completar para abrirlo (0 = abierto). */
+    val lessonsRemaining: Int,
+) {
+    val totalSteps: Int get() = challenge.exerciseCount
+    val unlocked: Boolean get() = lessonsRemaining == 0
+    val completed: Boolean get() = totalSteps > 0 && solvedSteps == totalSteps
+}
+
 /** Actividad recomendada para continuar. */
 sealed interface NextActivity {
     data class Lesson(val lesson: LessonSummary) : NextActivity
     data class Assessment(val assessment: LessonSummary) : NextActivity
+    data class Challenge(val challenge: LessonSummary) : NextActivity
 
-    /** Todo el módulo está hecho; se puede repasar o repetir la evaluación. */
+    /** Todo el módulo está hecho; se puede repasar o repetir la evaluación o el reto. */
     data object ModuleDone : NextActivity
 }
 
@@ -30,6 +46,7 @@ data class ModuleProgress(
     val lessons: List<LessonProgress>,
     /** Mejor resultado de la evaluación (0–1), o `null` si no se ha hecho. */
     val bestAssessmentScore: Double?,
+    val challenge: ChallengeProgress? = null,
 ) {
     val completedLessons: Int get() = lessons.count { it.completed }
 
@@ -38,16 +55,27 @@ data class ModuleProgress(
             lessons.firstOrNull { !it.completed }?.let { return NextActivity.Lesson(it.lesson) }
             val assessment = module.assessment
             if (assessment != null && bestAssessmentScore == null) return NextActivity.Assessment(assessment)
+            challenge?.takeIf { !it.completed }?.let { return NextActivity.Challenge(it.challenge) }
             return NextActivity.ModuleDone
         }
 
     companion object {
-        fun of(module: CourseModule, solvedExerciseIds: Set<String>, bestScores: Map<String, Double>) = ModuleProgress(
-            module = module,
-            lessons = module.lessons.map { lesson ->
+        fun of(module: CourseModule, solvedExerciseIds: Set<String>, bestScores: Map<String, Double>): ModuleProgress {
+            val lessons = module.lessons.map { lesson ->
                 LessonProgress(lesson, lesson.exerciseIds.count { it in solvedExerciseIds })
-            },
-            bestAssessmentScore = bestScores[module.id],
-        )
+            }
+            return ModuleProgress(
+                module = module,
+                lessons = lessons,
+                bestAssessmentScore = bestScores[module.id],
+                challenge = module.challenge?.let { challenge ->
+                    ChallengeProgress(
+                        challenge = challenge,
+                        solvedSteps = challenge.exerciseIds.count { it in solvedExerciseIds },
+                        lessonsRemaining = lessons.count { !it.completed },
+                    )
+                },
+            )
+        }
     }
 }

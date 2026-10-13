@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.funcode.academy.R
 import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.lesson.ReviewStatus
+import com.funcode.academy.domain.progress.ChallengeProgress
 import com.funcode.academy.domain.progress.LessonProgress
 import com.funcode.academy.domain.progress.ModuleProgress
 import com.funcode.academy.domain.progress.ProgressRepository
@@ -124,6 +125,32 @@ private fun ModuleContent(progress: ModuleProgress, onOpenLesson: (String) -> Un
                             if (progress.bestAssessmentScore == null) R.string.module_assessment_start else R.string.module_assessment_retake,
                         ),
                     )
+                }
+            }
+        }
+    }
+    progress.challenge?.let { ChallengeCard(it, onOpenLesson) }
+}
+
+@Composable
+private fun ChallengeCard(challenge: ChallengeProgress, onOpenLesson: (String) -> Unit) {
+    Heading(stringResource(R.string.module_challenge_title))
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(challenge.challenge.title, style = MaterialTheme.typography.titleMedium)
+            Text(challenge.challenge.description, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                when {
+                    // Cerrado: se explica qué falta, sin botón que no haga nada.
+                    !challenge.unlocked -> stringResource(R.string.challenge_locked, challenge.lessonsRemaining)
+                    challenge.completed -> stringResource(R.string.module_challenge_done)
+                    else -> stringResource(R.string.module_challenge_progress, challenge.solvedSteps, challenge.totalSteps)
+                },
+                style = MaterialTheme.typography.labelLarge,
+            )
+            if (challenge.unlocked) {
+                Button(onClick = { onOpenLesson(challenge.challenge.id) }) {
+                    Text(stringResource(if (challenge.completed) R.string.module_challenge_repeat else R.string.challenge_start))
                 }
             }
         }

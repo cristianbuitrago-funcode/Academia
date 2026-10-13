@@ -158,4 +158,20 @@ class LessonParserTest {
         assertTrue(errors.any { "order" in it })
         assertTrue(errors.any { "lección" in it })
     }
+
+    @Test fun `un reto se lee con su tipo y permite pistas`() {
+        val lesson = (LessonParser.parse(json(extra = ""","kind":"challenge"""")) as LessonParseResult.Valid).lesson
+        assertEquals(LessonKind.CHALLENGE, lesson.kind)
+    }
+
+    @Test fun `un reto no puede tener bloque assessment`() =
+        assertError(json(extra = ""","kind":"challenge","assessment":{"exerciseIds":["t.e1"]}"""), "Un reto")
+
+    @Test fun `modulo con reto`() {
+        val r = LessonParser.parseModule(
+            """{"schemaVersion":1,"id":"t.m1","order":1,"reviewStatus":"DRAFT","title":"T","description":"D",
+                "lessons":["t.l1"],"challenge":"t.reto"}""",
+        )
+        assertEquals("t.reto", (r as ModuleParseResult.Valid).definition.challengeId)
+    }
 }

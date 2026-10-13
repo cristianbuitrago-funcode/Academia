@@ -99,6 +99,10 @@ private fun ContinueCard(progress: ModuleProgress, onOpenLesson: (String) -> Uni
                     Text(stringResource(R.string.home_next_assessment, next.assessment.title), style = MaterialTheme.typography.bodyLarge)
                     Button(onClick = { onOpenLesson(next.assessment.id) }) { Text(stringResource(R.string.home_continue_button)) }
                 }
+                is NextActivity.Challenge -> {
+                    Text(stringResource(R.string.home_next_challenge, next.challenge.title), style = MaterialTheme.typography.bodyLarge)
+                    Button(onClick = { onOpenLesson(next.challenge.id) }) { Text(stringResource(R.string.home_continue_button)) }
+                }
                 NextActivity.ModuleDone -> Text(stringResource(R.string.home_module_done), style = MaterialTheme.typography.bodyLarge)
             }
             OutlinedButton(onClick = { onOpenModule(progress.module.id) }) { Text(stringResource(R.string.home_view_module)) }

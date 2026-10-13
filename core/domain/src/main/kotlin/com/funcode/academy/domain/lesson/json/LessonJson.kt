@@ -94,4 +94,5 @@ internal data class ModuleJson(
     val description: String? = null,
     val lessons: List<String>? = null,
     val assessment: String? = null,
+    val challenge: String? = null,
 )

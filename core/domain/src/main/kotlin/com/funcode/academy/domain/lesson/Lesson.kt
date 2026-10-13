@@ -42,7 +42,13 @@ data class Lesson(
  * [LESSON]: teoría y práctica, con pistas y reintentos.
  * [ASSESSMENT]: evaluación del módulo; una sola respuesta por pregunta y sin pistas.
  */
-enum class LessonKind { LESSON, ASSESSMENT }
+enum class LessonKind {
+    LESSON,
+    ASSESSMENT,
+
+    /** Reto guiado del módulo: un mini-proyecto en varios pasos, con pistas y reintentos. */
+    CHALLENGE,
+}
 
 /** Estado de revisión del contenido (decisión D7). Solo el responsable lo cambia a [APPROVED]. */
 enum class ReviewStatus { DRAFT, APPROVED }

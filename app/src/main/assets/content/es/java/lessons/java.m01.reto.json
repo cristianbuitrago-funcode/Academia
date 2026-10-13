@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.reto",
+  "moduleId": "java.m01",
+  "languageId": "java",
+  "locale": "es",
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "kind": "challenge",
+  "title": "Reto: tu tarjeta de presentación en Java",
+  "description": "Construye paso a paso un programa que muestra una tarjeta de presentación. Aplica todo lo aprendido en el módulo.",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "Escribir la estructura completa de un programa Java: la clase y el método main."
+    },
+    {
+      "id": "o2",
+      "text": "Mostrar varias líneas de texto en el orden deseado con System.out.println."
+    },
+    {
+      "id": "o3",
+      "text": "Encontrar un error y saber qué pasos llevan del código fuente a la ejecución."
+    }
+  ],
+  "presentations": {
+    "default": [
+      {
+        "type": "text",
+        "text": "En este reto vas a construir, paso a paso, un programa que muestra una tarjeta de presentación con tu nombre y tu afición. No hay teoría nueva: solo necesitas lo que has aprendido en las siete lecciones del módulo."
+      },
+      {
+        "type": "text",
+        "text": "Este es el programa terminado. En cada paso del reto trabajarás con una parte de él."
+      },
+      {
+        "type": "code",
+        "code": "public class TarjetaPresentacion {\n    public static void main(String[] args) {\n        System.out.println(\"==========\");\n        System.out.println(\"Nombre: Ana\");\n        System.out.println(\"Afición: programar\");\n        System.out.println(\"==========\");\n    }\n}",
+        "lineComments": [
+          {
+            "line": 1,
+            "comment": "La clase TarjetaPresentacion; el archivo se llamaría TarjetaPresentacion.java."
+          },
+          {
+            "line": 2,
+            "comment": "El método main: aquí empieza la ejecución."
+          },
+          {
+            "line": 3,
+            "comment": "Muestra la línea superior de la tarjeta."
+          },
+          {
+            "line": 4,
+            "comment": "Muestra el nombre."
+          },
+          {
+            "line": 5,
+            "comment": "Muestra la afición."
+          },
+          {
+            "line": 6,
+            "comment": "Muestra la línea inferior; las instrucciones se ejecutan en este orden."
+          },
+          {
+            "line": 7,
+            "comment": "Cierra el método main."
+          },
+          {
+            "line": 8,
+            "comment": "Cierra la clase."
+          }
+        ]
+      },
+      {
+        "type": "callout",
+        "text": "Puedes pedir pistas y volver a intentarlo tantas veces como quieras. El reto se supera al resolver todos los pasos."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "java.m01.reto.s01",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 1,
+      "prompt": "Paso 1. Vas a guardar el programa de la tarjeta. Si la clase se llama TarjetaPresentacion, ¿cómo debe llamarse el archivo?",
+      "options": [
+        {
+          "text": "TarjetaPresentacion.java"
+        },
+        {
+          "text": "tarjetapresentacion.java",
+          "feedback": "Java distingue mayúsculas y minúsculas: el nombre del archivo debe coincidir exactamente con el de la clase."
+        },
+        {
+          "text": "TarjetaPresentacion.class",
+          "feedback": "El archivo .class es el resultado de compilar, no el código fuente que escribes."
+        },
+        {
+          "text": "TarjetaPresentacion.txt",
+          "feedback": "Los programas Java se guardan con la extensión .java."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "hints": [
+        "Recuerda la lección sobre la estructura de un programa: el archivo y la clase pública se llaman igual."
+      ],
+      "explanation": "La clase pública se guarda en un archivo con su mismo nombre, respetando mayúsculas, y la extensión .java.",
+      "incorrectFeedback": "Fíjate en las mayúsculas y en la extensión del código fuente."
+    },
+    {
+      "id": "java.m01.reto.s02",
+      "type": "orderLines",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 2,
+      "prompt": "Paso 2. Ordena las líneas para crear la primera versión de la tarjeta, que solo muestra el nombre.",
+      "lines": [
+        "public class TarjetaPresentacion {",
+        "public static void main(String[] args) {",
+        "System.out.println(\"Nombre: Ana\");",
+        "}",
+        "}"
+      ],
+      "hints": [
+        "Primero se declara la clase y, dentro de ella, el método main."
+      ],
+      "explanation": "La clase envuelve al método main, la instrucción va dentro de main y cada llave abierta se cierra al final.",
+      "incorrectFeedback": "Piensa en la estructura: clase, main, instrucción y las dos llaves de cierre."
+    },
+    {
+      "id": "java.m01.reto.s03",
+      "type": "fillInBlanks",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 2,
+      "prompt": "Paso 3. Completa la tarjeta: la línea 4 debe mostrar el nombre y la línea 5 el texto Afición: programar.",
+      "template": "public class TarjetaPresentacion {\n    public static void main(String[] args) {\n        System.out.println(\"==========\");\n        System.out.{{0}}(\"Nombre: Ana\");\n        System.out.println({{1}});\n        System.out.println(\"==========\");\n    }\n}",
+      "blanks": [
+        [
+          "println"
+        ],
+        [
+          "\"Afición: programar\""
+        ]
+      ],
+      "hints": [
+        "El primer hueco es el método que muestra texto y salta de línea.",
+        "El texto que quieres mostrar tiene que ir entre comillas dobles."
+      ],
+      "explanation": "System.out.println muestra el texto y salta de línea; el texto se escribe entre comillas dobles: \"Afición: programar\".",
+      "incorrectFeedback": "Compara los huecos con las líneas 3 y 6, que ya están completas."
+    },
+    {
+      "id": "java.m01.reto.s04",
+      "type": "predictOutput",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 3,
+      "prompt": "Paso 4. ¿Qué mostraría la tarjeta terminada? Escribe la salida exactamente, una línea por cada mensaje.",
+      "code": "public class TarjetaPresentacion {\n    public static void main(String[] args) {\n        System.out.println(\"==========\");\n        System.out.println(\"Nombre: Ana\");\n        System.out.println(\"Afición: programar\");\n        System.out.println(\"==========\");\n    }\n}",
+      "acceptedOutputs": [
+        "==========\nNombre: Ana\nAfición: programar\n=========="
+      ],
+      "hints": [
+        "Cada println muestra su texto en una línea nueva, en el orden del programa.",
+        "Las comillas no se muestran."
+      ],
+      "explanation": "Las cuatro instrucciones se ejecutan en orden y cada una escribe una línea: la línea superior, el nombre, la afición y la línea inferior.",
+      "incorrectFeedback": "Recorre el programa de arriba abajo y escribe solo el texto que hay entre comillas."
+    },
+    {
+      "id": "java.m01.reto.s05",
+      "type": "orderLines",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 3,
+      "prompt": "Paso 5. Ordena el programa para que la tarjeta muestre, en este orden: la línea superior, la afición, el nombre y la línea inferior.",
+      "lines": [
+        "public class TarjetaPresentacion {",
+        "public static void main(String[] args) {",
+        "System.out.println(\"==========\");",
+        "System.out.println(\"Afición: programar\");",
+        "System.out.println(\"Nombre: Ana\");",
+        "System.out.println(\"==========\");",
+        "}",
+        "}"
+      ],
+      "hints": [
+        "El orden de las instrucciones dentro de main es el orden en que aparecen las líneas en pantalla."
+      ],
+      "explanation": "Las instrucciones se ejecutan de arriba abajo, así que se colocan en el mismo orden en que deben verse: línea, afición, nombre y línea.",
+      "incorrectFeedback": "Fíjate en el orden pedido: esta vez la afición va antes que el nombre."
+    },
+    {
+      "id": "java.m01.reto.s06",
+      "type": "findError",
+      "objectiveIds": [
+        "o3"
+      ],
+      "difficulty": 4,
+      "prompt": "Paso 6. Una compañera copió la tarjeta, pero su programa no compila. Marca la línea que contiene el error.",
+      "code": "public class TarjetaPresentacion {\n    public static void main(String[] args) {\n        System.out.println(\"==========\");\n        System.out.println(\"Nombre: Ana\");\n        system.out.println(\"Afición: programar\");\n        System.out.println(\"==========\");\n    }\n}",
+      "errorLines": [
+        5
+      ],
+      "hints": [
+        "Compara letra por letra el comienzo de cada instrucción."
+      ],
+      "explanation": "En la línea 5 pone system con s minúscula. Java distingue mayúsculas y minúsculas, así que debe ser System.",
+      "incorrectFeedback": "El error es de una sola letra: revisa las mayúsculas."
+    },
+    {
+      "id": "java.m01.reto.s07",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o3"
+      ],
+      "difficulty": 4,
+      "prompt": "Paso 7. Ya corregiste el error. ¿Qué hay que hacer para ver la tarjeta en pantalla?",
+      "options": [
+        {
+          "text": "Compilar el archivo con javac y después ejecutar el programa con java."
+        },
+        {
+          "text": "Ejecutarlo directamente con java, sin compilar.",
+          "feedback": "Antes de ejecutar hay que compilar: java ejecuta el resultado de la compilación."
+        },
+        {
+          "text": "Compilarlo con javac; al compilar ya se muestra la tarjeta.",
+          "feedback": "Compilar traduce y comprueba el programa, pero no lo ejecuta."
+        },
+        {
+          "text": "Abrir el archivo .java: el ordenador lo ejecuta al abrirlo.",
+          "feedback": "Abrir el archivo solo muestra el código fuente."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "hints": [
+        "Recuerda la lección sobre código fuente, compilación y ejecución: son dos pasos distintos."
+      ],
+      "explanation": "Primero se compila (javac TarjetaPresentacion.java) y después se ejecuta (java TarjetaPresentacion). Solo al ejecutar aparece la salida.",
+      "incorrectFeedback": "Piensa en qué hace cada herramienta: javac compila y java ejecuta."
+    }
+  ]
+}

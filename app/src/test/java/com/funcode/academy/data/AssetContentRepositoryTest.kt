@@ -21,7 +21,7 @@ class AssetContentRepositoryTest {
     private val repository = AssetContentRepository(ApplicationProvider.getApplicationContext<Context>().assets)
 
     @Test
-    fun elModulo1TieneSieteLeccionesEnOrdenYUnaEvaluacion() = runTest {
+    fun elModulo1TieneSieteLeccionesEnOrdenUnaEvaluacionYUnReto() = runTest {
         val module = repository.listModules().single()
         assertEquals("java.m01", module.id)
         assertEquals(ReviewStatus.DRAFT, module.reviewStatus)
@@ -30,6 +30,9 @@ class AssetContentRepositoryTest {
         assertEquals("java.m01.eval", module.assessment?.id)
         assertEquals(LessonKind.ASSESSMENT, module.assessment?.kind)
         assertEquals(10, module.assessment?.exerciseCount)
+        assertEquals("java.m01.reto", module.challenge?.id)
+        assertEquals(LessonKind.CHALLENGE, module.challenge?.kind)
+        assertEquals(7, module.challenge?.exerciseCount)
     }
 
     @Test

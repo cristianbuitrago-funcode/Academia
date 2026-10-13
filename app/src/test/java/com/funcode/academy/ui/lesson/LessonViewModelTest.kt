@@ -3,6 +3,8 @@ package com.funcode.academy.ui.lesson
 import com.funcode.academy.domain.lesson.Answer
 import com.funcode.academy.domain.lesson.AnswerResult
 import com.funcode.academy.domain.lesson.AssessmentScore
+import com.funcode.academy.domain.lesson.LessonKind
+import com.funcode.academy.domain.progress.ExerciseAttempt
 import com.funcode.academy.domain.progress.XpSource
 import com.funcode.academy.domain.progress.XpSourceType
 import com.funcode.academy.domain.rpg.Achievement
@@ -13,6 +15,7 @@ import com.funcode.academy.testing.FakeSettingsRepository
 import com.funcode.academy.ui.screens.lesson.LessonUiState
 import com.funcode.academy.ui.screens.lesson.LessonViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -283,5 +286,56 @@ class LessonViewModelTest {
         takeAssessment(vm, correctCount = 7)
         assertEquals(null, vm.rewardNotice.value)
         assertTrue(progress.ledgerEntries.isEmpty())
+    }
+
+    private val challenge = DemoContent.lesson("java.m01.reto")
+
+    /** Guarda como resueltos todos los ejercicios de las lecciones del módulo. */
+    private fun completeAllLessons() = runBlocking {
+        DemoContent.allLessons().filter { it.kind == LessonKind.LESSON }.flatMap { it.exercises }
+            .forEach { progress.recordAttempt(ExerciseAttempt(it.id, correct = true, hintsUsed = 0)) }
+        engine.sync()
+    }
+
+    @Test
+    fun elRetoEstaCerradoHastaCompletarLasLecciones() {
+        val state = viewModel(challenge.id).uiState.value
+        assertEquals(LessonUiState.Locked(challenge, lessonsRemaining = 7), state)
+        val vm = viewModel(challenge.id)
+        vm.startExercises() // no hace nada mientras está cerrado
+        assertTrue(vm.uiState.value is LessonUiState.Locked)
+    }
+
+    @Test
+    fun superarElRetoDa50XpYSuLogroUnaSolaVez() {
+        completeAllLessons()
+        val vm = viewModel(challenge.id)
+        assertTrue(vm.uiState.value is LessonUiState.Intro)
+        vm.startExercises()
+        assertEquals(true, vm.exercising.session.allowsRetries)
+        challenge.exercises.forEachIndexed { i, step ->
+            vm.updateDraft(DemoContent.correctAnswerFor(step.content))
+            vm.check()
+            if (i < challenge.exercises.lastIndex) {
+                // Los pasos no dan XP ni avisan de "ya recompensado".
+                assertEquals(null, vm.rewardNotice.value)
+            }
+            vm.next()
+        }
+        assertEquals(50, vm.sessionXp.value)
+        val notice = vm.rewardNotice.value!!
+        assertTrue(notice.challengeCompleted)
+        assertTrue(Achievement.FIRST_CHALLENGE in notice.achievements)
+        assertEquals(listOf(50), progress.ledgerEntries.filter { it.source.type == XpSourceType.CHALLENGE }.map { it.amount })
+
+        val again = viewModel(challenge.id)
+        again.startExercises()
+        challenge.exercises.forEach { step ->
+            again.updateDraft(DemoContent.correctAnswerFor(step.content))
+            again.check()
+            again.next()
+        }
+        assertEquals(0, again.sessionXp.value)
+        assertEquals(1, progress.ledgerEntries.count { it.source.type == XpSourceType.CHALLENGE })
     }
 }

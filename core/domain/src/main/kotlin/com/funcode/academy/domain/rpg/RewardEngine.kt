@@ -34,11 +34,11 @@ class RewardEngine(
     private val progress: ProgressRepository,
 ) {
     private val mutex = Mutex()
-    private var catalog: RewardCatalog? = null
+    private var cachedCatalog: RewardCatalog? = null
 
     suspend fun sync(): RewardOutcome = mutex.withLock {
-        val catalog = catalog ?: loadCatalog().also { catalog = it }
-        val results = VerifiedResults(progress.firstCorrectAttempts(), progress.observeBestAssessmentScores().first())
+        val catalog = catalog()
+        val results = verifiedResults()
         val levelBefore = LevelCurve.progressFor(progress.observeTotalXp().first()).level
 
         val alreadyGranted = progress.observeXpEntries().first().map { it.source }.toSet()
@@ -56,7 +56,18 @@ class RewardEngine(
         RewardOutcome(granted, newAchievements, levelBefore, LevelCurve.progressFor(totalXp).level)
     }
 
-    /** Ejercicios de lecciones (con su dificultad) y evaluaciones de cada módulo. */
+    /** Avance de las misiones según los resultados guardados (solo lectura). */
+    suspend fun missions(): List<MissionProgress> {
+        val catalog = mutex.withLock { catalog() }
+        return RewardCalculator.missions(catalog, verifiedResults())
+    }
+
+    private suspend fun catalog(): RewardCatalog = cachedCatalog ?: loadCatalog().also { cachedCatalog = it }
+
+    private suspend fun verifiedResults() =
+        VerifiedResults(progress.firstCorrectAttempts(), progress.observeBestAssessmentScores().first())
+
+    /** Ejercicios de lecciones (con su dificultad), evaluaciones y retos de cada módulo. */
     private suspend fun loadCatalog(): RewardCatalog = RewardCatalog(
         content.listModules().map { module ->
             ModuleRewards(
@@ -71,6 +82,7 @@ class RewardEngine(
                         AssessmentRewards(it.id, it.assessment?.passThreshold)
                     }
                 },
+                challenge = module.challenge?.let { ChallengeRewards(it.id, it.exerciseIds.toSet()) },
             )
         },
     )

@@ -107,6 +107,10 @@ class LessonFlowTest {
         assertShown(text(R.string.module_lesson_title, 7, "Leer y comprender programas sencillos"))
         assertShown(text(R.string.module_assessment_not_done))
         assertShown(text(R.string.module_assessment_start))
+        // El reto está cerrado: se explica qué falta y no hay botón para abrirlo.
+        assertShown("Reto: tu tarjeta de presentación en Java")
+        assertShown(text(R.string.challenge_locked, 7))
+        assertEquals(0, rule.onAllNodes(hasText(text(R.string.challenge_start))).fetchSemanticsNodes().size)
     }
 
     @Test
@@ -184,6 +188,7 @@ class LessonFlowTest {
         node(hasText(text(R.string.nav_profile)) and hasClickAction()).performClick()
         assertShown(text(R.string.home_total_xp, 10))
         assertShown(text(R.string.profile_rewards_exercises, 1, 10))
-        assertShown(text(R.string.profile_achievements_title, 0, 5))
+        assertShown(text(R.string.profile_achievements_title, 0, 6))
+        assertShown(text(R.string.profile_missions_title, 0, 5))
     }
 }

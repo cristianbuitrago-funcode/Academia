@@ -84,4 +84,48 @@ class RewardCalculatorTest {
             RewardCalculator.learningState(catalog, noEval, totalXp = 50),
         )
     }
+
+    private val withChallenge = RewardCatalog(
+        listOf(catalog.modules.single().copy(challenge = ChallengeRewards("m1.reto", setOf("m1.reto.s1", "m1.reto.s2")))),
+    )
+    private val allLessons = mapOf("m1.l1.e1" to 0, "m1.l1.e2" to 0, "m1.l2.e1" to 0)
+    private val allSteps = mapOf("m1.reto.s1" to 1, "m1.reto.s2" to 0)
+
+    @Test fun `el reto da 50 XP solo con todas sus partes y las lecciones completadas`() {
+        val reto = award(XpSourceType.CHALLENGE, "m1.reto", RewardRules.CHALLENGE_XP)
+        // Los pasos no dan XP por separado.
+        assertTrue(RewardCalculator.dueAwards(withChallenge, results(mapOf("m1.reto.s1" to 0))).isEmpty())
+        // Pasos resueltos sin las lecciones completadas: no cuenta.
+        assertTrue(reto !in RewardCalculator.dueAwards(withChallenge, results(allSteps)))
+        assertTrue(reto in RewardCalculator.dueAwards(withChallenge, results(allLessons + allSteps)))
+        assertEquals(1, RewardCalculator.learningState(withChallenge, results(allLessons + allSteps), 0).completedChallenges)
+    }
+
+    @Test fun `misiones sin actividad`() {
+        val missions = RewardCalculator.missions(withChallenge, results())
+        assertEquals(Mission.entries, missions.map { it.mission })
+        assertTrue(missions.all { it.current == 0 && !it.completed })
+    }
+
+    @Test fun `misiones a partir de resultados verificados`() {
+        val missions = RewardCalculator.missions(
+            withChallenge,
+            results(allLessons + allSteps + mapOf("m1.l1.e2" to 2), scores = mapOf("m1" to 0.8)),
+        ).associate { it.mission to it.current }
+        // Sin pistas: m1.l1.e1, m1.l2.e1 y m1.reto.s2 (m1.l1.e2 usó pistas).
+        assertEquals(3, missions[Mission.SOLVE_5_NO_HINTS])
+        assertEquals(3, missions[Mission.SOLVE_20_EXERCISES])
+        assertEquals(2, missions[Mission.COMPLETE_5_LESSONS])
+        assertEquals(1, missions[Mission.PASS_ASSESSMENT])
+        assertEquals(1, missions[Mission.COMPLETE_CHALLENGE])
+    }
+
+    @Test fun `el progreso de una mision nunca supera su meta`() {
+        val many = (1..30).associate { "x$it" to 0 }
+        val catalog30 = RewardCatalog(listOf(ModuleRewards("m", listOf(LessonRewards("m.l", many.mapValues { 1 })), null)))
+        val solve = RewardCalculator.missions(catalog30, results(many)).single { it.mission == Mission.SOLVE_20_EXERCISES }
+        assertEquals(20, solve.current)
+        assertTrue(solve.completed)
+        assertEquals(1f, solve.fraction)
+    }
 }

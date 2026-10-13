@@ -21,8 +21,8 @@ data class LessonSession(
     val currentProgress: ExerciseProgress get() = progressOf(currentExercise.id)
     val isLastExercise: Boolean get() = currentIndex == lesson.exercises.lastIndex
 
-    /** En las lecciones se puede reintentar; en las evaluaciones, no. */
-    val allowsRetries: Boolean get() = lesson.kind == LessonKind.LESSON
+    /** En las lecciones y los retos se puede reintentar; en las evaluaciones, no. */
+    val allowsRetries: Boolean get() = lesson.kind != LessonKind.ASSESSMENT
 
     fun progressOf(exerciseId: String): ExerciseProgress = progress[exerciseId] ?: ExerciseProgress()
 

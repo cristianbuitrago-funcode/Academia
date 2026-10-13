@@ -96,6 +96,10 @@ fun LessonScreen(
             LessonUiState.NotFound -> Message(stringResource(R.string.lesson_not_found), onExit)
             LessonUiState.InvalidContent -> Message(stringResource(R.string.lesson_invalid), onExit)
             is LessonUiState.Intro -> Intro(state.lesson, state.sections, onStart)
+            is LessonUiState.Locked -> {
+                LessonHeader(state.lesson)
+                Message(stringResource(R.string.challenge_locked, state.lessonsRemaining), onExit)
+            }
             is LessonUiState.Exercising -> ExerciseStep(state, onDraftChange, onCheck, onHint, onRetry, onNext)
             is LessonUiState.Finished -> Summary(state.lesson, state.summary, sessionXp, onRestart = onStart, onExit = onExit)
         }
@@ -149,10 +153,17 @@ private fun Intro(lesson: Lesson, sections: List<Section>, onStart: () -> Unit) 
             }
         }
     }
-    val isAssessment = lesson.kind == LessonKind.ASSESSMENT
-    if (isAssessment) Text(stringResource(R.string.assessment_rules), style = MaterialTheme.typography.titleSmall)
+    if (lesson.kind == LessonKind.ASSESSMENT) Text(stringResource(R.string.assessment_rules), style = MaterialTheme.typography.titleSmall)
     Button(onClick = onStart, modifier = Modifier.fillMaxWidth()) {
-        Text(stringResource(if (isAssessment) R.string.lesson_start_assessment else R.string.lesson_start_exercises))
+        Text(
+            stringResource(
+                when (lesson.kind) {
+                    LessonKind.LESSON -> R.string.lesson_start_exercises
+                    LessonKind.ASSESSMENT -> R.string.lesson_start_assessment
+                    LessonKind.CHALLENGE -> R.string.challenge_start
+                },
+            ),
+        )
     }
 }
 
@@ -171,7 +182,11 @@ private fun ExerciseStep(
     LessonHeader(session.lesson)
     Text(
         stringResource(
-            if (session.allowsRetries) R.string.lesson_exercise_progress else R.string.assessment_progress,
+            when (session.lesson.kind) {
+                LessonKind.LESSON -> R.string.lesson_exercise_progress
+                LessonKind.ASSESSMENT -> R.string.assessment_progress
+                LessonKind.CHALLENGE -> R.string.challenge_progress
+            },
             session.currentIndex + 1,
             session.lesson.exercises.size,
         ),

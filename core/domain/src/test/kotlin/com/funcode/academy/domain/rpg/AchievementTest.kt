@@ -10,7 +10,7 @@ class AchievementTest {
 
     @Test fun `los ids son unicos y estables`() {
         assertEquals(
-            listOf("first_lesson", "three_lessons", "first_assessment_passed", "first_module_mastered", "level_2"),
+            listOf("first_lesson", "three_lessons", "first_assessment_passed", "first_module_mastered", "level_2", "first_challenge"),
             Achievement.entries.map { it.id },
         )
         Achievement.entries.forEach { assertEquals(it, Achievement.fromId(it.id)) }
@@ -27,5 +27,6 @@ class AchievementTest {
         assertEquals(setOf(Achievement.FIRST_ASSESSMENT_PASSED), met(LearningState(0, 1, 0, 1)))
         assertEquals(setOf(Achievement.LEVEL_2), met(LearningState(0, 0, 0, 2)))
         assertTrue(Achievement.FIRST_MODULE_MASTERED.isMet(LearningState(7, 1, 1, 4)))
+        assertEquals(setOf(Achievement.FIRST_CHALLENGE), met(LearningState(0, 0, 0, 1, completedChallenges = 1)))
     }
 }

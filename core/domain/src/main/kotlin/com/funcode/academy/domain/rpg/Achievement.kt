@@ -11,6 +11,7 @@ enum class Achievement(val id: String) {
     FIRST_ASSESSMENT_PASSED("first_assessment_passed"),
     FIRST_MODULE_MASTERED("first_module_mastered"),
     LEVEL_2("level_2"),
+    FIRST_CHALLENGE("first_challenge"),
     ;
 
     /** Condición de desbloqueo, comprobada solo con resultados verificados. */
@@ -20,6 +21,7 @@ enum class Achievement(val id: String) {
         FIRST_ASSESSMENT_PASSED -> state.passedAssessments >= 1
         FIRST_MODULE_MASTERED -> state.masteredModules >= 1
         LEVEL_2 -> state.level >= 2
+        FIRST_CHALLENGE -> state.completedChallenges >= 1
     }
 
     companion object {
@@ -34,4 +36,5 @@ data class LearningState(
     /** Módulos con todas sus lecciones completadas y la evaluación aprobada. */
     val masteredModules: Int,
     val level: Int,
+    val completedChallenges: Int = 0,
 )
