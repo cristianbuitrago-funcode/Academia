@@ -1,4 +1,4 @@
-# Funcode Academy: componentes del proyecto (fases 2 a 6)
+# Funcode Academy: componentes del proyecto (fases 2 a 7)
 
 Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase.
 
@@ -22,7 +22,9 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `model/ModuleStatus.kt` | Estados de un módulo de la ruta (bloqueado, disponible, completado, dominado). Se usará en las fases 4–5. |
 | `progress/XpSource.kt` | Identifica una actividad que concede XP y valida que el XP sea positivo. |
 | `progress/ProgressRepository.kt` | **Contrato** para leer y registrar XP. El dominio no sabe que existe Room. |
-| `settings/SettingsRepository.kt` | Contrato para los ajustes del estudiante. |
+| `settings/SettingsRepository.kt`, `settings/LearningPreferences.kt` | Contrato y modelo de las preferencias: público, tema, tamaño de texto y pistas. |
+| `progress/ExerciseHistory.kt` | Historial de intentos de cada ejercicio (deducido de `exercise_attempt`). |
+| `learning/StudyAdvisor.kt` | Reglas sencillas de recomendación: retomar, repasar y repetir la evaluación. |
 | `progress/ExerciseAttempt.kt` | Intento comprobado de un ejercicio (sin el texto de la respuesta). `ProgressRepository.recordAttempt` lo guarda. |
 | `lesson/Lesson.kt` | Modelo de lección: objetivos, secciones de teoría y código (con comentarios por línea), variantes de presentación, versión, estado de revisión y evaluación opcional. |
 | `lesson/Exercise.kt` | Datos comunes de un ejercicio y el contenido de cada uno de los **7 tipos**. |
@@ -68,11 +70,13 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `ui/screens/lesson/LessonScreen.kt` | Introducción (objetivos, teoría, ejemplo), ejercicio, retroalimentación y resumen (con el resultado si es una evaluación). |
 | `ui/screens/lesson/ExerciseInputs.kt` | Controles de respuesta de cada tipo (opciones, huecos, flechas para ordenar, salida, líneas, desplegables). |
 | `ui/components/CodeBlock.kt`, `DraftBanner.kt` | Bloque de código monoespaciado con números de línea; aviso de borrador. |
-| `ui/theme/Theme.kt` | Tema Material 3 claro y oscuro (paleta provisional, P10). |
+| `ui/theme/Theme.kt` | Tema Material 3 claro y oscuro (paleta provisional, P10), preferencia de tema y escala de texto. |
 | `ui/navigation/TopLevelDestination.kt` | Rutas tipadas y destinos de la barra inferior. |
 | `ui/FuncodeAppUi.kt` | `Scaffold` con la barra de navegación y el `NavHost` que cambia de pantalla. |
 | `ui/screens/home/*` | Inicio: nivel y XP **calculados desde Room**, tarjeta «Continuar aprendiendo» y sincronización de recompensas pendientes al abrir. |
-| `ui/screens/settings/*` | Ajustes: elegir el público (adolescente/adulto), guardado en DataStore. |
+| `ui/screens/settings/*` | Ajustes: público (niños, adolescentes o adultos), tema, tamaño de texto, pistas y restablecer preferencias. |
+| `ui/FuncodeRoot.kt` | Raíz de la interfaz: aplica el tema y el tamaño de texto elegidos. |
+| `ui/progress/Recommendations.kt` | Recalcula las recomendaciones cuando cambian los resultados guardados. |
 | `res/values/strings.xml` | Todos los textos visibles, en español. |
 | `res/xml/*backup*` | Reglas de copia de seguridad: solo la base de datos y los ajustes. |
 | `schemas/` | Esquema de Room exportado (se compara en CI con el generado). |
@@ -91,6 +95,8 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `app/src/test/.../ui/NavigationTest.kt` | Navegación, botón Atrás, recreación y ajustes en la interfaz | Robolectric + Compose: misma tarea |
 | `core/domain/.../lesson/*Test.kt` | Validadores, parser, sesión y coherencia del contenido real | `./gradlew :core:domain:test` |
 | `core/domain/.../lesson/JavaContentCompilationTest.kt` | Compila con `javac --release 17` el Java del contenido y compara las salidas declaradas (en la JVM de las pruebas, no en la app) | `./gradlew :core:domain:test` |
+| `app/src/test/.../ui/a11y/*` | Preferencias aplicadas, roles y descripciones, texto al 260 % y contraste | Robolectric / JVM |
+| `core/domain/.../learning/StudyAdvisorTest.kt` | Reglas de recomendación | `./gradlew :core:domain:test` |
 | `core/domain/.../mission/*Test.kt` | Lectura, validación, estados y transiciones de las misiones | `./gradlew :core:domain:test` |
 | `app/src/test/.../ui/mission/MissionsViewModelTest.kt` | Pantalla de misiones con el contenido real | JVM |
 | `core/domain/.../rpg/*Test.kt` | Reglas de XP, niveles, logros y motor de recompensas (con el contenido real) | `./gradlew :core:domain:test` |

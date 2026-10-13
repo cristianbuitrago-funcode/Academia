@@ -35,7 +35,7 @@ Una lección o un módulo que no cumpla las reglas **no se muestra**: la app ens
 | `reviewStatus` | Sí | `DRAFT` (siempre al crear) o `APPROVED` (solo el responsable). |
 | `title`, `description` | Sí | Texto no vacío. |
 | `objectives` | Sí | Lista de `{id, text}`. Cada objetivo debe practicarse en al menos un ejercicio. |
-| `presentations` | Sí | Mapa de variante → secciones. `default` es obligatoria; `kids`, `teens` y `adults` son opcionales y solo cambian la presentación, nunca los objetivos ni los ejercicios. |
+| `presentations` | Sí | Mapa de variante → secciones. `default` es obligatoria; `kids`, `teens` y `adults` son opcionales y solo cambian la presentación, nunca los objetivos ni los ejercicios. Si los ejercicios mencionan un ejemplo de la teoría, todas las variantes deben conservarlo (ver `java.m01.l01`). Estilo: niños, frases breves y ejemplos cercanos; adolescentes, directo y con tecnología que usan; adultos, estructurado y con usos profesionales o cotidianos. |
 | `exercises` | Sí | Lista ordenada (de menor a mayor dificultad). |
 | `kind` | No | `lesson` (por defecto), `assessment` (evaluación del módulo) o `challenge` (proyecto guiado: pasos con pistas y reintentos, sin bloque `assessment`). |
 | `project` | Solo en `challenge` | `{situation, priorConcepts[], recap[]}`: el problema que se plantea, los conceptos previos y el resumen de lo aprendido (se muestra al resolver todos los pasos). |

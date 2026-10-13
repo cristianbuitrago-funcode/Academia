@@ -20,14 +20,15 @@ _Última actualización: 2026-10-13_
 | 3. Motor de lecciones y ejercicios | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 3 — Detalle». El contenido sigue en borrador. |
 | 4. Primer módulo de Java y evaluación | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 4 — Detalle». El contenido sigue en borrador. |
 | 5. RPG básico: XP, niveles y logros | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 5 — Detalle». |
-| 6. Misiones, retos y proyectos | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 6 — Detalle». Misiones y proyecto en borrador. |
-| 7–9 | Planificado — sin autorizar | — |
+| 6. Misiones, retos y proyectos | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 6 — Detalle». Misiones y proyecto en borrador. |
+| 7. Personalización, accesibilidad y adaptación | **Implementado — CI en curso; pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 7 — Detalle». Variantes de la lección 1 en borrador. |
+| 8–9 | Planificado — sin autorizar | — |
 
 ## Decisiones
 
 | Decisión | Estado |
 |---|---|
-| D1–D8 | Aprobado (ver §0 del plan técnico) |
+| D1–D8 | Aprobado (ver §0 del plan técnico). **D3 modificada en la Fase 7:** la presentación infantil se puede elegir (preferencia voluntaria, sin pedir la edad). |
 | P1 Rama `main` + flujo con *pull requests* | Aprobado. `main` creada; ver `docs/FLUJO_DE_TRABAJO.md` |
 | P3 Robolectric | Aprobado con condiciones. Incorporado en la Fase 2 (justificación abajo) |
 | P4 Permiso para subir *workflows* | Resuelto: el *push* de `.github/workflows/ci.yml` funcionó |
@@ -260,6 +261,124 @@ Las lecciones son, en este orden:
 | Sin migraciones innecesarias; sin completar dos veces; progreso tras reiniciar | ✔ Esquema v1 sin cambios; resultados derivados o del tipo «mejor de»; prueba de reapertura |
 | Verificación manual en Android Studio | **Pendiente** (responsable) |
 | Aprobación del contenido | **Pendiente** (responsable) |
+
+## Fase 7 — Detalle
+
+### Revisión de entrada (2026-10-13)
+
+- Fases 2 a 6: **aprobadas** por el responsable; último CI en verde (38449932591, 234/234 pruebas).
+- Las verificaciones manuales en Android Studio de las fases 3 a 6 no tienen resultados registrados en este documento. Constan como aprobadas por el responsable, sin evidencia de prueba en dispositivo.
+- No falta ninguna funcionalidad esencial.
+
+**Lo que ya existía:**
+- variantes de presentación en el modelo (`default`, `kids`, `teens`, `adults`; la lección elige la del público);
+- selector de público adolescente/adulto (D3);
+- tema según el sistema;
+- ninguna animación propia.
+
+**Contenido:** todo tenía solo la variante `default`.
+
+### Decisiones del responsable (2026-10-13)
+
+| Tema | Decisión |
+|---|---|
+| Variante infantil | **Se habilita** en Ajustes (cambia D3). Es una preferencia voluntaria: no se pregunta la edad. |
+| Variantes de ejemplo | Solo la **lección 1**, en borrador. |
+| Recomendaciones | Las **reglas de dificultad** propuestas (ver abajo). Cubren la «misión de refuerzo» pendiente de la Fase 6, sin crear una misión. |
+| Preferencias | Tema, tamaño de texto, botón de pistas y restablecer preferencias. |
+
+### Preferencias (Ajustes)
+
+Se guardan en DataStore, solo en el dispositivo, y se aplican de verdad:
+
+| Preferencia | Valores | Dónde se aplica |
+|---|---|---|
+| Estilo de las explicaciones | Niños y niñas · Adolescente · Persona adulta (sin elegir = presentación común) | Teoría de las lecciones con variante; los objetivos, ejercicios y corrección no cambian. |
+| Tema | Como el sistema · Claro · Oscuro | Toda la app (`FuncodeRoot` → `FuncodeTheme`). |
+| Tamaño del texto | Normal (100 %) · Grande (115 %) · Muy grande (130 %) | Toda la app. Se multiplica por el tamaño de letra del sistema, que se sigue respetando (`ProvideTextScale`). |
+| Mostrar el botón de pistas | Activado (por defecto) / desactivado | Lecciones y proyectos (las evaluaciones nunca tienen pistas). No cambia el XP ni la corrección. |
+| Restablecer preferencias | Botón con confirmación | Vuelve a los valores por defecto. **No borra el progreso**, que está en Room. No se ha añadido «borrar progreso». |
+
+**Animaciones:** la app no tiene animaciones propias, así que no se ha añadido una opción para reducirlas. Los componentes de Material 3 siguen el ajuste del sistema.
+
+### Variantes educativas
+
+- **`java.m01.l01` (versión 2, DRAFT)** tiene presentación común y variantes para niños, adolescentes y adultos.
+- Todas conservan el ejemplo del robot al que se refieren los ejercicios.
+- Comparten los mismos objetivos y ejercicios: la corrección es idéntica por construcción, porque los ejercicios no dependen de la variante.
+- Las demás lecciones usan la presentación común con cualquier público.
+
+### Recomendaciones de estudio (reglas, sin inteligencia artificial)
+
+`StudyAdvisor` usa solo los intentos guardados (`exercise_attempt`) y los mejores resultados de las evaluaciones.
+
+1. **Retomar:** lección con algún intento y sin completar.
+2. **Repasar:** lección completada con **2 o más** ejercicios que costaron. Un ejercicio costó si su primer acierto llegó tras un fallo o con pistas.
+3. **Repetir la evaluación:** mejor resultado por debajo del umbral (80 %). Se acompaña de las lecciones de la regla 2.
+
+Se muestran en Inicio («Recomendado para ti», máximo 3) con un botón que abre la actividad. Además:
+- **no bloquean** nada;
+- **no dan XP**: repetir actividades ya recompensadas da 0 XP;
+- no cambian resultados ni umbrales.
+
+En cada ejercicio se muestra **qué objetivo se practica**.
+
+### Accesibilidad
+
+**Barreras corregidas en esta fase:**
+- **Contraste:** el color secundario del tema claro con texto blanco daba **4,3:1**, por debajo del 4,5:1 (AA). Se oscureció a `#00796B` (**5,3:1**). `ContrastTest` comprueba ahora 9 pares texto/fondo en los dos temas.
+- **Bloques de código:** TalkBack leía el número pegado al código con espacios de alineación. Ahora cada línea se anuncia como «Línea N: …».
+- **Ajustes:**
+  - el interruptor de pistas se anuncia como interruptor con su estado y toda la fila es pulsable (≥ 48 dp);
+  - cada grupo de opciones es un grupo de botones de opción;
+  - hay encabezados por sección.
+
+**Ya cumplido y comprobado:**
+- objetivos táctiles de al menos 48 dp en opciones y filas;
+- la información no depende solo del color: los estados siempre llevan texto;
+- retroalimentación y avisos con *live region*;
+- barras de progreso con descripción o decorativas junto a un texto equivalente;
+- tarjetas que se leen de una vez.
+
+**Texto ampliado:** `LargeTextTest` recorre Inicio → lección → ejercicio → retroalimentación con el texto del sistema al 200 % y el de la app en «Muy grande» (260 % en total). Todo sigue siendo alcanzable desplazándose.
+
+**Limitaciones:**
+- **No se afirma el cumplimiento completo de ninguna norma de accesibilidad (WCAG, EN 301 549).**
+- Las pruebas son automáticas en Robolectric; falta la revisión con TalkBack en un dispositivo real (procedimiento en `docs/CONFIGURACION_ENTORNO.md` §9).
+- Con «Muy grande» y el texto del sistema al máximo, las etiquetas de la barra inferior pueden recortarse; está pendiente de revisión visual.
+
+### Componentes
+
+| Componente | Implementado | Probado | Evidencia |
+|---|---|---|---|
+| `settings/LearningPreferences.kt`, `SettingsRepository` ampliado | ✔ | CI | `DataStoreSettingsRepositoryTest` (valores por defecto, persistencia al reabrir, restablecer) |
+| `Audience.KIDS` seleccionable | ✔ | ✔ | `AudienceTest`, `PreferencesAndAccessibilityTest` |
+| Variantes de la lección 1 (mismos objetivos, ejercicios y ejemplo) | ✔ | ✔ | `ModuleContentTest`, `LessonViewModelTest` |
+| `ExerciseHistory` (deducido de los intentos) y `observeExerciseHistories` | ✔ | ✔ | `ExerciseHistoryTest`, `RoomProgressRepositoryTest` |
+| `StudyAdvisor` (reglas de recomendación) | ✔ | ✔ | `StudyAdvisorTest` |
+| Inicio: «Recomendado para ti»; seguir una recomendación no da XP | ✔ | CI | `LessonFlowTest` |
+| `FuncodeRoot`: tema y escala de texto aplicados | ✔ | CI | `PreferencesAndAccessibilityTest`, `LargeTextTest` |
+| Ajustes: público, tema, tamaño, pistas y restablecer con confirmación | ✔ | CI | `PreferencesAndAccessibilityTest` |
+| Pistas ocultas con la preferencia; objetivo que se practica | ✔ | CI | `LessonFlowTest`, `LessonViewModelTest` |
+| Contraste y descripciones de código y barras | ✔ | CI | `ContrastTest`, `PreferencesAndAccessibilityTest` |
+| Verificación en Android Studio / dispositivo con TalkBack | — | **Pendiente** (responsable) | `docs/CONFIGURACION_ENTORNO.md` §9 |
+
+- **Base de datos:** sin cambio de esquema ni migración. Solo hay una consulta nueva de lectura sobre `exercise_attempt`.
+- **DataStore:** tres claves nuevas (`theme_mode`, `text_scale`, `hints_enabled`).
+- **Privacidad:** no se pide la edad ni ningún dato personal. No hay servicios externos ni permisos nuevos.
+
+### Criterios de aceptación de la Fase 7 (según la autorización)
+
+| Requisito | Estado |
+|---|---|
+| Variantes que conservan objetivos y corrección; selección voluntaria y modificable, sin pedir la edad | ✔ |
+| Preferencias reales, guardadas y aplicadas | ✔ CI |
+| Accesibilidad: etiquetas, roles, contraste, texto ampliado, objetivos táctiles, estados con texto | ✔ Corregido lo detectado; revisión con TalkBack pendiente |
+| Ritmo: recomendaciones con datos reales, sin bloqueos, sin XP extra, sin cambiar criterios | ✔ |
+| Privacidad y funcionamiento sin conexión; restablecer distinto de borrar el progreso | ✔ |
+| Integración con el currículo y el RPG sin alterar respuestas, notas ni recompensas | ✔ |
+| Verificación manual en Android Studio | **Pendiente** (responsable) |
+| Aprobación del contenido de las variantes | **Pendiente** (responsable) |
 
 ## Fase 6 — Detalle
 
@@ -513,6 +632,7 @@ Las lecciones son, en este orden:
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 6, incluida la compilación del reto con `javac` | **144/144 superadas** |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con misiones de contenido y proyecto guiado | **164/164 superadas** |
 | 2026-10-13 | CI 38449467297 (commit `6fe2eb6`) | Linux + Windows | **Verde: 234/234 pruebas** (164 dominio, 70 app); APK generado; esquema de Room sin cambios; lint: 0 errores, 2 avisos (`OldTargetApi` conocido y `PluralsCandidate` en un texto de misión, corregido después reformulando el texto) |
+| 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 7 | **173/173 superadas** |
 | 2026-10-13 | CI 38449932591 (commit `d712599`) | Linux + Windows | **Verde: 234/234 pruebas**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38441919559 (commit `ae93235`) | Linux + Windows | **Verde: 208/208 pruebas** (144 dominio, 64 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38438737589 (commit `91b7049`) | Linux + Windows | **Verde: 188/188 pruebas** (127 dominio, 61 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
@@ -536,13 +656,13 @@ Las lecciones son, en este orden:
 
 ## Acciones pendientes del responsable
 
-1. Verificar la Fase 6 en Android Studio siguiendo `docs/CONFIGURACION_ENTORNO.md` §8.
-2. Revisar el contenido en borrador del módulo `java.m01` (7 lecciones, la evaluación, el proyecto guiado y las 7 misiones) y aprobarlo o pedir cambios (D7).
-3. Decidir P7 (versión de Java), los logros, el avatar, la propuesta de monedas y la misión de refuerzo de dificultades (ver «Fase 5 — Detalle» y «Fase 6 — Detalle»).
+1. Verificar la Fase 7 en Android Studio y con TalkBack siguiendo `docs/CONFIGURACION_ENTORNO.md` §9.
+2. Revisar el contenido en borrador del módulo `java.m01` (7 lecciones, las variantes de la lección 1, la evaluación, el proyecto guiado y las 7 misiones) y aprobarlo o pedir cambios (D7).
+3. Decidir P7 (versión de Java), los logros, el avatar y la propuesta de monedas (ver «Fase 5 — Detalle»). La misión de refuerzo queda cubierta por las recomendaciones de la Fase 7.
 4. Responder las decisiones F3-D1 a F3-D5 que siguen abiertas.
-5. Revisar y fusionar el *pull request* #1 (contiene las fases 2 a 6).
+5. Revisar y fusionar el *pull request* #1 (contiene las fases 2 a 7).
 6. Borrar la rama `Main` duplicada y cambiar la rama por defecto a `main` (`docs/FLUJO_DE_TRABAJO.md`).
 
 ## Próximos pasos autorizados
 
-Ninguno. La Fase 7 espera autorización explícita.
+Ninguno. La Fase 8 espera autorización explícita.

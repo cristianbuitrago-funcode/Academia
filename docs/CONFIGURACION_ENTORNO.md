@@ -200,3 +200,46 @@ Anota cualquier fallo con su número.
 | 15 | Repetir 1–4 y 10 en el emulador con **API 26** | Igual, sin cierres. |
 
 Anota cualquier fallo con su número.
+
+---
+
+## 9. Probar la Fase 7 (personalización y accesibilidad) en Android Studio
+
+1. Actualiza la rama: **Git → Pull** (rama `ccr-db27c4de-czvzgb`).
+2. Pruebas automáticas: `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `.\gradlew.bat …`).
+3. **No borres los datos** de la app: así compruebas que el progreso de las fases anteriores se conserva.
+
+### Preferencias
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 1 | Ajustes | Secciones «¿Para quién adaptamos las explicaciones?» (3 opciones), «Tema», «Tamaño del texto», «Ayudas» y «Restablecer preferencias»; nota de privacidad. |
+| 2 | Elegir «Niños y niñas…» y abrir la lección 1 | La teoría usa frases breves («Un programa es una lista de órdenes…»). Con «Persona adulta», el texto es estructurado («…la banca en línea, las hojas de cálculo…»). Los ejercicios son los mismos. |
+| 3 | Abrir la lección 5 con cualquier opción | Misma teoría (aún no tiene variantes). |
+| 4 | Tema «Oscuro» con el sistema en claro, y al revés | La app cambia de colores al instante. «Como el sistema» vuelve a seguir al teléfono. |
+| 5 | Tamaño «Muy grande» | Todo el texto crece; las pantallas se desplazan y no se corta nada importante. |
+| 6 | Desactivar «Mostrar el botón de pistas» y abrir un ejercicio | No aparece «Ver una pista». Se ve «Practicas: …». Al activarlo, vuelve. |
+| 7 | Cerrar y reabrir la app | Las preferencias se conservan. |
+| 8 | Restablecer preferencias → Cancelar; después → Restablecer | Al cancelar no cambia nada; al restablecer vuelven los valores por defecto. **El XP, el nivel, los logros y las misiones siguen igual.** |
+
+### Recomendaciones
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 9 | Empezar una lección sin terminarla y volver a Inicio | «Recomendado para ti: Retoma «…» (ejercicios resueltos: X de Y)» y botón «Retomar». |
+| 10 | Completar una lección fallando o pidiendo pista en 2 ejercicios | «Repasa «…» (ejercicios que necesitaron reintentos o pistas: 2)». Repasarla no suma XP. |
+| 11 | Hacer la evaluación con menos del 80 % | «…tu mejor resultado es X %; para aprobar se necesita un 80 %», con las lecciones a repasar si las hay. |
+
+### Accesibilidad (procedimiento manual)
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 12 | Ajustes del sistema → tamaño de fuente y de visualización al máximo, y la app en «Muy grande» | Se puede completar un ejercicio y llegar a todos los botones desplazándose. Anota si alguna etiqueta de la barra inferior se recorta. |
+| 13 | TalkBack en Ajustes | Lee los encabezados, cada opción como botón de opción con su estado, el interruptor de pistas como interruptor con su estado y el diálogo de restablecer. |
+| 14 | TalkBack en una lección con código | Cada línea se lee como «Línea N: …». La retroalimentación se anuncia al aparecer. |
+| 15 | TalkBack en Inicio y Perfil | Barra de nivel: «Progreso hacia el nivel N: X de Y». Las tarjetas de misiones y logros se leen de una vez. |
+| 16 | Accessibility Scanner (app gratuita de Google) en Inicio, Ajustes y una lección | Anota sus sugerencias; no deben aparecer objetivos táctiles < 48 dp ni contraste insuficiente en el texto. |
+| 17 | Repetir 1, 4, 5 y 8 en el emulador con **API 26** | Igual, sin cierres. |
+
+Anota cualquier fallo con su número.
+
