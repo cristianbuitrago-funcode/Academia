@@ -21,7 +21,7 @@ _Última actualización: 2026-10-13_
 | 4. Primer módulo de Java y evaluación | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 4 — Detalle». El contenido sigue en borrador. |
 | 5. RPG básico: XP, niveles y logros | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 5 — Detalle». |
 | 6. Misiones, retos y proyectos | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 6 — Detalle». Misiones y proyecto en borrador. |
-| 7. Personalización, accesibilidad y adaptación | **Implementado — CI en curso; pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 7 — Detalle». Variantes de la lección 1 en borrador. |
+| 7. Personalización, accesibilidad y adaptación | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio (con TalkBack) y de aprobación** | Ver «Fase 7 — Detalle». Variantes de la lección 1 en borrador. |
 | 8–9 | Planificado — sin autorizar | — |
 
 ## Decisiones
@@ -351,16 +351,16 @@ En cada ejercicio se muestra **qué objetivo se practica**.
 
 | Componente | Implementado | Probado | Evidencia |
 |---|---|---|---|
-| `settings/LearningPreferences.kt`, `SettingsRepository` ampliado | ✔ | CI | `DataStoreSettingsRepositoryTest` (valores por defecto, persistencia al reabrir, restablecer) |
+| `settings/LearningPreferences.kt`, `SettingsRepository` ampliado | ✔ | ✔ CI | `DataStoreSettingsRepositoryTest` (valores por defecto, persistencia al reabrir, restablecer) |
 | `Audience.KIDS` seleccionable | ✔ | ✔ | `AudienceTest`, `PreferencesAndAccessibilityTest` |
 | Variantes de la lección 1 (mismos objetivos, ejercicios y ejemplo) | ✔ | ✔ | `ModuleContentTest`, `LessonViewModelTest` |
 | `ExerciseHistory` (deducido de los intentos) y `observeExerciseHistories` | ✔ | ✔ | `ExerciseHistoryTest`, `RoomProgressRepositoryTest` |
 | `StudyAdvisor` (reglas de recomendación) | ✔ | ✔ | `StudyAdvisorTest` |
-| Inicio: «Recomendado para ti»; seguir una recomendación no da XP | ✔ | CI | `LessonFlowTest` |
-| `FuncodeRoot`: tema y escala de texto aplicados | ✔ | CI | `PreferencesAndAccessibilityTest`, `LargeTextTest` |
-| Ajustes: público, tema, tamaño, pistas y restablecer con confirmación | ✔ | CI | `PreferencesAndAccessibilityTest` |
-| Pistas ocultas con la preferencia; objetivo que se practica | ✔ | CI | `LessonFlowTest`, `LessonViewModelTest` |
-| Contraste y descripciones de código y barras | ✔ | CI | `ContrastTest`, `PreferencesAndAccessibilityTest` |
+| Inicio: «Recomendado para ti»; seguir una recomendación no da XP | ✔ | ✔ CI | `LessonFlowTest` |
+| `FuncodeRoot`: tema y escala de texto aplicados | ✔ | ✔ CI | `PreferencesAndAccessibilityTest`, `LargeTextTest` |
+| Ajustes: público, tema, tamaño, pistas y restablecer con confirmación | ✔ | ✔ CI | `PreferencesAndAccessibilityTest` |
+| Pistas ocultas con la preferencia; objetivo que se practica | ✔ | ✔ CI | `LessonFlowTest`, `LessonViewModelTest` |
+| Contraste y descripciones de código y barras | ✔ | ✔ CI | `ContrastTest`, `PreferencesAndAccessibilityTest` |
 | Verificación en Android Studio / dispositivo con TalkBack | — | **Pendiente** (responsable) | `docs/CONFIGURACION_ENTORNO.md` §9 |
 
 - **Base de datos:** sin cambio de esquema ni migración. Solo hay una consulta nueva de lectura sobre `exercise_attempt`.
@@ -372,7 +372,7 @@ En cada ejercicio se muestra **qué objetivo se practica**.
 | Requisito | Estado |
 |---|---|
 | Variantes que conservan objetivos y corrección; selección voluntaria y modificable, sin pedir la edad | ✔ |
-| Preferencias reales, guardadas y aplicadas | ✔ CI |
+| Preferencias reales, guardadas y aplicadas | ✔ CI (38452947745) |
 | Accesibilidad: etiquetas, roles, contraste, texto ampliado, objetivos táctiles, estados con texto | ✔ Corregido lo detectado; revisión con TalkBack pendiente |
 | Ritmo: recomendaciones con datos reales, sin bloqueos, sin XP extra, sin cambiar criterios | ✔ |
 | Privacidad y funcionamiento sin conexión; restablecer distinto de borrar el progreso | ✔ |
@@ -636,6 +636,7 @@ En cada ejercicio se muestra **qué objetivo se practica**.
 | 2026-10-13 | CI 38451937299 (commit `075c81b`) | Linux + Windows | **Fallo de compilación** de `:app`: `stringResource` dentro de un bloque `semantics { }` (CodeBlock). Corregido en `313c03d`. |
 | 2026-10-13 | CI 38452256496 (commit `313c03d`) | Linux + Windows | **Fallo de compilación** de las pruebas: faltaba importar `assert` en `PreferencesAndAccessibilityTest`. Corregido en `6638871`. |
 | 2026-10-13 | CI 38452449808 (commit `6638871`) | Linux + Windows | **Verde: 260/260 pruebas** (173 dominio, 87 app); APK generado; esquema de Room sin cambios; lint: 0 errores, 4 avisos (`OldTargetApi` conocido y 3 `ModifierParameter` en firmas nuevas, corregidos después) |
+| 2026-10-13 | CI 38452947745 (commit `95b71dd`) | Linux + Windows | **Verde: 260/260 pruebas**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38449932591 (commit `d712599`) | Linux + Windows | **Verde: 234/234 pruebas**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38441919559 (commit `ae93235`) | Linux + Windows | **Verde: 208/208 pruebas** (144 dominio, 64 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38438737589 (commit `91b7049`) | Linux + Windows | **Verde: 188/188 pruebas** (127 dominio, 61 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
