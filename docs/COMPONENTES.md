@@ -35,8 +35,9 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `rpg/RewardRules.kt` | Valores de XP aprobados (P6): por ejercicio según la dificultad, penalización por pistas, lección y evaluación. |
 | `rpg/LevelCurve.kt` | Curva de niveles (100 × n) y progreso hacia el siguiente nivel, calculados desde el XP total. |
 | `rpg/Achievement.kt` | Logros con id estable y condición de desbloqueo sobre `LearningState`. |
-| `rpg/RewardCalculator.kt` | Cálculo puro de las recompensas que corresponden a los resultados verificados. |
-| `rpg/Mission.kt` | Misiones de objetivos (id estable y meta); su avance se calcula en `RewardCalculator.missions`. |
+| `rpg/RewardCalculator.kt` | Cálculo puro de las recompensas que corresponden a los resultados verificados y del estado de cada misión. |
+| `mission/Mission.kt` | Misión de contenido: tipo, objetivo, requisitos, tareas vinculadas, estados y avance de cada tarea. |
+| `mission/MissionAssembler.kt` | Valida las referencias, tipos y requisitos (sin ciclos) de las misiones y descarta las inválidas. |
 | `rpg/RewardEngine.kt` | Único punto que concede XP y logros: recalcula desde lo guardado y registra lo que falta (idempotente). |
 | `progress/ModuleProgress.kt` | Progreso de un módulo **derivado** de los ejercicios resueltos y del mejor resultado: lecciones completadas, estado del reto (bloqueo y pasos) y siguiente actividad. |
 
@@ -58,7 +59,9 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `data/local/ModuleProgressDao.kt` | Guarda el mejor resultado de la evaluación de cada módulo en `module_progress` (transacción de lectura y escritura). |
 | `ui/progress/LearningProgress.kt` | Combina módulos, ejercicios resueltos y resultados en el progreso de cada módulo. |
 | `ui/rpg/*` | Tarjeta de nivel con barra de progreso, aviso de recompensas y textos de los logros. |
-| `ui/screens/profile/*` | Perfil: nivel, XP, resumen de recompensas por tipo, misiones y logros con su fecha. |
+| `ui/screens/profile/*` | Perfil: nivel, XP, resumen de recompensas por tipo (también misiones) y logros con su fecha. |
+| `ui/screens/mission/*` | Misiones: lista con estado y detalle con objetivo, requisitos, tareas enlazadas a sus actividades, recompensa y resultado. |
+| `ui/progress/MissionsProgress.kt` | Recalcula el estado de las misiones cuando cambia cualquier resultado guardado. |
 | `ui/screens/module/*` | Mapa (lista de módulos) y pantalla de módulo (lecciones en orden, evaluación y reto, cerrado o abierto). |
 | `assets/content/es/java/` | Contenido educativo en JSON (índice, módulos y una lección por archivo). Formato: `docs/contenido/GUIA_AUTORES.md`. |
 | `ui/screens/lesson/LessonViewModel.kt` | Carga la lección, mantiene la sesión del dominio y registra intentos. |
@@ -88,6 +91,8 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `app/src/test/.../ui/NavigationTest.kt` | Navegación, botón Atrás, recreación y ajustes en la interfaz | Robolectric + Compose: misma tarea |
 | `core/domain/.../lesson/*Test.kt` | Validadores, parser, sesión y coherencia del contenido real | `./gradlew :core:domain:test` |
 | `core/domain/.../lesson/JavaContentCompilationTest.kt` | Compila con `javac --release 17` el Java del contenido y compara las salidas declaradas (en la JVM de las pruebas, no en la app) | `./gradlew :core:domain:test` |
+| `core/domain/.../mission/*Test.kt` | Lectura, validación, estados y transiciones de las misiones | `./gradlew :core:domain:test` |
+| `app/src/test/.../ui/mission/MissionsViewModelTest.kt` | Pantalla de misiones con el contenido real | JVM |
 | `core/domain/.../rpg/*Test.kt` | Reglas de XP, niveles, logros y motor de recompensas (con el contenido real) | `./gradlew :core:domain:test` |
 | `app/src/test/.../data/RewardPersistenceTest.kt` | Motor de recompensas con Room en archivo: sin duplicados y recuperación tras reabrir | Robolectric |
 | `app/src/test/.../ui/profile/ProfileStateTest.kt` | Estado del perfil a partir del registro | JVM |

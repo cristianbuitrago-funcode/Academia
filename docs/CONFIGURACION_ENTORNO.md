@@ -174,7 +174,7 @@ Anota cualquier fallo con su número.
 
 ---
 
-## 8. Probar la Fase 6 (reto y misiones) en Android Studio
+## 8. Probar la Fase 6 (misiones y proyecto guiado) en Android Studio
 
 1. Actualiza la rama: **Git → Pull** (rama `ccr-db27c4de-czvzgb`).
 2. Pruebas automáticas: `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `.\gradlew.bat …`).
@@ -183,19 +183,20 @@ Anota cualquier fallo con su número.
 
 | # | Qué hacer | Resultado esperado |
 |---|---|---|
-| 1 | Mapa → **Abrir módulo** sin progreso | Tarjeta «Reto del módulo» con «Reto: tu tarjeta de presentación en Java» y «…Lecciones que faltan: 7». **No** hay botón para abrirlo. |
-| 2 | Perfil sin progreso | «Misiones (0 de 5)», cada una con «Progreso: 0 de N», y «Logros (0 de 6)». |
-| 3 | Completar la lección 1 sin pistas | En el módulo, «Lecciones que faltan: 6». En Perfil, la misión «Resuelve 5 ejercicios sin pedir pistas» queda completada. |
-| 4 | Completar las 7 lecciones | El reto muestra «Pasos resueltos: 0 de 7» y el botón **Empezar el reto**. |
-| 5 | Empezar el reto | Introducción con el programa comentado; «Paso 1 de 7». Se pueden pedir pistas y reintentar. |
-| 6 | Resolver los pasos 1–6 | No aparece aviso de XP en cada paso (los pasos no dan XP aparte). |
-| 7 | Resolver el paso 7 | «XP obtenido: +50», «¡Reto superado!» y «Logro desbloqueado: Primer reto superado». |
-| 8 | Repetir el reto | El XP total no cambia; «XP obtenido en esta sesión: 0». |
-| 9 | Volver al módulo | «Reto superado» y botón «Repetir el reto». |
-| 10 | Inicio con la evaluación hecha y el reto sin superar | «Siguiente paso: Reto: tu tarjeta…» y «Continuar» abre el reto. |
-| 11 | Perfil | «Retos superados: 1 (XP: 50)» y las misiones correspondientes completadas. |
-| 12 | Cerrar y reabrir la app | Todo se conserva. |
-| 13 | Repetir 1, 4 y 7 en el emulador con **API 26** | Igual, sin cierres. |
+| 1 | Inicio sin progreso | Sección «Misiones»: «Misiones completadas: 0 de 7», «Misión actual: Descubre qué es programar y qué es un algoritmo», botones «Ver la misión» y «Ver misiones». |
+| 2 | Mapa → **Ver misiones** | Lista de 7 misiones con su tipo y estado: la primera «Disponible», el resto «Bloqueada». |
+| 3 | Abrir «Ordena los pasos de una solución» | «Bloqueada», «Para desbloquearla, completa antes: «Descubre qué es programar…»», tareas visibles **sin** botones de abrir. |
+| 4 | Abrir la misión 1 | Objetivo, tareas («Completa la lección «¿Qué es programar?»»…), «XP de bonificación al completarla: 10 (una sola vez)» y botón «Abrir «¿Qué es programar?»». |
+| 5 | Abrir la lección desde la misión y resolver un ejercicio; volver | La misión está «En progreso» y la tarea muestra «Progreso: 1 de 5». Abrir la misión no cambió nada antes de resolver. |
+| 6 | Completar las lecciones 1 y 2 | En el último acierto: «¡Misión completada: Descubre qué es programar…!» además del XP. La misión 2 pasa a «En progreso», porque ya tiene un ejercicio de ordenar resuelto. |
+| 7 | Repetir la lección 1 | No se suma más XP; la misión sigue completada y su detalle dice «XP de bonificación obtenido: 10». |
+| 8 | Completar las 7 lecciones | El proyecto guiado del módulo se abre. La misión 7 queda disponible. |
+| 9 | Abrir el proyecto | «La situación» y «Lo que necesitas saber antes de empezar»; «Paso 1 de 7»; dos pistas por paso. |
+| 10 | Terminar el proyecto | «XP obtenido: +60» (50 del proyecto + 10 de la misión), «¡Proyecto guiado completado!» y, en el resumen, «Lo que has aprendido». |
+| 11 | Evaluación con 8 o más aciertos | Se completa la misión 6. |
+| 12 | Perfil | «Misiones completadas: N (XP: 10·N)» y «Proyectos guiados completados». |
+| 13 | Cerrar y reabrir la app | Los estados de las misiones y las recompensas se conservan. |
+| 14 | Modo avión; TalkBack en la lista de misiones | Funciona igual; cada misión se lee de una vez (tipo, título, estado y tareas). |
+| 15 | Repetir 1–4 y 10 en el emulador con **API 26** | Igual, sin cierres. |
 
 Anota cualquier fallo con su número.
-

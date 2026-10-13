@@ -6,6 +6,7 @@ El contenido vive en `app/src/main/assets/content/<idioma>/<lenguaje>/`:
 content/es/java/
 ├── index.json                  {"schemaVersion": 1, "modules": ["modules/java.m01.json"], "lessons": ["lessons/java.m01.l01.json", …]}
 ├── modules/java.m01.json       un módulo por archivo
+├── missions/java.m01.mi01.json una misión por archivo
 └── lessons/java.m01.l01.json   una lección (o evaluación) por archivo
 ```
 
@@ -36,12 +37,25 @@ Una lección o un módulo que no cumpla las reglas **no se muestra**: la app ens
 | `objectives` | Sí | Lista de `{id, text}`. Cada objetivo debe practicarse en al menos un ejercicio. |
 | `presentations` | Sí | Mapa de variante → secciones. `default` es obligatoria; `kids`, `teens` y `adults` son opcionales y solo cambian la presentación, nunca los objetivos ni los ejercicios. |
 | `exercises` | Sí | Lista ordenada (de menor a mayor dificultad). |
-| `kind` | No | `lesson` (por defecto), `assessment` (evaluación del módulo) o `challenge` (reto guiado: pasos con pistas y reintentos, sin bloque `assessment`). |
+| `kind` | No | `lesson` (por defecto), `assessment` (evaluación del módulo) o `challenge` (proyecto guiado: pasos con pistas y reintentos, sin bloque `assessment`). |
+| `project` | Solo en `challenge` | `{situation, priorConcepts[], recap[]}`: el problema que se plantea, los conceptos previos y el resumen de lo aprendido (se muestra al resolver todos los pasos). |
 | `assessment` | Solo en evaluaciones | `{exerciseIds, passThreshold?}`. `exerciseIds` debe incluir **todos** los ejercicios. `passThreshold` (fracción en (0, 1] de respuestas correctas al primer intento) es opcional; el valor aprobado (P6) es **0.8**. Sin él, la evaluación no se puede aprobar ni da XP. |
 
 **Evaluaciones:** una sola respuesta por pregunta y sin pistas (el parser rechaza `hints` en una evaluación). Una pregunta sin responder cuenta como fallo.
 
 Secciones: `{"type":"text","text":…}`, `{"type":"callout","text":…}` y `{"type":"code","code":…,"lineComments":[{"line":1,"comment":…}]}` (líneas numeradas desde 1).
+
+## Campos de una misión
+
+| Campo | Obligatorio | Reglas |
+|---|---|---|
+| `schemaVersion`, `id`, `moduleId`, `order`, `version`, `reviewStatus` | Sí | Como en la lección. `id` no debe cambiar: identifica también su bonificación de XP. |
+| `type` | Sí | `learning`, `practice`, `assessment` o `project`. |
+| `title`, `description`, `objective` | Sí | `objective` es el objetivo educativo. |
+| `prerequisites` | No | Ids de otras misiones que hay que completar antes (sin ciclos). |
+| `tasks` | Sí | Al menos una: `{"kind":"completeLesson","lessonId"}`, `{"kind":"solveExercises","exerciseIds":[…],"description"}` (ejercicios de lecciones o del proyecto, no de evaluaciones), `{"kind":"passAssessment","assessmentId"}` o `{"kind":"completeChallenge","challengeId"}`. |
+
+Completar una misión da 10 XP de bonificación una sola vez. Todo lo que referencia debe existir en el mismo módulo; si no, la misión se descarta (y las que dependen de ella).
 
 ## Campos comunes de cada ejercicio
 

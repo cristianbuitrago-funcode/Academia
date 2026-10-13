@@ -20,7 +20,7 @@ _Última actualización: 2026-10-13_
 | 3. Motor de lecciones y ejercicios | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 3 — Detalle». El contenido sigue en borrador. |
 | 4. Primer módulo de Java y evaluación | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 4 — Detalle». El contenido sigue en borrador. |
 | 5. RPG básico: XP, niveles y logros | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 5 — Detalle». |
-| 6. Retos y misiones | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 6 — Detalle». El reto está en borrador. |
+| 6. Misiones, retos y proyectos | **Implementado — CI en curso; pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 6 — Detalle». Misiones y proyecto en borrador. |
 | 7–9 | Planificado — sin autorizar | — |
 
 ## Decisiones
@@ -32,7 +32,7 @@ _Última actualización: 2026-10-13_
 | P3 Robolectric | Aprobado con condiciones. Incorporado en la Fase 2 (justificación abajo) |
 | P4 Permiso para subir *workflows* | Resuelto: el *push* de `.github/workflows/ci.yml` funcionó |
 | P6 Valores de XP, curva de niveles y umbral | **Aprobado** (2026-10-13): propuesta A de XP con penalización por pistas, curva 100×n y umbral del 80 %. Ver «Fase 5 — Detalle». El umbral no bloquea lecciones ni módulos. |
-| Fase 6: alcance de retos y misiones | **Aprobado** (2026-10-13): reto guiado por módulo, abierto al completar las lecciones, 50 XP una vez; misiones de objetivos sin reloj ni XP. |
+| Fase 6: retos, misiones y proyectos | **Aprobado** (2026-10-13): proyecto guiado por módulo (abierto al completar las lecciones, 50 XP una vez); misiones de contenido con requisitos declarados y 10 XP de bonificación una vez; pantalla Misiones desde Inicio y Mapa. Sustituye a la decisión anterior de misiones fijas sin XP. |
 | Monedas virtuales | **No implementadas** por decisión del responsable (2026-10-13); propuesta documentada en «Fase 5 — Detalle». |
 | P7 Versión de Java del contenido | **Pendiente.** Se usa Java 17 de forma provisional (`javac --release 17` en las pruebas). |
 | P8 Comprobación automática del Java del contenido | Implementada en la Fase 4 (`JavaContentCompilationTest`); pendiente de tu aprobación. |
@@ -263,74 +263,118 @@ Las lecciones son, en este orden:
 
 ## Fase 6 — Detalle
 
-### Revisión de entrada y alcance
+### Revisión de entrada (2026-10-13)
 
-- Fase 5: aprobada por el responsable; CI 38438737589 en verde (188/188 pruebas).
-- El plan solo definía la Fase 6 como «Misiones, retos y proyectos — retos ligados a objetivos» (§13), con un campo opcional `challenge` en el módulo (§6.1).
-- Como no había especificación detallada, se consultaron cuatro decisiones antes de programar. Respuestas del responsable (2026-10-13), todas las opciones recomendadas:
+- Fase 5: aprobada por el responsable; CI 38438737589 en verde (188/188).
+- Ya existía una primera versión de la Fase 6, hecha con la descripción de una línea del plan (CI 38441919559, 208/208): el reto guiado del módulo y cinco misiones fijas.
+- La especificación completa de la Fase 6 pide más. Las misiones deben:
+  - definirse como contenido;
+  - tener objetivo, tipo, requisitos, actividades vinculadas, estados y versión;
+  - contar con una pantalla propia.
+- Además, el proyecto guiado necesitaba conceptos previos, pistas progresivas y un resumen final.
+- No había errores bloqueantes.
+- Antes de programar se consultaron las decisiones que afectan a las recompensas y a la navegación.
 
-| Decisión | Valor aprobado |
+### Decisiones aprobadas por el responsable (2026-10-13)
+
+| Tema | Decisión |
 |---|---|
-| Qué es un reto | Un **reto guiado por módulo**: un mini-proyecto en varios pasos, ligado a los objetivos del módulo. Se construye con los 7 tipos de ejercicio existentes (no hay ejecución de Java, D2) y admite pistas y reintentos. |
-| Acceso | Se muestra desde el principio, pero **se abre al completar todas las lecciones** del módulo. Es el primer bloqueo de la app y no bloquea la evaluación. |
-| Recompensa | **50 XP una sola vez** al resolver todos los pasos; los pasos no dan XP aparte. Logro «Primer reto superado» (sin XP). |
-| Misiones | **Misiones de objetivos sin reloj**: lista fija derivada del progreso verificado, sin XP extra. |
+| Proyecto guiado | Es el reto del módulo (`kind: challenge`), que se abre al completar las lecciones y da **50 XP** una vez. Usa los 7 tipos de ejercicio; no hay ejecución de Java (D2). |
+| Recompensa de las misiones | **10 XP de bonificación** por misión completada, una sola vez. Se registra en el mismo registro de XP con el tipo `MISSION`. |
+| Misiones anteriores | Las cinco misiones fijas se **sustituyen** por misiones de contenido. |
+| Desbloqueo | Cada misión declara sus **requisitos** (otras misiones). La primera está disponible desde el inicio. |
+| Acceso | Pantalla **Misiones** abierta desde Inicio y desde el Mapa; la barra inferior no cambia. |
 
-**Proyectos:** se interpretan como el propio reto guiado (un programa completo construido paso a paso). Proyectos abiertos con código libre necesitarían ejecución real de Java (Fase 8).
+### Modelo y reglas
 
-### Reto del módulo 1 (`java.m01.reto`, DRAFT)
+- **Misión** (`missions/<id>.json`). Campos:
+  - id estable (también identifica su bonificación);
+  - módulo, orden y versión del contenido;
+  - estado de revisión;
+  - tipo (`learning`, `practice`, `assessment`, `project`);
+  - título, descripción y objetivo educativo;
+  - requisitos (otras misiones);
+  - tareas.
+- **Tareas verificables.** Siempre apuntan a contenido existente:
 
-- Título: «Reto: tu tarjeta de presentación en Java».
-- Siete pasos de dificultad 1 a 4, con 3 objetivos:
-  1. nombre del archivo;
-  2. ordenar el esqueleto;
-  3. completar huecos;
-  4. predecir la salida;
-  5. reordenar la salida;
-  6. encontrar el error;
-  7. compilar y ejecutar.
-- Solo usa lo enseñado en el módulo 1.
-- `JavaContentCompilationTest` compila con `javac --release 17` el ejemplo, los huecos completados y las líneas ordenadas, ejecuta la salida y comprueba que el error falla justo en la línea marcada.
-- **Pendiente de tu revisión.**
+  | Tarea | Se cumple cuando… |
+  |---|---|
+  | `completeLesson` | todos los ejercicios de la lección están resueltos |
+  | `solveExercises` | están resueltos los ejercicios indicados (de lecciones o del proyecto) |
+  | `passAssessment` | la evaluación alcanza el umbral aprobado (80 %) |
+  | `completeChallenge` | el proyecto guiado está completo, con las lecciones del módulo completadas |
 
-### Reglas
+- **Estados:** se **calculan** con los resultados guardados (`exercise_attempt` y `module_progress`); no se guardan aparte, así que no se duplican ni se desincronizan.
+  - *Bloqueada:* algún requisito no está completado.
+  - *Completada:* todas las tareas cumplidas.
+  - *En progreso:* alguna tarea avanzada.
+  - *Disponible:* sin avance.
+- **Abrir una misión o su pantalla no cambia nada.**
+- Una misión bloqueada no se completa aunque sus tareas estén hechas. Al cumplir el requisito pasa directamente a completada, porque las actividades ya hechas cuentan.
+- **Validación:** `MissionAssembler` descarta, con la lista de errores, las misiones que:
+  - hacen referencia a contenido inexistente, de otro tipo o de otro módulo;
+  - incluyen preguntas de evaluación en `solveExercises`;
+  - tienen requisitos inexistentes o en ciclo;
+  - dependen de una misión descartada.
+- **Recompensa:** `RewardEngine` concede `MISSION` (10 XP) cuando una misión está completada.
+  - Es idempotente: repetir actividades o volver a entrar no suma más.
+  - Las actividades se pueden repetir para practicar, sin bonificación.
 
-- **Bloqueo:** `ChallengeProgress.lessonsRemaining`, calculado con los ejercicios resueltos.
-  - El módulo muestra el reto cerrado con el número de lecciones que faltan y **sin botón**.
-  - Si se intenta abrir el reto de otra forma, la pantalla de lección comprueba lo mismo y muestra el aviso en lugar de los ejercicios.
-- **XP:** `RewardCalculator` concede `CHALLENGE` (50 XP) cuando todos los pasos tienen un acierto guardado **y** todas las lecciones están completadas.
-  - Se registra con la misma restricción `UNIQUE`, así que nunca se duplica.
-  - Los pasos no cuentan como ejercicios de lección.
-- **Siguiente actividad:** lección pendiente → evaluación sin hacer → reto sin superar → módulo terminado.
+### Misiones del módulo 1 (DRAFT, pendientes de tu revisión)
 
-### Misiones (sin XP ni reloj)
+| Id | Tipo | Misión | Tareas | Requiere |
+|---|---|---|---|---|
+| `java.m01.mi01` | Aprendizaje | Descubre qué es programar y qué es un algoritmo | Lecciones 1 y 2 | — |
+| `java.m01.mi02` | Práctica | Ordena los pasos de una solución | Lección 3 + 4 ejercicios de ordenar y de seguir secuencias | mi01 |
+| `java.m01.mi03` | Aprendizaje | Conoce la estructura de un programa Java | Lección 4 | mi02 |
+| `java.m01.mi04` | Aprendizaje | Muestra mensajes con System.out.println | Lección 5 | mi03 |
+| `java.m01.mi05` | Práctica | Lee programas: predice salidas y encuentra errores | Lecciones 6 y 7 + 7 ejercicios de predecir la salida y de encontrar errores | mi04 |
+| `java.m01.mi06` | Evaluación | Supera la evaluación del módulo 1 | Evaluación con un 80 % o más | mi05 |
+| `java.m01.mi07` | Proyecto | Proyecto guiado: tu tarjeta de presentación | Proyecto `java.m01.reto` | mi05 |
 
-| Id (estable) | Misión | Meta |
-|---|---|---|
-| `solve_5_no_hints` | Resuelve 5 ejercicios sin pedir pistas (lecciones y reto, según el primer acierto) | 5 |
-| `solve_20_exercises` | Resuelve 20 ejercicios distintos de las lecciones | 20 |
-| `complete_5_lessons` | Completa 5 lecciones | 5 |
-| `pass_assessment` | Aprueba la evaluación de un módulo | 1 |
-| `complete_challenge` | Supera el reto de un módulo | 1 |
+**Total del módulo 1 sin pistas:** 910 (lecciones y evaluación) + 50 (proyecto) + 70 (7 misiones) = **1030 XP**, nivel 5. Comprobado en `RewardEngineTest`.
 
-Se recalculan desde los resultados guardados cada vez que cambian. No se guardan, así que no pueden duplicarse ni desincronizarse.
+**No implementado:** la misión de «reforzar conceptos con dificultades». Requiere decidir cómo se detectan esas dificultades (por ejemplo, ejercicios fallados al primer intento) y es una regla educativa nueva; queda como propuesta pendiente.
+
+### Proyecto guiado `java.m01.reto` (DRAFT, versión 2)
+
+- **Título:** «Proyecto guiado: tu tarjeta de presentación en Java».
+- **Situación:** presentarse en un club de programación con un programa que muestre una tarjeta.
+- **Contenido:**
+  - 4 conceptos previos;
+  - 7 pasos ordenados (dificultad 1→4) con **2 pistas progresivas** cada uno;
+  - explicación y retroalimentación en cada paso;
+  - **resumen final de lo aprendido**, que se muestra en el resumen al resolver todos los pasos.
+- **Finalización:** todos los pasos resueltos con las 7 lecciones completadas.
+- **Comprobación:** el código se compila con `javac` en las pruebas. La app no ejecuta Java ni lo afirma.
 
 ### Componentes
 
 | Componente | Implementado | Probado | Evidencia |
 |---|---|---|---|
-| `LessonKind.CHALLENGE` en el parser (sin bloque `assessment`) y en el módulo (`challenge`) | ✔ | ✔ | `LessonParserTest`, `ModuleAssemblerTest` (nueva) |
-| Sesión del reto con pistas y reintentos | ✔ | ✔ | `LessonSessionTest` |
-| `ChallengeProgress`: bloqueo, pasos resueltos, siguiente actividad | ✔ | ✔ | `ModuleProgressTest` |
-| XP y logro del reto; misiones | ✔ | ✔ | `RewardCalculatorTest`, `RewardEngineTest` (módulo completo: 960 XP), `AchievementTest` |
-| Contenido del reto compilado con `javac` | ✔ | ✔ | `JavaContentCompilationTest`, `ModuleContentTest` |
-| App: tarjeta del reto en el módulo, bloqueo al abrir, modo reto, aviso «¡Reto superado!», continuar en Inicio | ✔ | ✔ CI | `LessonViewModelTest`, `LessonFlowTest`, `AssetContentRepositoryTest` |
-| Perfil: misiones con barra y «Retos superados» | ✔ | ✔ CI | `ProfileStateTest`, `NavigationTest`, `LessonFlowTest` |
+| `mission/Mission.kt`: modelo, tipos, tareas y estados | ✔ | ✔ | `MissionParserTest`, `MissionProgressTest` |
+| `LessonParser.parseMission`: contenido inválido o incompleto con errores acumulados | ✔ | ✔ | `MissionParserTest` |
+| `MissionAssembler`: referencias, tipos, módulo, requisitos y ciclos | ✔ | ✔ | `MissionAssemblerTest` |
+| Estados y transiciones; la actividad que hay que abrir en cada tarea | ✔ | ✔ | `MissionProgressTest`, `RewardEngineTest` (cadena real mi01→mi02) |
+| Bonificación `MISSION` sin duplicados | ✔ | ✔ | `MissionProgressTest`, `RewardEngineTest`, `RewardPersistenceTest` (Room en archivo, reapertura) |
+| Proyecto guiado: bloque `project`, pistas progresivas, resumen | ✔ | ✔ | `LessonParserTest`, `ModuleContentTest`, `JavaContentCompilationTest` |
+| Contenido real: 7 misiones válidas que cubren las 7 lecciones y los 4 tipos | ✔ | ✔ | `ModuleContentTest`, `AssetContentRepositoryTest` |
+| Pantallas Misiones y detalle (requisitos, tareas con enlace, recompensa, resultado); acceso desde Inicio y Mapa | ✔ | CI | `MissionsViewModelTest`, `LessonFlowTest` |
+| Aviso «¡Misión completada!» en la lección; misiones en el resumen de recompensas del Perfil | ✔ | CI | `LessonViewModelTest`, `ProfileStateTest` |
 | Verificación en Android Studio / dispositivo | — | **Pendiente** (responsable) | `docs/CONFIGURACION_ENTORNO.md` §8 |
 
-- **Base de datos:** sin cambio de esquema ni migración. Los pasos del reto se guardan como intentos en `exercise_attempt`, y su XP en `xp_ledger` con el tipo `CHALLENGE`, que ya existía.
-- **Totales:** el módulo 1 completo sin pistas suma 910 + 50 = **960 XP** y sigue en el nivel 4.
-- **No implementado:** campañas, retos diarios, rachas, proyectos con código libre, tienda, monedas, multijugador y cualquier ejecución de Java.
+**Base de datos:** sin cambio de esquema ni migración.
+- El tipo `MISSION` es un valor nuevo de la columna de texto `sourceType` de `xp_ledger`.
+- Los estados de las misiones se deducen y no se guardan.
+
+**No implementado (fuera de la Fase 6):**
+- campañas narrativas;
+- mapa mundial;
+- misiones diarias y rachas;
+- tienda y monedas;
+- personalización por edades;
+- multijugador;
+- ejecución real de Java.
 
 ## Fase 5 — Detalle
 
@@ -467,6 +511,7 @@ Se recalculan desde los resultados guardados cada vez que cambian. No se guardan
 | 2026-10-13 | CI 38435568555 (commit `730a23b`) | Linux + Windows | **Verde: 143/143 pruebas** (97 dominio, 46 app); APK generado; esquema de Room sin cambios; lint: 0 errores, 2 avisos (`OldTargetApi` conocido y `PluralsCandidate` en el texto del resultado, corregido después reformulando el texto) |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 5 | **127/127 superadas** |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 6, incluida la compilación del reto con `javac` | **144/144 superadas** |
+| 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con misiones de contenido y proyecto guiado | **164/164 superadas** |
 | 2026-10-13 | CI 38441919559 (commit `ae93235`) | Linux + Windows | **Verde: 208/208 pruebas** (144 dominio, 64 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38438737589 (commit `91b7049`) | Linux + Windows | **Verde: 188/188 pruebas** (127 dominio, 61 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38436000222 (commit `ed66018`) | Linux + Windows | **Verde: 143/143 pruebas**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
@@ -490,8 +535,8 @@ Se recalculan desde los resultados guardados cada vez que cambian. No se guardan
 ## Acciones pendientes del responsable
 
 1. Verificar la Fase 6 en Android Studio siguiendo `docs/CONFIGURACION_ENTORNO.md` §8.
-2. Revisar el contenido en borrador del módulo `java.m01` (7 lecciones, la evaluación y el reto) y aprobarlo o pedir cambios (D7).
-3. Decidir P7 (versión de Java), el conjunto de logros y misiones, el avatar y la propuesta de monedas (ver «Fase 5 — Detalle» y «Fase 6 — Detalle»).
+2. Revisar el contenido en borrador del módulo `java.m01` (7 lecciones, la evaluación, el proyecto guiado y las 7 misiones) y aprobarlo o pedir cambios (D7).
+3. Decidir P7 (versión de Java), los logros, el avatar, la propuesta de monedas y la misión de refuerzo de dificultades (ver «Fase 5 — Detalle» y «Fase 6 — Detalle»).
 4. Responder las decisiones F3-D1 a F3-D5 que siguen abiertas.
 5. Revisar y fusionar el *pull request* #1 (contiene las fases 2 a 6).
 6. Borrar la rama `Main` duplicada y cambiar la rama por defecto a `main` (`docs/FLUJO_DE_TRABAJO.md`).
