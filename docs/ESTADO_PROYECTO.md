@@ -20,7 +20,7 @@ _Última actualización: 2026-10-13_
 | 3. Motor de lecciones y ejercicios | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 3 — Detalle». El contenido sigue en borrador. |
 | 4. Primer módulo de Java y evaluación | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 4 — Detalle». El contenido sigue en borrador. |
 | 5. RPG básico: XP, niveles y logros | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 5 — Detalle». |
-| 6. Misiones, retos y proyectos | **Implementado — CI en curso; pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 6 — Detalle». Misiones y proyecto en borrador. |
+| 6. Misiones, retos y proyectos | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 6 — Detalle». Misiones y proyecto en borrador. |
 | 7–9 | Planificado — sin autorizar | — |
 
 ## Decisiones
@@ -359,8 +359,8 @@ Las lecciones son, en este orden:
 | Bonificación `MISSION` sin duplicados | ✔ | ✔ | `MissionProgressTest`, `RewardEngineTest`, `RewardPersistenceTest` (Room en archivo, reapertura) |
 | Proyecto guiado: bloque `project`, pistas progresivas, resumen | ✔ | ✔ | `LessonParserTest`, `ModuleContentTest`, `JavaContentCompilationTest` |
 | Contenido real: 7 misiones válidas que cubren las 7 lecciones y los 4 tipos | ✔ | ✔ | `ModuleContentTest`, `AssetContentRepositoryTest` |
-| Pantallas Misiones y detalle (requisitos, tareas con enlace, recompensa, resultado); acceso desde Inicio y Mapa | ✔ | CI | `MissionsViewModelTest`, `LessonFlowTest` |
-| Aviso «¡Misión completada!» en la lección; misiones en el resumen de recompensas del Perfil | ✔ | CI | `LessonViewModelTest`, `ProfileStateTest` |
+| Pantallas Misiones y detalle (requisitos, tareas con enlace, recompensa, resultado); acceso desde Inicio y Mapa | ✔ | ✔ CI | `MissionsViewModelTest`, `LessonFlowTest` |
+| Aviso «¡Misión completada!» en la lección; misiones en el resumen de recompensas del Perfil | ✔ | ✔ CI | `LessonViewModelTest`, `ProfileStateTest` |
 | Verificación en Android Studio / dispositivo | — | **Pendiente** (responsable) | `docs/CONFIGURACION_ENTORNO.md` §8 |
 
 **Base de datos:** sin cambio de esquema ni migración.
@@ -513,6 +513,7 @@ Las lecciones son, en este orden:
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 6, incluida la compilación del reto con `javac` | **144/144 superadas** |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con misiones de contenido y proyecto guiado | **164/164 superadas** |
 | 2026-10-13 | CI 38449467297 (commit `6fe2eb6`) | Linux + Windows | **Verde: 234/234 pruebas** (164 dominio, 70 app); APK generado; esquema de Room sin cambios; lint: 0 errores, 2 avisos (`OldTargetApi` conocido y `PluralsCandidate` en un texto de misión, corregido después reformulando el texto) |
+| 2026-10-13 | CI 38449932591 (commit `d712599`) | Linux + Windows | **Verde: 234/234 pruebas**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38441919559 (commit `ae93235`) | Linux + Windows | **Verde: 208/208 pruebas** (144 dominio, 64 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38438737589 (commit `91b7049`) | Linux + Windows | **Verde: 188/188 pruebas** (127 dominio, 61 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38436000222 (commit `ed66018`) | Linux + Windows | **Verde: 143/143 pruebas**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
