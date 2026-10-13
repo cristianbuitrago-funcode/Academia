@@ -19,7 +19,7 @@ _Última actualización: 2026-10-13_
 | 2. Esqueleto y CI | **Aprobado** (2026-10-13, según el responsable: verificado manualmente en Android Studio) | El *pull request* #1 sigue abierto: `main` aún no contiene la Fase 2. Los detalles de la verificación manual (resolución del fallo de Room y del emulador en su equipo) no constan en este registro. |
 | 3. Motor de lecciones y ejercicios | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 3 — Detalle». El contenido sigue en borrador. |
 | 4. Primer módulo de Java y evaluación | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 4 — Detalle». El contenido sigue en borrador. |
-| 5. RPG básico: XP, niveles y logros | **Implementado — CI en curso; pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 5 — Detalle». |
+| 5. RPG básico: XP, niveles y logros | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 5 — Detalle». |
 | 6–9 | Planificado — sin autorizar | — |
 
 ## Decisiones
@@ -323,10 +323,10 @@ Las lecciones son, en este orden:
 | `LevelCurve` y `LevelProgress`: nivel, XP del nivel, restante y fracción | ✔ | ✔ | `LevelCurveTest` (estado inicial, límites exactos, determinismo, valores no válidos) |
 | `Achievement` y `LearningState` | ✔ | ✔ | `AchievementTest` |
 | `RewardCalculator` (puro) y `RewardEngine` (idempotente) | ✔ | ✔ | `RewardCalculatorTest`, `RewardEngineTest` (contenido real; repetición; pistas; evaluación aprobada y suspendida; 910 XP; llamadas simultáneas) |
-| Room: `AchievementDao`, `ExerciseAttemptDao.firstCorrectAttempts`, `XpLedgerDao.observeAll` | ✔ | CI | `RoomProgressRepositoryTest`, `RewardPersistenceTest` (archivo real: sin duplicados tras reabrir; recompensa pendiente concedida después) |
-| Avisos en la lección (XP, lección completada, evaluación aprobada, subida de nivel, logros; «ya recompensado») y XP de la sesión en el resumen | ✔ | CI | `LessonViewModelTest`, `LessonFlowTest` |
-| Inicio: tarjeta de nivel con barra de progreso; sincronización pendiente al abrir | ✔ | CI | `NavigationTest` |
-| Perfil: nivel, barra, XP, resumen de recompensas por tipo y logros con fecha | ✔ | CI | `ProfileStateTest`, `NavigationTest`, `LessonFlowTest` |
+| Room: `AchievementDao`, `ExerciseAttemptDao.firstCorrectAttempts`, `XpLedgerDao.observeAll` | ✔ | ✔ CI | `RoomProgressRepositoryTest`, `RewardPersistenceTest` (archivo real: sin duplicados tras reabrir; recompensa pendiente concedida después) |
+| Avisos en la lección (XP, lección completada, evaluación aprobada, subida de nivel, logros; «ya recompensado») y XP de la sesión en el resumen | ✔ | ✔ CI | `LessonViewModelTest`, `LessonFlowTest` |
+| Inicio: tarjeta de nivel con barra de progreso; sincronización pendiente al abrir | ✔ | ✔ CI | `NavigationTest` |
+| Perfil: nivel, barra, XP, resumen de recompensas por tipo y logros con fecha | ✔ | ✔ CI | `ProfileStateTest`, `NavigationTest`, `LessonFlowTest` |
 | Verificación en Android Studio / dispositivo | — | **Pendiente** (responsable) | `docs/CONFIGURACION_ENTORNO.md` §7 |
 
 **Base de datos:**
@@ -393,6 +393,7 @@ Las lecciones son, en este orden:
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 4, incluida la compilación con `javac --release 17` del contenido | **97/97 superadas** |
 | 2026-10-13 | CI 38435568555 (commit `730a23b`) | Linux + Windows | **Verde: 143/143 pruebas** (97 dominio, 46 app); APK generado; esquema de Room sin cambios; lint: 0 errores, 2 avisos (`OldTargetApi` conocido y `PluralsCandidate` en el texto del resultado, corregido después reformulando el texto) |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 5 | **127/127 superadas** |
+| 2026-10-13 | CI 38438737589 (commit `91b7049`) | Linux + Windows | **Verde: 188/188 pruebas** (127 dominio, 61 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38436000222 (commit `ed66018`) | Linux + Windows | **Verde: 143/143 pruebas**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-12 | CI 38319271182 | Linux + Windows | **Verde en ambos** tras usar `OkioStorage` en la prueba de DataStore (la app sigue usando `FileStorage`, correcto en Android). |
 
