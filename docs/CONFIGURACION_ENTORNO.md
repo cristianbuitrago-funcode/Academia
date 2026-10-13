@@ -114,3 +114,31 @@ En la ejecución de CI (pestaña *Actions* → ejecución en verde → *Artifact
 | 9 | TalkBack (opcional) en un ejercicio de ordenar | Los botones de flecha se leen como «Subir la línea N» / «Bajar la línea N». |
 
 Anota cualquier fallo con su número.
+
+---
+
+## 6. Probar la Fase 4 (módulo 1 y evaluación) en Android Studio
+
+1. Actualiza la rama: **Git → Pull** (rama `ccr-db27c4de-czvzgb`).
+2. Pruebas automáticas: `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `.\gradlew.bat …`). `JavaContentCompilationTest` compila los ejemplos con el `javac` del JDK de Gradle (JDK 17 o superior).
+3. Si tenías instalada la versión de la Fase 3, puedes conservarla: no hay cambio de base de datos. Los intentos de la lección antigua `java.m02.l01` no cuentan para el módulo nuevo.
+4. Ejecuta la app (▶) y comprueba:
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 1 | Inicio | Tarjeta «Continuar aprendiendo»: título del módulo 1, «Lecciones completadas: 0 de 7», «Siguiente lección: ¿Qué es programar?», botones «Continuar» y «Ver el módulo». |
+| 2 | Pestaña **Mapa** | «Mapa de aprendizaje» con el módulo 1, aviso de borrador, «Evaluación: aún no realizada» y «Abrir módulo». |
+| 3 | **Abrir módulo** | Lecciones numeradas del 1 al 7, nota sobre el orden recomendado, «Ejercicios resueltos: 0 de N» y la tarjeta «Evaluación del módulo». |
+| 4 | Abrir la lección 1 y resolver todos sus ejercicios | Al volver al módulo, la lección 1 dice «Completada»; en Inicio, «Siguiente lección» pasa a la 2. |
+| 5 | Cerrar la app (deslizarla en Recientes) y volver a abrirla | El progreso del paso 4 se conserva. |
+| 6 | **Hacer la evaluación** | La introducción dice «Una sola respuesta por pregunta y sin pistas.»; botón «Empezar la evaluación». |
+| 7 | Responder mal la pregunta 1 y comprobar | Se muestra «Todavía no es correcto.» con la explicación; **no** aparece «Intentar de nuevo» ni «Ver una pista», y la respuesta ya no se puede cambiar; solo «Siguiente pregunta». |
+| 8 | Pulsar «Siguiente pregunta» sin responder varias preguntas hasta el final → **Ver resultado** | «Resultado: X de 10 respuestas correctas (Y %)»; las preguntas sin responder cuentan como fallos. **No** aparece «aprobado» (el umbral P6 no está aprobado). |
+| 9 | Volver al módulo | «Mejor resultado de la evaluación: Y %» y «Repetir la evaluación». |
+| 10 | Repetir la evaluación con peor resultado | El mejor resultado no baja. Con uno mejor, sube. |
+| 11 | Cerrar y reabrir la app | El mejor resultado se conserva. |
+| 12 | Girar la pantalla en mitad de la evaluación | Se conservan la pregunta y la respuesta. |
+| 13 | Repetir 1–3 y 6–8 en el emulador con **API 26** | Igual, sin cierres. |
+
+Ninguna pantalla debe decir que se ejecuta código Java: solo se comprueban las respuestas. Anota cualquier fallo con su número.
+

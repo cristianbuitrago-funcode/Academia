@@ -17,8 +17,9 @@ _Última actualización: 2026-10-13_
 |---|---|---|
 | 1. Planificación y arquitectura | **Aprobado** (2026-10-10) | D1–D8, P1 y P3 resueltas. |
 | 2. Esqueleto y CI | **Aprobado** (2026-10-13, según el responsable: verificado manualmente en Android Studio) | El *pull request* #1 sigue abierto: `main` aún no contiene la Fase 2. Los detalles de la verificación manual (resolución del fallo de Room y del emulador en su equipo) no constan en este registro. |
-| 3. Motor de lecciones y ejercicios | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 3 — Detalle». Contenido en borrador. |
-| 4–9 | Planificado — sin autorizar | — |
+| 3. Motor de lecciones y ejercicios | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 3 — Detalle». El contenido sigue en borrador. |
+| 4. Primer módulo de Java y evaluación | **Implementado — pruebas en CI en curso; pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 4 — Detalle». Todo el contenido está en borrador. |
+| 5–9 | Planificado — sin autorizar | — |
 
 ## Decisiones
 
@@ -28,7 +29,10 @@ _Última actualización: 2026-10-13_
 | P1 Rama `main` + flujo con *pull requests* | Aprobado. `main` creada; ver `docs/FLUJO_DE_TRABAJO.md` |
 | P3 Robolectric | Aprobado con condiciones. Incorporado en la Fase 2 (justificación abajo) |
 | P4 Permiso para subir *workflows* | Resuelto: el *push* de `.github/workflows/ci.yml` funcionó |
-| P2, P5–P10 | Pendiente (se deciden en su fase) |
+| P6 Umbral del 80 % para aprobar un módulo | **Pendiente.** Era solo una propuesta del plan: no se aplica. La evaluación muestra el resultado, pero no «aprobado/no aprobado». |
+| P7 Versión de Java del contenido | **Pendiente.** Se usa Java 17 de forma provisional (`javac --release 17` en las pruebas). |
+| P8 Comprobación automática del Java del contenido | Implementada en la Fase 4 (`JavaContentCompilationTest`); pendiente de tu aprobación. |
+| P2, P5, P9, P10 | Pendiente (se deciden en su fase) |
 
 ---
 
@@ -118,7 +122,7 @@ Aporta valor comprobable: permite probar **Room real** (la restricción única d
 | Normalización (tokens de Java para huecos; saltos de línea y espacios finales para salidas) | ✔ | ✔ 5 pruebas | `CodeTextTest` |
 | Lectura del JSON con validación completa (errores acumulados, nunca excepciones por contenido) | ✔ | ✔ 22 pruebas | `LessonParserTest` |
 | Sesión de ejercicios y resumen (`LessonSession`, `SessionSummary`) | ✔ | ✔ 8 pruebas | `LessonSessionTest` |
-| Lección demostrativa `java.m02.l01` (borrador) | ✔ | ✔ 5 pruebas + `javac` | `DemoLessonContentTest`; verificación manual con `javac` 21 (ver abajo) |
+| Lección demostrativa `java.m02.l01` (borrador) | ✔ | ✔ 5 pruebas + `javac` | `DemoLessonContentTest` (sustituida en la Fase 4 por `ModuleContentTest`); verificación manual con `javac` 21 (ver abajo) |
 | Repositorio de contenido en `assets` (sin conexión) | ✔ | ✔ 4 pruebas | `AssetContentRepositoryTest` (Robolectric) |
 | Registro de intentos en `exercise_attempt` (sin guardar el texto de la respuesta) | ✔ | ✔ 1 prueba nueva | `RoomProgressRepositoryTest` |
 | `LessonViewModel` (carga, ejercicios, pistas, reintentos, resumen) | ✔ | ✔ 7 pruebas | `LessonViewModelTest` |
@@ -141,7 +145,7 @@ Aporta valor comprobable: permite probar **Room real** (la restricción única d
 | **F3-D2** | Tablas `exercise_progress` y `lesson_progress` sin uso (redundantes con `exercise_attempt`) | Eliminarlas con una migración 1→2 cuando haya que cambiar el esquema por otro motivo; mientras tanto, no se usan. |
 | **F3-D3 (= P2)** | Comportamiento de los borradores | Hoy se muestran **con la etiqueta «Borrador: contenido pendiente de revisión»** en todas las compilaciones (no hay otro contenido). Antes de publicar, decidir si las compilaciones de publicación los ocultan. |
 | **F3-D4** | Formato del contenido (JSON v1, `docs/contenido/GUIA_AUTORES.md`) y su lectura en `:core:domain` | Aprobar el formato como base de la Fase 4. |
-| **F3-D5 (= P8)** | Comprobación automática del Java del contenido | Añadir en CI la compilación de los ejemplos con `javac` antes de producir más contenido (Fase 4). |
+| **F3-D5 (= P8)** | Comprobación automática del Java del contenido | **Implementada en la Fase 4** (`JavaContentCompilationTest`); pendiente de tu aprobación. |
 
 ### Criterios de aceptación de la Fase 3 (según la autorización)
 
@@ -162,6 +166,97 @@ Aporta valor comprobable: permite probar **Room real** (la restricción única d
 | Aprobación del contenido | **Pendiente** (responsable) |
 
 
+## Fase 4 — Detalle
+
+### Revisión de entrada
+
+- Fase 3: aprobada por el responsable; último CI de la Fase 3 en verde (commit `d9b81ab`).
+- El PR #1 sigue abierto; la Fase 4 se desarrolla en la misma rama (`ccr-db27c4de-czvzgb`).
+
+### Discrepancias y decisiones tomadas (pendientes de tu aprobación)
+
+1. **Umbral del 80 % (P6):** no está aprobado. No se ha inventado: la evaluación no declara `passThreshold`, así que la app muestra el resultado (aciertos y porcentaje), pero **no** dice «aprobado» ni «suspendido», y no bloquea ni desbloquea nada. El motor ya admite un umbral opcional para cuando lo apruebes.
+2. **Versión de Java (P7):** no está aprobada. Los ejemplos se comprueban con `javac --release 17`; solo usan construcciones válidas desde Java 1.0 (`class`, `main`, `System.out.println`).
+3. **Renumeración:** la lección demostrativa `java.m02.l01` (borrador, nunca aprobada) pasa a ser `java.m01.l05`. Los intentos guardados con los ids antiguos quedan huérfanos; solo existían en pruebas, porque no hay usuarios.
+4. **Orden de las lecciones:** el orden es una recomendación. No se bloquean lecciones, porque el bloqueo dependería del umbral (P6).
+5. **La evaluación es una lección de tipo `assessment`:** reutiliza el motor, pero no permite reintentos ni pistas.
+6. **Persistencia sin cambio de esquema:**
+   - Una lección cuenta como completada cuando todos sus ejercicios tienen al menos un intento correcto en `exercise_attempt`. No se guarda aparte.
+   - El mejor resultado de la evaluación se guarda en la tabla existente `module_progress` (`bestAssessmentScore`, una fila por módulo).
+   - La base de datos sigue en la versión 1, sin migración.
+7. **Inicio:**
+   - La lista plana de lecciones de la Fase 3 se sustituye por una tarjeta «Continuar aprendiendo», que muestra la siguiente lección sin completar, la evaluación o «módulo completado».
+   - La tarjeta incluye el botón «Ver el módulo».
+   - Motivo: con 8 actividades, la lista ya no era manejable y duplicaba la pantalla del módulo.
+8. **Mapa:** deja de ser «Disponible en una próxima versión» y lista los módulos reales (hoy, uno).
+9. **Sin recompensas del RPG:** no se concede XP; el contador de XP sigue en 0.
+
+### Contenido en borrador (`app/src/main/assets/content/es/java/`)
+
+Las lecciones son, en este orden:
+
+| Id | Título | Ejercicios |
+|---|---|---|
+| `java.m01.l01` | ¿Qué es programar? | 5 |
+| `java.m01.l02` | Algoritmos: los pasos para resolver un problema | 6 |
+| `java.m01.l03` | Instrucciones y orden: la ejecución secuencial | 6 |
+| `java.m01.l04` | Java y la estructura de un programa | 6 |
+| `java.m01.l05` | El método main y System.out.println | 7 |
+| `java.m01.l06` | Código fuente, compilación y ejecución | 6 |
+| `java.m01.l07` | Leer y comprender programas sencillos | 6 |
+| `java.m01.eval` | Evaluación del módulo 1 (6 tipos de pregunta, sin pistas) | 10 |
+
+- **Módulo:** `java.m01` «Módulo 1: Introducción a la programación y tu primer programa en Java» (`modules/java.m01.json`).
+- **Estado:** todo es **DRAFT, pendiente de tu revisión** (52 ejercicios).
+- **Contenido de cada lección:**
+  - objetivos, explicación y un ejemplo comentado línea a línea;
+  - ejercicios de dificultad creciente;
+  - pistas opcionales, explicación y retroalimentación.
+- **Fuera del módulo:** no hay variables, bucles, métodos propios ni programación orientada a objetos.
+
+### Componentes
+
+| Componente | Implementado | Probado | Evidencia |
+|---|---|---|---|
+| Tipo de lección (`lesson`/`assessment`) y reglas de la evaluación en el parser (todas las preguntas puntúan, sin pistas, umbral opcional en (0, 1]) | ✔ | ✔ | `LessonParserTest` |
+| Módulos: `modules/*.json`, índice con `modules`, `ModuleAssembler` (lecciones existentes, del mismo módulo, sin duplicados, tipo correcto) | ✔ | ✔ | `LessonParserTest`, `ModuleContentTest` |
+| Evaluación en la sesión: una respuesta por pregunta, sin pistas, `AssessmentScore` (aciertos al primer intento; sin responder = fallo) | ✔ | ✔ | `LessonSessionTest`, `LessonViewModelTest` |
+| Progreso del módulo derivado (`ModuleProgress`: lecciones completadas, siguiente actividad) | ✔ | ✔ | `ModuleProgressTest` |
+| Comprobación del Java del contenido con `javac --release 17` (los ejemplos compilan; las salidas declaradas coinciden con las reales; `findError` falla justo en las líneas marcadas; los huecos rellenados y las líneas ordenadas compilan) | ✔ | ✔ | `JavaContentCompilationTest`. Se ejecuta en las pruebas JVM del dominio (contenedor y CI), **nunca en la app**. |
+| Coherencia del contenido real (borrador, ids, dificultad no decreciente, cada objetivo practicado) | ✔ | ✔ | `ModuleContentTest` |
+| Mejor resultado en `module_progress` (transacción de lectura y escritura; se conserva solo el mejor) | ✔ | CI | `RoomProgressRepositoryTest` |
+| Progreso tras cerrar y reabrir la base de datos (archivo real) | ✔ | CI | `RoomProgressRepositoryTest.elProgresoSeRecuperaAlCerrarYReabrirLaBaseDeDatos` |
+| Mapa → módulo → lecciones en orden → evaluación → resultado; tarjeta «Continuar» en Inicio | ✔ | CI | `LessonFlowTest`, `NavigationTest` |
+| El resultado de la evaluación se guarda una sola vez por sesión terminada | ✔ | CI | `LessonViewModelTest` |
+| Verificación en Android Studio / dispositivo | — | **Pendiente** (responsable) | `docs/CONFIGURACION_ENTORNO.md` §6 |
+
+**No implementado (fuera del alcance de la Fase 4):**
+- recompensas del RPG y XP;
+- bloqueo de lecciones o de módulos;
+- «aprobado/no aprobado» de la evaluación (depende de P6);
+- módulo 2;
+- variantes por edad del nuevo contenido;
+- `STRUCTURAL_CODE`;
+- cualquier ejecución de Java en la app.
+
+### Criterios de aceptación de la Fase 4 (según la autorización)
+
+| Requisito | Estado |
+|---|---|
+| Lecciones con objetivos, explicación, ejemplo comentado, ejercicios graduados, pistas y retroalimentación | ✔ Validado por el parser y `ModuleContentTest` |
+| Ejemplos Java válidos y comprobados con herramientas | ✔ `JavaContentCompilationTest` (`javac --release 17`) |
+| Contenido en borrador | ✔ `reviewStatus: DRAFT` en el módulo y en las 8 lecciones |
+| Evaluación con varios tipos de pregunta y corrección coherente | ✔ 6 tipos; se usa el mismo validador que en las lecciones |
+| Resultado final a partir de las respuestas comprobadas; respuestas incompletas | ✔ Una respuesta incompleta no cuenta como intento; una pregunta sin responder cuenta como fallo |
+| Guardar el resultado de la sesión | ✔ Mejor resultado por módulo (`module_progress`) |
+| Regla del 80 % | **No aplicada:** P6 no está aprobada |
+| Sin recompensas del RPG | ✔ |
+| Navegación completa y retomar sin perder el progreso | ✔ CI (Robolectric); falta la revisión manual |
+| Sin botones falsos | ✔ Todos los botones nuevos llevan a una pantalla real |
+| Sin migraciones innecesarias; sin completar dos veces; progreso tras reiniciar | ✔ Esquema v1 sin cambios; resultados derivados o del tipo «mejor de»; prueba de reapertura |
+| Verificación manual en Android Studio | **Pendiente** (responsable) |
+| Aprobación del contenido | **Pendiente** (responsable) |
+
 ## Pruebas ejecutadas
 
 | Fecha | Dónde | Prueba | Resultado |
@@ -180,6 +275,7 @@ Aporta valor comprobable: permite probar **Room real** (la restricción única d
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con el motor de la Fase 3 | **72/72 superadas** |
 | 2026-10-13 | Contenedor | `javac`/`java` 21 sobre los 5 programas de la lección demostrativa | Salidas y error de compilación coinciden con el contenido |
 | 2026-10-13 | CI 38428986983 (commit `63c4a71`) | Linux + Windows | **Verde: 102/102 pruebas** (72 dominio, 30 app); lint: 0 errores, 1 aviso (`OldTargetApi`); APK generado; esquema de Room sin cambios |
+| 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 4, incluida la compilación con `javac --release 17` del contenido | **97/97 superadas** |
 | 2026-10-12 | CI 38319271182 | Linux + Windows | **Verde en ambos** tras usar `OkioStorage` en la prueba de DataStore (la app sigue usando `FileStorage`, correcto en Android). |
 
 ## Errores conocidos
@@ -199,12 +295,13 @@ Aporta valor comprobable: permite probar **Room real** (la restricción única d
 
 ## Acciones pendientes del responsable
 
-1. Verificar la Fase 3 en Android Studio siguiendo `docs/CONFIGURACION_ENTORNO.md` §5.
-2. Revisar el contenido en borrador `java.m02.l01` y aprobarlo o pedir cambios (D7).
-3. Responder las decisiones F3-D1 a F3-D5.
-4. Revisar y fusionar el *pull request* #1 (contiene las fases 2 y 3).
-5. Borrar la rama `Main` duplicada y cambiar la rama por defecto a `main` (`docs/FLUJO_DE_TRABAJO.md`).
+1. Verificar la Fase 4 en Android Studio siguiendo `docs/CONFIGURACION_ENTORNO.md` §6.
+2. Revisar el contenido en borrador del módulo `java.m01` (7 lecciones y la evaluación) y aprobarlo o pedir cambios (D7).
+3. Decidir P6 (umbral de aprobación), P7 (versión de Java) y las decisiones 3–8 de «Fase 4 — Detalle».
+4. Responder las decisiones F3-D1 a F3-D5 que siguen abiertas.
+5. Revisar y fusionar el *pull request* #1 (contiene las fases 2, 3 y 4).
+6. Borrar la rama `Main` duplicada y cambiar la rama por defecto a `main` (`docs/FLUJO_DE_TRABAJO.md`).
 
 ## Próximos pasos autorizados
 
-Ninguno. La Fase 4 espera autorización explícita.
+Ninguno. La Fase 5 espera autorización explícita.

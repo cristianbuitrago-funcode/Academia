@@ -1,4 +1,4 @@
-# Funcode Academy: componentes del proyecto (fases 2 y 3)
+# Funcode Academy: componentes del proyecto (fases 2 a 4)
 
 Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase.
 
@@ -30,7 +30,9 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `lesson/AnswerValidator.kt` | **Comprueba** respuestas con las reglas del contenido. Función pura: no ejecuta código. |
 | `lesson/CodeText.kt` | Normaliza texto: *tokens* de Java para los huecos y salidas de programa sin espacios finales. |
 | `lesson/LessonParser.kt`, `lesson/json/` | Lee el JSON del contenido y lo valida por completo; devuelve todos los errores en lugar de fallar. |
-| `lesson/LessonSession.kt` | Motor de la sesión (ejercicio actual, pistas, intentos, resumen) y contrato `ContentRepository`. |
+| `lesson/LessonSession.kt` | Motor de la sesión (ejercicio actual, pistas, intentos, resumen) y contrato `ContentRepository`. En una evaluación: una respuesta por pregunta, sin pistas y resultado `AssessmentScore`. |
+| `lesson/Module.kt` | Módulo del curso (`CourseModule`) y `ModuleAssembler`, que lo arma a partir de su definición y comprueba sus lecciones. |
+| `progress/ModuleProgress.kt` | Progreso de un módulo **derivado** de los ejercicios resueltos y del mejor resultado: lecciones completadas y siguiente actividad. |
 
 ## `:app` (Android)
 
@@ -45,18 +47,21 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `data/progress/RoomProgressRepository.kt` | Implementa `ProgressRepository` con Room. |
 | `data/settings/DataStoreSettingsRepository.kt` | Implementa `SettingsRepository` con DataStore (archivo `settings.preferences_pb`). |
 | `data/content/AssetContentRepository.kt` | Implementa `ContentRepository` leyendo `assets/content/es/java` (sin conexión). |
-| `data/local/ExerciseAttemptDao.kt` | Inserta y consulta intentos en `exercise_attempt`. |
-| `assets/content/es/java/` | Contenido educativo en JSON (índice + una lección por archivo). Formato: `docs/contenido/GUIA_AUTORES.md`. |
+| `data/local/ExerciseAttemptDao.kt` | Inserta y consulta intentos en `exercise_attempt`; también da los ejercicios resueltos. |
+| `data/local/ModuleProgressDao.kt` | Guarda el mejor resultado de la evaluación de cada módulo en `module_progress` (transacción de lectura y escritura). |
+| `ui/progress/LearningProgress.kt` | Combina módulos, ejercicios resueltos y resultados en el progreso de cada módulo. |
+| `ui/screens/module/*` | Mapa (lista de módulos) y pantalla de módulo (lecciones en orden y evaluación). |
+| `assets/content/es/java/` | Contenido educativo en JSON (índice, módulos y una lección por archivo). Formato: `docs/contenido/GUIA_AUTORES.md`. |
 | `ui/screens/lesson/LessonViewModel.kt` | Carga la lección, mantiene la sesión del dominio y registra intentos. |
-| `ui/screens/lesson/LessonScreen.kt` | Introducción (objetivos, teoría, ejemplo), ejercicio, retroalimentación y resumen. |
+| `ui/screens/lesson/LessonScreen.kt` | Introducción (objetivos, teoría, ejemplo), ejercicio, retroalimentación y resumen (con el resultado si es una evaluación). |
 | `ui/screens/lesson/ExerciseInputs.kt` | Controles de respuesta de cada tipo (opciones, huecos, flechas para ordenar, salida, líneas, desplegables). |
 | `ui/components/CodeBlock.kt`, `DraftBanner.kt` | Bloque de código monoespaciado con números de línea; aviso de borrador. |
 | `ui/theme/Theme.kt` | Tema Material 3 claro y oscuro (paleta provisional, P10). |
 | `ui/navigation/TopLevelDestination.kt` | Rutas tipadas y destinos de la barra inferior. |
 | `ui/FuncodeAppUi.kt` | `Scaffold` con la barra de navegación y el `NavHost` que cambia de pantalla. |
-| `ui/screens/home/*` | Inicio: XP total **leído de Room** (hoy siempre 0: los ejercicios aún no dan XP) y lista de lecciones disponibles. |
+| `ui/screens/home/*` | Inicio: XP total **leído de Room** (hoy siempre 0: los ejercicios aún no dan XP) y tarjeta «Continuar aprendiendo» con la siguiente actividad. |
 | `ui/screens/settings/*` | Ajustes: elegir el público (adolescente/adulto), guardado en DataStore. |
-| `ui/screens/map`, `ui/screens/profile` | Pantallas pendientes: muestran "Disponible en una próxima versión". |
+| `ui/screens/profile` | Pantalla pendiente: muestra "Disponible en una próxima versión". |
 | `ui/components/ComingSoon.kt` | Componente reutilizable para ese estado vacío. |
 | `res/values/strings.xml` | Todos los textos visibles, en español. |
 | `res/xml/*backup*` | Reglas de copia de seguridad: solo la base de datos y los ajustes. |
@@ -71,12 +76,14 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | Ubicación | Qué comprueba | Cómo se ejecuta |
 |---|---|---|
 | `core/domain/src/test` | Reglas del dominio (JUnit puro) | `./gradlew :core:domain:test` |
-| `app/src/test/.../data/RoomProgressRepositoryTest.kt` | Room real en memoria: el XP no se duplica | Robolectric: `./gradlew :app:testDebugUnitTest` |
+| `app/src/test/.../data/RoomProgressRepositoryTest.kt` | Room real: el XP no se duplica, mejor resultado de la evaluación, progreso tras cerrar y reabrir la base de datos | Robolectric: `./gradlew :app:testDebugUnitTest` |
 | `app/src/test/.../data/DataStoreSettingsRepositoryTest.kt` | El ajuste persiste al cerrar y reabrir DataStore | JVM: misma tarea |
 | `app/src/test/.../ui/NavigationTest.kt` | Navegación, botón Atrás, recreación y ajustes en la interfaz | Robolectric + Compose: misma tarea |
 | `core/domain/.../lesson/*Test.kt` | Validadores, parser, sesión y coherencia del contenido real | `./gradlew :core:domain:test` |
+| `core/domain/.../lesson/JavaContentCompilationTest.kt` | Compila con `javac --release 17` el Java del contenido y compara las salidas declaradas (en la JVM de las pruebas, no en la app) | `./gradlew :core:domain:test` |
+| `core/domain/.../progress/ModuleProgressTest.kt` | Lecciones completadas y siguiente actividad | `./gradlew :core:domain:test` |
 | `app/src/test/.../data/AssetContentRepositoryTest.kt` | Lectura del contenido real de `assets` | Robolectric |
 | `app/src/test/.../ui/lesson/LessonViewModelTest.kt` | Recorrido completo de la lección y registro de intentos | JVM |
-| `app/src/test/.../ui/lesson/LessonFlowTest.kt` | Inicio → lección → ejercicio → retroalimentación en la interfaz | Robolectric + Compose |
+| `app/src/test/.../ui/lesson/LessonFlowTest.kt` | Inicio/Mapa → módulo → lección o evaluación → ejercicio → retroalimentación | Robolectric + Compose |
 
 Robolectric simula Android en la JVM: es rápido, pero **no sustituye** la prueba en emulador o dispositivo.

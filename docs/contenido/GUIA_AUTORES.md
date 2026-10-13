@@ -4,11 +4,23 @@ El contenido vive en `app/src/main/assets/content/<idioma>/<lenguaje>/`:
 
 ```
 content/es/java/
-├── index.json                    {"schemaVersion": 1, "lessons": ["lessons/java.m02.l01.json"]}
-└── lessons/java.m02.l01.json     una lección por archivo
+├── index.json                  {"schemaVersion": 1, "modules": ["modules/java.m01.json"], "lessons": ["lessons/java.m01.l01.json", …]}
+├── modules/java.m01.json       un módulo por archivo
+└── lessons/java.m01.l01.json   una lección (o evaluación) por archivo
 ```
 
-Una lección que no cumpla las reglas **no se muestra**: la app enseña un aviso en lugar de cerrarse, y la prueba `DemoLessonContentTest` (en `:core:domain`) falla con la lista completa de problemas. Para comprobar un archivo basta con ejecutar `./gradlew :core:domain:test`.
+Una lección o un módulo que no cumpla las reglas **no se muestra**: la app enseña un aviso en lugar de cerrarse. Las pruebas `ModuleContentTest` y `JavaContentCompilationTest` (en `:core:domain`) fallan con la lista completa de problemas. Para comprobar el contenido basta con ejecutar `./gradlew :core:domain:test`.
+
+## Campos del módulo
+
+| Campo | Obligatorio | Reglas |
+|---|---|---|
+| `schemaVersion` | Sí | `1` |
+| `id` | Sí | Estable (p. ej. `java.m01`). |
+| `order` | Sí | Entero ≥ 1; orden en el mapa. |
+| `reviewStatus`, `title`, `description` | Sí | Como en la lección. |
+| `lessons` | Sí | Ids de las lecciones **en el orden recomendado**. Deben existir, tener `moduleId` igual al id del módulo y `kind` = `lesson`. |
+| `assessment` | No | Id de la evaluación del módulo (`kind` = `assessment`). |
 
 ## Campos de la lección
 
@@ -23,7 +35,10 @@ Una lección que no cumpla las reglas **no se muestra**: la app enseña un aviso
 | `objectives` | Sí | Lista de `{id, text}`. Cada objetivo debe practicarse en al menos un ejercicio. |
 | `presentations` | Sí | Mapa de variante → secciones. `default` es obligatoria; `kids`, `teens` y `adults` son opcionales y solo cambian la presentación, nunca los objetivos ni los ejercicios. |
 | `exercises` | Sí | Lista ordenada (de menor a mayor dificultad). |
-| `assessment` | No | `{exerciseIds, passThreshold}`: fracción (0–1] de esos ejercicios que hay que resolver al primer intento. |
+| `kind` | No | `lesson` (por defecto) o `assessment` (evaluación del módulo). |
+| `assessment` | Solo en evaluaciones | `{exerciseIds, passThreshold?}`. `exerciseIds` debe incluir **todos** los ejercicios. `passThreshold` (fracción en (0, 1] de respuestas correctas al primer intento) es opcional y **no se debe escribir mientras P6 no esté aprobada**: sin él, la app muestra el resultado, pero no «aprobado». |
+
+**Evaluaciones:** una sola respuesta por pregunta y sin pistas (el parser rechaza `hints` en una evaluación). Una pregunta sin responder cuenta como fallo.
 
 Secciones: `{"type":"text","text":…}`, `{"type":"callout","text":…}` y `{"type":"code","code":…,"lineComments":[{"line":1,"comment":…}]}` (líneas numeradas desde 1).
 
@@ -47,6 +62,6 @@ Secciones: `{"type":"text","text":…}`, `{"type":"callout","text":…}` y `{"ty
 
 ## Antes de enviar un bloque a revisión (D7)
 
-1. Todo el código Java debe compilar (o fallar exactamente donde dice `findError`) y producir la salida declarada. Mientras la comprobación automática (P8) no exista, verifícalo con `javac`/`java` y anótalo en `docs/ESTADO_PROYECTO.md`.
+1. Todo el código Java debe compilar (o fallar exactamente donde dice `findError`) y producir la salida declarada. `JavaContentCompilationTest` lo comprueba automáticamente con `javac --release 17` (versión provisional, P7) durante las pruebas del dominio, en el contenedor y en CI. Esto ocurre en la JVM de las pruebas, **no en la app**. Solo se compila el código que contiene `class X`; el pseudocódigo (p. ej. `mostrar "Hola"`) se ignora.
 2. `reviewStatus` = `DRAFT`.
 3. `./gradlew :core:domain:test` en verde.

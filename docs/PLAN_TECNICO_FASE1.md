@@ -410,3 +410,8 @@ Los criterios 17–18 dependen de una verificación del responsable; hasta enton
 | 2026-10-13 | Lectura y validación del JSON del contenido en `:core:domain` (kotlinx.serialization) | Es Kotlin puro y comprobable sin Android; la app solo aporta el texto leído de `assets`. |
 | 2026-10-13 | Solo se registran intentos (`exercise_attempt`); resuelto/no resuelto se deduce | Evita datos redundantes; sin cambios de esquema (F3-D2 para las tablas sin uso). |
 | 2026-10-13 | Ordenar líneas se valida por el texto resultante, no por índices | Dos líneas idénticas (p. ej. `}`) son intercambiables sin cambiar el programa. |
+| 2026-10-13 | Fase 4: la evaluación es una lección con `kind: assessment` (una respuesta por pregunta, sin pistas) | Reutiliza el motor y el validador; la corrección es la misma que en las lecciones. |
+| 2026-10-13 | Umbral de aprobación opcional en el contenido; no se declara mientras P6 esté pendiente | No se inventa una regla educativa no aprobada; se muestra el resultado sin «aprobado». |
+| 2026-10-13 | Progreso del módulo derivado de `exercise_attempt`; mejor resultado en `module_progress` | Sin cambio de esquema ni migración; repetir una actividad no duplica nada. |
+| 2026-10-13 | `JavaContentCompilationTest` con `javac --release 17` (P7 provisional) en las pruebas del dominio | Cumple P8 sin herramientas externas; el código se compila en la JVM de las pruebas, nunca en la app. |
+| 2026-10-13 | Inicio muestra una tarjeta «Continuar» en lugar de la lista de lecciones; Mapa lista los módulos | Con 8 actividades, la lista plana dejaba de ser manejable y duplicaba la pantalla del módulo. |
