@@ -2,6 +2,7 @@ package com.funcode.academy.ui.lesson
 
 import com.funcode.academy.domain.lesson.Answer
 import com.funcode.academy.domain.lesson.AnswerResult
+import com.funcode.academy.domain.lesson.AssessmentScore
 import com.funcode.academy.testing.DemoContent
 import com.funcode.academy.testing.FakeContentRepository
 import com.funcode.academy.testing.FakeProgressRepository
@@ -31,8 +32,26 @@ class LessonViewModelTest {
 
     @After fun tearDown() = Dispatchers.resetMain()
 
+    private val assessment = DemoContent.assessment()
+
     private fun viewModel(id: String = lesson.id) =
-        LessonViewModel(id, FakeContentRepository(listOf(lesson)), progress, FakeSettingsRepository())
+        LessonViewModel(id, FakeContentRepository(listOf(lesson, assessment)), progress, FakeSettingsRepository())
+
+    /** Hace la evaluación respondiendo bien a las [correctCount] primeras preguntas y mal al resto. */
+    private fun takeAssessment(vm: LessonViewModel, correctCount: Int) {
+        vm.startExercises()
+        assessment.exercises.forEachIndexed { index, exercise ->
+            val content = exercise.content
+            vm.updateDraft(if (index < correctCount) DemoContent.correctAnswerFor(content) else DemoContent.wrongAnswerFor(content))
+            vm.check()
+            if (index < correctCount) {
+                assertEquals(exercise.id, AnswerResult.Correct, vm.exercising.feedback)
+            } else {
+                assertTrue(exercise.id, vm.exercising.feedback is AnswerResult.Incorrect)
+            }
+            vm.next()
+        }
+    }
 
     private val LessonViewModel.exercising get() = uiState.value as LessonUiState.Exercising
 
@@ -106,8 +125,66 @@ class LessonViewModelTest {
 
     @Test
     fun elOrdenInicialDeLasLineasNoEsElCorrecto() {
-        val order = LessonViewModel.shuffledOrder("java.m02.l01.e05", 6)
+        val order = LessonViewModel.shuffledOrder("java.m01.l05.e05", 6)
         assertEquals((0..5).toList(), order.sorted())
         assertNotEquals((0..5).toList(), order)
+    }
+
+    @Test
+    fun laEvaluacionCalculaElResultadoYLoGuardaUnaSolaVez() {
+        val vm = viewModel(assessment.id)
+        takeAssessment(vm, correctCount = 7)
+
+        val summary = (vm.uiState.value as LessonUiState.Finished).summary
+        assertEquals(AssessmentScore(correct = 7, total = 10), summary.assessmentScore)
+        assertEquals(70, summary.assessmentScore?.percent)
+        // Sin umbral aprobado (P6) no se decide si se aprueba.
+        assertEquals(null, summary.assessmentPassed)
+        assertEquals(listOf("java.m01" to AssessmentScore(7, 10)), progress.assessmentResults)
+
+        vm.next() // pulsar de nuevo en el resumen no vuelve a guardar
+        assertEquals(1, progress.assessmentResults.size)
+    }
+
+    @Test
+    fun enLaEvaluacionNoSePuedeReintentarNiPedirPistas() {
+        val vm = viewModel(assessment.id)
+        vm.startExercises()
+        assertEquals(false, vm.exercising.session.allowsRetries)
+        vm.revealHint()
+        assertEquals(0, vm.exercising.session.currentProgress.hintsRevealed)
+
+        val first = assessment.exercises.first()
+        vm.updateDraft(DemoContent.wrongAnswerFor(first.content))
+        vm.check()
+        assertTrue(vm.exercising.feedback is AnswerResult.Incorrect)
+        // Cambiar la respuesta y comprobar otra vez no cuenta como un nuevo intento.
+        vm.updateDraft(DemoContent.correctAnswerFor(first.content))
+        vm.check()
+        assertEquals(1, progress.attempts.size)
+        assertEquals(false, progress.attempts.single().correct)
+    }
+
+    @Test
+    fun unaPreguntaSinResponderCuentaComoFalloSinRegistrarIntento() {
+        val vm = viewModel(assessment.id)
+        vm.startExercises()
+        vm.check() // sin responder: incompleta, no se registra
+        assertTrue(vm.exercising.feedback is AnswerResult.Incomplete)
+        repeat(assessment.exercises.size) { vm.next() }
+
+        val summary = (vm.uiState.value as LessonUiState.Finished).summary
+        assertEquals(AssessmentScore(correct = 0, total = 10), summary.assessmentScore)
+        assertTrue(progress.attempts.isEmpty())
+        assertEquals(listOf("java.m01" to AssessmentScore(0, 10)), progress.assessmentResults)
+    }
+
+    @Test
+    fun unaLeccionNormalNoGuardaResultadoDeEvaluacion() {
+        val vm = viewModel()
+        vm.startExercises()
+        repeat(lesson.exercises.size) { vm.next() }
+        assertEquals(null, (vm.uiState.value as LessonUiState.Finished).summary.assessmentScore)
+        assertTrue(progress.assessmentResults.isEmpty())
     }
 }

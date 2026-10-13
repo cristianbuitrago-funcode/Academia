@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.funcode.academy.data.content.AssetContentRepository
+import com.funcode.academy.domain.lesson.LessonKind
 import com.funcode.academy.domain.lesson.LessonLoadResult
+import com.funcode.academy.domain.lesson.ModuleLoadResult
 import com.funcode.academy.domain.lesson.ReviewStatus
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -19,17 +21,37 @@ class AssetContentRepositoryTest {
     private val repository = AssetContentRepository(ApplicationProvider.getApplicationContext<Context>().assets)
 
     @Test
-    fun listaLaLeccionDemostrativaComoBorrador() = runTest {
-        val lesson = repository.listLessons().single { it.id == "java.m02.l01" }
-        assertEquals(ReviewStatus.DRAFT, lesson.reviewStatus)
-        assertEquals(7, lesson.exerciseCount)
+    fun elModulo1TieneSieteLeccionesEnOrdenYUnaEvaluacion() = runTest {
+        val module = repository.listModules().single()
+        assertEquals("java.m01", module.id)
+        assertEquals(ReviewStatus.DRAFT, module.reviewStatus)
+        assertEquals((1..7).map { "java.m01.l0$it" }, module.lessons.map { it.id })
+        assertTrue(module.lessons.all { it.kind == LessonKind.LESSON && it.reviewStatus == ReviewStatus.DRAFT })
+        assertEquals("java.m01.eval", module.assessment?.id)
+        assertEquals(LessonKind.ASSESSMENT, module.assessment?.kind)
+        assertEquals(10, module.assessment?.exerciseCount)
+    }
+
+    @Test
+    fun cargaElModuloPorSuId() = runTest {
+        val result = repository.loadModule("java.m01")
+        assertTrue(result is ModuleLoadResult.Loaded)
+        assertEquals(ModuleLoadResult.NotFound, repository.loadModule("java.m99"))
     }
 
     @Test
     fun cargaLaLeccionCompleta() = runTest {
-        val result = repository.loadLesson("java.m02.l01")
+        val result = repository.loadLesson("java.m01.l05")
         assertTrue(result is LessonLoadResult.Loaded)
         assertEquals(7, (result as LessonLoadResult.Loaded).lesson.exercises.size)
+    }
+
+    @Test
+    fun cargaLaEvaluacionSinUmbralAprobado() = runTest {
+        val lesson = (repository.loadLesson("java.m01.eval") as LessonLoadResult.Loaded).lesson
+        assertEquals(LessonKind.ASSESSMENT, lesson.kind)
+        // P6 (umbral del 80 %) no está aprobado: el contenido no declara umbral.
+        assertEquals(null, lesson.assessment?.passThreshold)
     }
 
     @Test
@@ -38,9 +60,16 @@ class AssetContentRepositoryTest {
     }
 
     @Test
+    fun laLeccionAntiguaRenumeradaYaNoExiste() = runTest {
+        assertEquals(LessonLoadResult.NotFound, repository.loadLesson("java.m02.l01"))
+    }
+
+    @Test
     fun unaRutaDeContenidoInexistenteNoRompeLaApp() = runTest {
         val empty = AssetContentRepository(ApplicationProvider.getApplicationContext<Context>().assets, basePath = "content/xx/nada")
         assertTrue(empty.listLessons().isEmpty())
-        assertEquals(LessonLoadResult.NotFound, empty.loadLesson("java.m02.l01"))
+        assertTrue(empty.listModules().isEmpty())
+        assertEquals(LessonLoadResult.NotFound, empty.loadLesson("java.m01.l01"))
+        assertEquals(ModuleLoadResult.NotFound, empty.loadModule("java.m01"))
     }
 }

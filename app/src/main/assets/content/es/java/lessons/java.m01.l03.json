@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.l03",
+  "moduleId": "java.m01",
+  "languageId": "java",
+  "locale": "es",
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "title": "Instrucciones y orden: la ejecución secuencial",
+  "description": "Sigue instrucciones de arriba abajo y comprueba cómo el orden decide el resultado.",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "Seguir instrucciones en orden, de arriba abajo, y predecir su resultado."
+    },
+    {
+      "id": "o2",
+      "text": "Explicar que cambiar el orden de las instrucciones puede cambiar el resultado."
+    }
+  ],
+  "presentations": {
+    "default": [
+      {
+        "type": "text",
+        "text": "Un programa se ejecuta de forma secuencial: primero la primera instrucción, después la segunda, y así hasta la última. Ninguna se salta y ninguna se adelanta."
+      },
+      {
+        "type": "text",
+        "text": "En esta lección usaremos pseudocódigo: instrucciones escritas en español que imitan a un programa. La instrucción mostrar escribe en pantalla el texto que va entre comillas, en una línea nueva."
+      },
+      {
+        "type": "code",
+        "code": "mostrar \"Preparados\"\nmostrar \"Listos\"\nmostrar \"¡Ya!\"",
+        "lineComments": [
+          {
+            "line": 1,
+            "comment": "Primera instrucción: se ejecuta antes que las demás."
+          },
+          {
+            "line": 2,
+            "comment": "Se ejecuta cuando termina la primera."
+          },
+          {
+            "line": 3,
+            "comment": "Última instrucción; después, el programa termina."
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "text": "Resultado: tres líneas en el mismo orden que las instrucciones: Preparados, Listos y ¡Ya!. Si cambiáramos el orden de las instrucciones, cambiaría el orden de las líneas."
+      },
+      {
+        "type": "callout",
+        "text": "El pseudocódigo no es un lenguaje real: sirve para pensar. En las próximas lecciones escribirás lo mismo en Java."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "java.m01.l03.e01",
+      "type": "trueFalse",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 1,
+      "prompt": "¿Verdadero o falso?",
+      "statement": "El ordenador ejecuta las instrucciones de un programa en el orden en que están escritas, de arriba abajo.",
+      "correct": true,
+      "hints": [
+        "Piensa en el ejemplo «Preparados, Listos, ¡Ya!»."
+      ],
+      "explanation": "Verdadero. Las instrucciones se ejecutan una tras otra, en el orden en que están escritas.",
+      "incorrectFeedback": "Repasa la primera frase de la explicación."
+    },
+    {
+      "id": "java.m01.l03.e02",
+      "type": "predictOutput",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 2,
+      "prompt": "¿Qué mostraría este programa? Escribe una línea por cada instrucción.",
+      "code": "mostrar \"Uno\"\nmostrar \"Dos\"\nmostrar \"Tres\"",
+      "acceptedOutputs": [
+        "Uno\nDos\nTres"
+      ],
+      "hints": [
+        "Cada instrucción mostrar escribe una línea nueva.",
+        "No escribas las comillas."
+      ],
+      "explanation": "Cada mostrar escribe su texto en una línea nueva, en orden: Uno, Dos y Tres.",
+      "incorrectFeedback": "Escribe solo el texto que está entre comillas, una línea por instrucción."
+    },
+    {
+      "id": "java.m01.l03.e03",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 2,
+      "prompt": "Un programa tiene dos instrucciones: primero mostrar \"Hola\" y después mostrar \"Adiós\". Si las intercambias, ¿qué ocurre?",
+      "options": [
+        {
+          "text": "Se muestra primero «Adiós» y después «Hola»"
+        },
+        {
+          "text": "Se muestra lo mismo que antes",
+          "feedback": "El orden de las instrucciones decide el orden del resultado."
+        },
+        {
+          "text": "Solo se muestra «Hola»",
+          "feedback": "Las dos instrucciones se siguen ejecutando; solo cambia su orden."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "hints": [
+        "Sigue las instrucciones intercambiadas de arriba abajo."
+      ],
+      "explanation": "Al intercambiar las instrucciones también se intercambia el resultado: se muestra primero «Adiós» y después «Hola».",
+      "incorrectFeedback": "El orden de las instrucciones decide el orden del resultado."
+    },
+    {
+      "id": "java.m01.l03.e04",
+      "type": "orderLines",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 3,
+      "prompt": "Ordena las instrucciones para que el programa muestre, en este orden: Lunes, Martes y Miércoles.",
+      "lines": [
+        "mostrar \"Lunes\"",
+        "mostrar \"Martes\"",
+        "mostrar \"Miércoles\""
+      ],
+      "hints": [
+        "La primera línea del resultado sale de la primera instrucción."
+      ],
+      "explanation": "Como se ejecutan de arriba abajo, la instrucción que muestra «Lunes» debe ir primero.",
+      "incorrectFeedback": "El resultado aparece en el mismo orden que las instrucciones."
+    },
+    {
+      "id": "java.m01.l03.e05",
+      "type": "predictOutput",
+      "objectiveIds": [
+        "o1",
+        "o2"
+      ],
+      "difficulty": 3,
+      "prompt": "¿Qué mostraría este programa? Ojo: el ordenador no reordena las instrucciones.",
+      "code": "mostrar \"Paso 2\"\nmostrar \"Paso 1\"\nmostrar \"Paso 3\"",
+      "acceptedOutputs": [
+        "Paso 2\nPaso 1\nPaso 3"
+      ],
+      "hints": [
+        "Sigue las instrucciones de arriba abajo, aunque los textos parezcan desordenados."
+      ],
+      "explanation": "El ordenador sigue el orden escrito aunque los textos parezcan desordenados: Paso 2, Paso 1 y Paso 3.",
+      "incorrectFeedback": "Sigue las instrucciones exactamente como están."
+    },
+    {
+      "id": "java.m01.l03.e06",
+      "type": "fillInBlanks",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 3,
+      "prompt": "Completa el programa para que muestre «Buenos» y, en la línea siguiente, «días».",
+      "template": "mostrar \"Buenos\"\n{{0}} \"días\"",
+      "blanks": [
+        [
+          "mostrar"
+        ]
+      ],
+      "hints": [
+        "Usa la misma instrucción que en la primera línea."
+      ],
+      "explanation": "La instrucción mostrar escribe «días» en una línea nueva, después de «Buenos».",
+      "incorrectFeedback": "Necesitas la misma instrucción que en la primera línea."
+    }
+  ]
+}

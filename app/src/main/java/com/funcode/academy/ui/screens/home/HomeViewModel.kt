@@ -5,16 +5,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.funcode.academy.domain.lesson.ContentRepository
-import com.funcode.academy.domain.lesson.LessonSummary
+import com.funcode.academy.domain.progress.ModuleProgress
 import com.funcode.academy.domain.progress.ProgressRepository
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.funcode.academy.ui.progress.observeModulesProgress
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
-/** Expone a la pantalla de Inicio el XP total y las lecciones disponibles. */
+/** Expone a la pantalla de Inicio el XP total y el progreso de los módulos. */
 class HomeViewModel(
     progressRepository: ProgressRepository,
     contentRepository: ContentRepository,
@@ -24,14 +22,9 @@ class HomeViewModel(
     val totalXp: StateFlow<Int?> = progressRepository.observeTotalXp()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), initialValue = null)
 
-    private val _lessons = MutableStateFlow<List<LessonSummary>?>(null)
-
     /** `null` mientras se lee el contenido. */
-    val lessons: StateFlow<List<LessonSummary>?> = _lessons.asStateFlow()
-
-    init {
-        viewModelScope.launch { _lessons.value = contentRepository.listLessons() }
-    }
+    val modules: StateFlow<List<ModuleProgress>?> = observeModulesProgress(contentRepository, progressRepository)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), initialValue = null)
 
     companion object {
         fun factory(progressRepository: ProgressRepository, contentRepository: ContentRepository) = viewModelFactory {

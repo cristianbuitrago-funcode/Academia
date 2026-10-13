@@ -15,6 +15,8 @@ internal data class LessonJson(
     val locale: String? = null,
     val version: Int? = null,
     val reviewStatus: String? = null,
+    /** "lesson" (por defecto) o "assessment". */
+    val kind: String? = null,
     val title: String? = null,
     val description: String? = null,
     val objectives: List<ObjectiveJson>? = null,
@@ -76,4 +78,20 @@ internal data class ExerciseJson(
 )
 
 @Serializable
-internal data class LessonIndexJson(val schemaVersion: Int? = null, val lessons: List<String>? = null)
+internal data class LessonIndexJson(
+    val schemaVersion: Int? = null,
+    val modules: List<String>? = null,
+    val lessons: List<String>? = null,
+)
+
+@Serializable
+internal data class ModuleJson(
+    val schemaVersion: Int? = null,
+    val id: String? = null,
+    val order: Int? = null,
+    val reviewStatus: String? = null,
+    val title: String? = null,
+    val description: String? = null,
+    val lessons: List<String>? = null,
+    val assessment: String? = null,
+)

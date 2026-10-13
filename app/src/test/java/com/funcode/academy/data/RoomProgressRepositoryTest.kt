@@ -5,8 +5,10 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.funcode.academy.data.local.FuncodeDatabase
+import com.funcode.academy.data.local.ModuleProgressDao
 import com.funcode.academy.data.local.XpLedgerEntity
 import com.funcode.academy.data.progress.RoomProgressRepository
+import com.funcode.academy.domain.lesson.AssessmentScore
 import com.funcode.academy.domain.progress.ExerciseAttempt
 import com.funcode.academy.domain.progress.XpAward
 import com.funcode.academy.domain.progress.XpAwardResult
@@ -35,13 +37,16 @@ class RoomProgressRepositoryTest {
         database = Room.inMemoryDatabaseBuilder(context, FuncodeDatabase::class.java)
             .allowMainThreadQueries()
             .build()
-        repository = RoomProgressRepository(database.xpLedgerDao(), database.exerciseAttemptDao(), clock = { 1_000L })
+        repository = repositoryFor(database)
     }
 
     @After
     fun tearDown() {
         database.close()
     }
+
+    private fun repositoryFor(db: FuncodeDatabase) =
+        RoomProgressRepository(db.xpLedgerDao(), db.exerciseAttemptDao(), db.moduleProgressDao(), clock = { 1_000L })
 
     @Test
     fun sinActividadesElXpTotalEsCero() = runTest {
@@ -88,13 +93,65 @@ class RoomProgressRepositoryTest {
 
     @Test
     fun losIntentosSeGuardanSinElTextoDeLaRespuesta() = runTest {
-        repository.recordAttempt(ExerciseAttempt("java.m02.l01.e01", correct = false, hintsUsed = 1))
-        repository.recordAttempt(ExerciseAttempt("java.m02.l01.e01", correct = true, hintsUsed = 1))
-        repository.recordAttempt(ExerciseAttempt("java.m02.l01.e02", correct = true, hintsUsed = 0))
+        repository.recordAttempt(ExerciseAttempt("java.m01.l05.e01", correct = false, hintsUsed = 1))
+        repository.recordAttempt(ExerciseAttempt("java.m01.l05.e01", correct = true, hintsUsed = 1))
+        repository.recordAttempt(ExerciseAttempt("java.m01.l05.e02", correct = true, hintsUsed = 0))
 
-        val attempts = database.exerciseAttemptDao().attemptsFor("java.m02.l01.e01")
+        val attempts = database.exerciseAttemptDao().attemptsFor("java.m01.l05.e01")
         assertEquals(listOf(false, true), attempts.map { it.correct })
         assertEquals(listOf(1, 1), attempts.map { it.hintsUsed })
-        assertEquals(1, database.exerciseAttemptDao().attemptsFor("java.m02.l01.e02").size)
+        assertEquals(1, database.exerciseAttemptDao().attemptsFor("java.m01.l05.e02").size)
+    }
+
+    @Test
+    fun losEjerciciosResueltosSeDerivanDeLosIntentosSinDuplicarse() = runTest {
+        repository.recordAttempt(ExerciseAttempt("java.m01.l01.e01", correct = false, hintsUsed = 0))
+        assertEquals(emptySet<String>(), repository.observeSolvedExerciseIds().first())
+
+        repository.recordAttempt(ExerciseAttempt("java.m01.l01.e01", correct = true, hintsUsed = 0))
+        repository.recordAttempt(ExerciseAttempt("java.m01.l01.e01", correct = true, hintsUsed = 0))
+        repository.recordAttempt(ExerciseAttempt("java.m01.l01.e02", correct = true, hintsUsed = 1))
+
+        assertEquals(setOf("java.m01.l01.e01", "java.m01.l01.e02"), repository.observeSolvedExerciseIds().first())
+    }
+
+    @Test
+    fun sinEvaluacionesNoHayResultados() = runTest {
+        assertEquals(emptyMap<String, Double>(), repository.observeBestAssessmentScores().first())
+    }
+
+    @Test
+    fun laEvaluacionConservaSoloElMejorResultadoEnUnaFila() = runTest {
+        repository.recordAssessmentResult("java.m01", AssessmentScore(correct = 6, total = 10))
+        repository.recordAssessmentResult("java.m01", AssessmentScore(correct = 9, total = 10))
+        repository.recordAssessmentResult("java.m01", AssessmentScore(correct = 4, total = 10))
+
+        assertEquals(mapOf("java.m01" to 0.9), repository.observeBestAssessmentScores().first())
+        val rows = database.moduleProgressDao().observeAll().first()
+        assertEquals(1, rows.size)
+        assertEquals(ModuleProgressDao.STATUS_ASSESSED, rows.single().status)
+    }
+
+    @Test
+    fun elProgresoSeRecuperaAlCerrarYReabrirLaBaseDeDatos() = runTest {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val name = "reabrir-${System.nanoTime()}.db"
+        fun open() = Room.databaseBuilder(context, FuncodeDatabase::class.java, name).allowMainThreadQueries().build()
+
+        val first = open()
+        val before = repositoryFor(first)
+        before.recordAttempt(ExerciseAttempt("java.m01.l01.e01", correct = true, hintsUsed = 0))
+        before.recordAssessmentResult("java.m01", AssessmentScore(correct = 7, total = 10))
+        first.close()
+
+        val second = open()
+        try {
+            val after = repositoryFor(second)
+            assertEquals(setOf("java.m01.l01.e01"), after.observeSolvedExerciseIds().first())
+            assertEquals(mapOf("java.m01" to 0.7), after.observeBestAssessmentScores().first())
+        } finally {
+            second.close()
+            context.deleteDatabase(name)
+        }
     }
 }

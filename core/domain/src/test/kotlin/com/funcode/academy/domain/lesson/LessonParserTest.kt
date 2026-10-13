@@ -105,6 +105,57 @@ class LessonParserTest {
         assertTrue(errors.any { "passThreshold" in it })
     }
 
-    @Test fun `indice de lecciones`() =
-        assertEquals(listOf("lessons/a.json"), LessonParser.parseIndex("""{"schemaVersion":1,"lessons":["lessons/a.json"]}"""))
+    @Test fun `indice de modulos y lecciones`() = assertEquals(
+        ContentIndex(listOf("modules/m.json"), listOf("lessons/a.json")),
+        LessonParser.parseIndex("""{"schemaVersion":1,"modules":["modules/m.json"],"lessons":["lessons/a.json"]}"""),
+    )
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `un indice mal formado se informa como argumento no valido`() {
+        LessonParser.parseIndex("{ roto")
+    }
+
+    @Test fun `una leccion es de tipo leccion por defecto`() =
+        assertEquals(LessonKind.LESSON, (LessonParser.parse(json()) as LessonParseResult.Valid).lesson.kind)
+
+    @Test fun `tipo de leccion desconocido`() = assertError(json(extra = ""","kind":"examen""""), "kind")
+
+    @Test fun `una evaluacion necesita el bloque assessment`() = assertError(json(extra = ""","kind":"assessment""""), "bloque 'assessment'")
+
+    @Test fun `una evaluacion debe incluir todos sus ejercicios y no tener pistas`() {
+        val errors = errorsOf(
+            json(extra = ""","kind":"assessment","assessment":{"exerciseIds":[]}"""),
+        )
+        assertTrue(errors.any { "todos sus ejercicios" in it })
+        assertTrue(errors.any { "no pueden tener pistas" in it })
+    }
+
+    @Test fun `una evaluacion valida sin umbral`() {
+        val text = json(
+            exercises = """[{"id":"t.e1","type":"trueFalse","objectiveIds":["o1"],"difficulty":1,"prompt":"P",
+                "statement":"S","correct":true,"explanation":"E","incorrectFeedback":"I"}]""",
+            extra = ""","kind":"assessment","assessment":{"exerciseIds":["t.e1"]}""",
+        )
+        val lesson = (LessonParser.parse(text) as LessonParseResult.Valid).lesson
+        assertEquals(LessonKind.ASSESSMENT, lesson.kind)
+        assertEquals(null, lesson.assessment!!.passThreshold)
+    }
+
+    @Test fun `modulo valido`() {
+        val r = LessonParser.parseModule(
+            """{"schemaVersion":1,"id":"t.m1","order":1,"reviewStatus":"DRAFT","title":"T","description":"D",
+                "lessons":["t.l1"],"assessment":"t.eval"}""",
+        )
+        assertEquals(
+            ModuleParseResult.Valid(ModuleDefinition("t.m1", 1, "T", "D", ReviewStatus.DRAFT, listOf("t.l1"), "t.eval")),
+            r,
+        )
+    }
+
+    @Test fun `modulo sin lecciones ni orden`() {
+        val r = LessonParser.parseModule("""{"schemaVersion":1,"id":"t.m1","reviewStatus":"DRAFT","title":"T","description":"D"}""")
+        val errors = (r as ModuleParseResult.Invalid).errors
+        assertTrue(errors.any { "order" in it })
+        assertTrue(errors.any { "lección" in it })
+    }
 }

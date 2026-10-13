@@ -8,9 +8,9 @@ internal object TestLessons {
         hints = hints, explanation = "Explicación", incorrectFeedback = "Inténtalo de nuevo",
     )
 
-    fun lesson(vararg exercises: Exercise, assessment: Assessment? = null) = Lesson(
+    fun lesson(vararg exercises: Exercise, assessment: Assessment? = null, kind: LessonKind = LessonKind.LESSON) = Lesson(
         id = "test.m01.l01", moduleId = "test.m01", languageId = "java", locale = "es", version = 1,
-        reviewStatus = ReviewStatus.DRAFT, title = "Título", description = "Descripción",
+        reviewStatus = ReviewStatus.DRAFT, kind = kind, title = "Título", description = "Descripción",
         objectives = listOf(LearningObjective("o1", "Objetivo")),
         presentations = mapOf(PresentationVariant.DEFAULT to listOf(Section.Text("Teoría"))),
         exercises = exercises.toList(), assessment = assessment,

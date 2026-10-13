@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.l02",
+  "moduleId": "java.m01",
+  "languageId": "java",
+  "locale": "es",
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "title": "Algoritmos: los pasos para resolver un problema",
+  "description": "Aprende qué es un algoritmo y cómo describir un problema como una secuencia de pasos precisos.",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "Definir qué es un algoritmo."
+    },
+    {
+      "id": "o2",
+      "text": "Describir un problema sencillo como una secuencia de pasos precisos y ordenados."
+    }
+  ],
+  "presentations": {
+    "default": [
+      {
+        "type": "text",
+        "text": "Un algoritmo es una secuencia finita de pasos, precisos y ordenados, que resuelve un problema. Una receta de cocina o las instrucciones para montar un mueble son algoritmos de la vida diaria."
+      },
+      {
+        "type": "text",
+        "text": "Un buen algoritmo cumple tres condiciones: cada paso es preciso (no deja dudas), los pasos siguen un orden concreto y el algoritmo termina (no continúa para siempre)."
+      },
+      {
+        "type": "text",
+        "text": "Antes de escribir un programa conviene pensar el algoritmo en lenguaje normal. Después se traduce a un lenguaje de programación como Java."
+      },
+      {
+        "type": "text",
+        "text": "Ejemplo: algoritmo para calcular el precio total de dos productos."
+      },
+      {
+        "type": "code",
+        "code": "1. Leer el precio del primer producto\n2. Leer el precio del segundo producto\n3. Sumar los dos precios\n4. Mostrar el resultado de la suma",
+        "lineComments": [
+          {
+            "line": 1,
+            "comment": "Obtiene el primer dato necesario."
+          },
+          {
+            "line": 2,
+            "comment": "Obtiene el segundo dato."
+          },
+          {
+            "line": 3,
+            "comment": "Solo se puede sumar cuando ya se conocen los dos precios."
+          },
+          {
+            "line": 4,
+            "comment": "Comunica el resultado; sin este paso nadie lo vería."
+          }
+        ]
+      },
+      {
+        "type": "callout",
+        "text": "Los pasos 1 y 2 podrían intercambiarse sin cambiar el resultado, pero el paso 3 siempre debe ir después de ambos."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "java.m01.l02.e01",
+      "type": "trueFalse",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 1,
+      "prompt": "¿Verdadero o falso?",
+      "statement": "Un algoritmo puede tener infinitos pasos.",
+      "correct": false,
+      "hints": [
+        "Una de las condiciones habla de cuándo acaba el algoritmo."
+      ],
+      "explanation": "Falso. Un algoritmo debe terminar: tiene un número finito de pasos.",
+      "incorrectFeedback": "Repasa las tres condiciones de un buen algoritmo."
+    },
+    {
+      "id": "java.m01.l02.e02",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 1,
+      "prompt": "¿Cuál de estos es un algoritmo?",
+      "options": [
+        {
+          "text": "Una receta con los pasos para preparar una tortilla"
+        },
+        {
+          "text": "Una lista de ingredientes sin instrucciones",
+          "feedback": "Sin pasos que seguir no es un algoritmo: falta indicar qué hacer y en qué orden."
+        },
+        {
+          "text": "Una foto de una tortilla",
+          "feedback": "Una foto muestra el resultado, pero no explica cómo conseguirlo."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "hints": [
+        "Busca la opción que dice qué hacer, paso a paso."
+      ],
+      "explanation": "La receta con los pasos es un algoritmo: describe qué hacer y en qué orden para obtener la tortilla.",
+      "incorrectFeedback": "Un algoritmo indica acciones ordenadas."
+    },
+    {
+      "id": "java.m01.l02.e03",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 2,
+      "prompt": "¿Qué paso es lo bastante preciso para un algoritmo?",
+      "options": [
+        {
+          "text": "Calentar el agua hasta que hierva"
+        },
+        {
+          "text": "Calentar el agua un rato",
+          "feedback": "«Un rato» no dice cuánto tiempo: no es preciso."
+        },
+        {
+          "text": "Hacer lo que haga falta con el agua",
+          "feedback": "No indica ninguna acción concreta."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "hints": [
+        "Busca el paso que indica claramente cuándo ha terminado."
+      ],
+      "explanation": "«Calentar el agua hasta que hierva» dice exactamente cuándo termina el paso.",
+      "incorrectFeedback": "Un paso preciso no deja dudas sobre qué hacer ni cuándo parar."
+    },
+    {
+      "id": "java.m01.l02.e04",
+      "type": "orderLines",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 2,
+      "prompt": "Ordena los pasos del algoritmo para calcular el precio total de dos productos.",
+      "lines": [
+        "Leer el precio del primer producto",
+        "Leer el precio del segundo producto",
+        "Sumar los dos precios",
+        "Mostrar el resultado de la suma"
+      ],
+      "alternativeOrders": [
+        [
+          1,
+          0,
+          2,
+          3
+        ]
+      ],
+      "hints": [
+        "Primero hay que conocer los datos.",
+        "Solo se puede mostrar un resultado que ya se ha calculado."
+      ],
+      "explanation": "Primero se leen los dos precios (en cualquier orden), después se suman y, por último, se muestra el resultado.",
+      "incorrectFeedback": "Piensa qué datos hacen falta antes de poder sumar."
+    },
+    {
+      "id": "java.m01.l02.e05",
+      "type": "matchPairs",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 2,
+      "prompt": "Relaciona cada condición de un buen algoritmo con su significado.",
+      "left": [
+        "Preciso",
+        "Ordenado",
+        "Finito"
+      ],
+      "right": [
+        "Termina después de un número limitado de pasos",
+        "Cada paso deja claro qué hacer",
+        "Los pasos siguen una secuencia concreta"
+      ],
+      "pairs": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          0
+        ]
+      ],
+      "hints": [
+        "«Finito» significa que tiene fin."
+      ],
+      "explanation": "Preciso: cada paso deja claro qué hacer. Ordenado: los pasos siguen una secuencia. Finito: termina tras un número limitado de pasos.",
+      "incorrectFeedback": "Repasa las tres condiciones de la explicación."
+    },
+    {
+      "id": "java.m01.l02.e06",
+      "type": "findError",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 3,
+      "prompt": "Este algoritmo para enviar un mensaje de texto tiene un paso en un lugar imposible. Márcalo.",
+      "code": "1. Desbloquear el teléfono\n2. Pulsar «Enviar»\n3. Abrir la aplicación de mensajes\n4. Escribir el mensaje",
+      "errorLines": [
+        2
+      ],
+      "hints": [
+        "¿Se puede enviar un mensaje que aún no se ha escrito?"
+      ],
+      "explanation": "El paso 2 intenta enviar el mensaje antes de abrir la aplicación y de escribirlo. Debería ser el último.",
+      "incorrectFeedback": "Comprueba si cada paso tiene lo que necesita en el momento en que se ejecuta."
+    }
+  ]
+}

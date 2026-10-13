@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.l01",
+  "moduleId": "java.m01",
+  "languageId": "java",
+  "locale": "es",
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "title": "¿Qué es programar?",
+  "description": "Descubre qué es un programa, para qué sirve programar y por qué las instrucciones deben ser exactas.",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "Explicar qué es un programa y para qué sirve programar."
+    },
+    {
+      "id": "o2",
+      "text": "Reconocer que un ordenador sigue instrucciones exactas y no adivina lo que queremos."
+    }
+  ],
+  "presentations": {
+    "default": [
+      {
+        "type": "text",
+        "text": "Un programa es un conjunto de instrucciones que le dice a un ordenador qué hacer, paso a paso. Programar es escribir esas instrucciones."
+      },
+      {
+        "type": "text",
+        "text": "Usas programas a diario: la calculadora del móvil, un videojuego, la aplicación del tiempo o esta misma app. Alguien escribió cada una de sus instrucciones."
+      },
+      {
+        "type": "text",
+        "text": "El ordenador es muy rápido, pero no entiende intenciones: hace exactamente lo que dicen las instrucciones, ni más ni menos. Si una instrucción es confusa o falta un paso, el resultado será incorrecto."
+      },
+      {
+        "type": "text",
+        "text": "Las instrucciones se escriben en un lenguaje de programación: un idioma con reglas muy precisas que las personas pueden escribir y el ordenador puede seguir. En esta ruta aprenderás Java."
+      },
+      {
+        "type": "text",
+        "text": "Ejemplo: instrucciones para un robot que dibuja un cuadrado en un papel."
+      },
+      {
+        "type": "code",
+        "code": "1. Bajar el lápiz\n2. Avanzar 10 pasos\n3. Girar 90 grados a la derecha\n4. Avanzar 10 pasos\n5. Girar 90 grados a la derecha\n6. Avanzar 10 pasos\n7. Girar 90 grados a la derecha\n8. Avanzar 10 pasos\n9. Subir el lápiz",
+        "lineComments": [
+          {
+            "line": 1,
+            "comment": "El robot solo dibuja si el lápiz toca el papel."
+          },
+          {
+            "line": 2,
+            "comment": "Primer lado del cuadrado."
+          },
+          {
+            "line": 3,
+            "comment": "Cada giro de 90 grados prepara el lado siguiente."
+          },
+          {
+            "line": 8,
+            "comment": "Cuarto y último lado."
+          },
+          {
+            "line": 9,
+            "comment": "Sin este paso, el robot seguiría pintando al moverse después."
+          }
+        ]
+      },
+      {
+        "type": "callout",
+        "text": "Cada paso es concreto: dice cuántos pasos avanzar y cuántos grados girar. Así el robot no tiene que adivinar nada."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "java.m01.l01.e01",
+      "type": "trueFalse",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 1,
+      "prompt": "¿Verdadero o falso?",
+      "statement": "Si una instrucción no está clara, el ordenador deduce lo que querías decir.",
+      "correct": false,
+      "hints": [
+        "Recuerda lo que hace el ordenador cuando una instrucción es confusa."
+      ],
+      "explanation": "Falso. El ordenador no adivina intenciones: sigue las instrucciones tal como están escritas.",
+      "incorrectFeedback": "Piensa en el robot del ejemplo: ¿qué haría si faltara el paso de bajar el lápiz?"
+    },
+    {
+      "id": "java.m01.l01.e02",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 1,
+      "prompt": "¿Qué frase describe mejor qué es un programa?",
+      "options": [
+        {
+          "text": "Un conjunto de instrucciones que el ordenador sigue paso a paso"
+        },
+        {
+          "text": "Una pieza del ordenador, como el teclado o la pantalla",
+          "feedback": "Eso es hardware: las piezas físicas. El programa son las instrucciones."
+        },
+        {
+          "text": "La persona que escribe el código",
+          "feedback": "Esa persona programa; el programa es lo que escribe."
+        },
+        {
+          "text": "La conexión a Internet",
+          "feedback": "Muchos programas usan Internet, pero un programa no es la conexión."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "hints": [
+        "Piensa en qué le dice al ordenador lo que tiene que hacer."
+      ],
+      "explanation": "Un programa es un conjunto de instrucciones que el ordenador sigue paso a paso.",
+      "incorrectFeedback": "Vuelve a leer la primera frase de la explicación."
+    },
+    {
+      "id": "java.m01.l01.e03",
+      "type": "matchPairs",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 2,
+      "prompt": "Relaciona cada término con su significado.",
+      "left": [
+        "Programa",
+        "Programar",
+        "Lenguaje de programación",
+        "Ordenador"
+      ],
+      "right": [
+        "Máquina que sigue las instrucciones",
+        "Idioma con reglas precisas para escribir instrucciones",
+        "Escribir instrucciones para resolver una tarea",
+        "Conjunto de instrucciones que dice qué hacer"
+      ],
+      "pairs": [
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          0
+        ]
+      ],
+      "hints": [
+        "Empieza por «Ordenador»: es el que sigue las instrucciones."
+      ],
+      "explanation": "Un programa es un conjunto de instrucciones; programar es escribirlas; el lenguaje de programación es el idioma en que se escriben, y el ordenador es la máquina que las sigue.",
+      "incorrectFeedback": "Repasa las definiciones de la explicación."
+    },
+    {
+      "id": "java.m01.l01.e04",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 2,
+      "prompt": "¿Cuáles de estos son programas? Marca todos los que lo sean.",
+      "options": [
+        {
+          "text": "La calculadora del móvil"
+        },
+        {
+          "text": "Un videojuego"
+        },
+        {
+          "text": "La aplicación del tiempo"
+        },
+        {
+          "text": "Un lápiz",
+          "feedback": "Un lápiz es un objeto físico: no contiene instrucciones que un ordenador siga."
+        }
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "hints": [
+        "Hay más de una respuesta correcta."
+      ],
+      "explanation": "La calculadora del móvil, un videojuego y la aplicación del tiempo son programas: alguien escribió sus instrucciones. Un lápiz es un objeto físico.",
+      "incorrectFeedback": "Piensa en cuáles funcionan siguiendo instrucciones escritas por alguien."
+    },
+    {
+      "id": "java.m01.l01.e05",
+      "type": "findError",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 2,
+      "prompt": "Marca la instrucción que el robot no podría seguir con exactitud.",
+      "code": "1. Bajar el lápiz\n2. Avanzar 10 pasos\n3. Avanzar un poco más\n4. Subir el lápiz",
+      "errorLines": [
+        3
+      ],
+      "hints": [
+        "Busca una instrucción sin una cantidad concreta."
+      ],
+      "explanation": "«Avanzar un poco más» no dice cuántos pasos: el robot no sabría cuánto avanzar.",
+      "incorrectFeedback": "Busca la instrucción que deja una duda."
+    }
+  ]
+}

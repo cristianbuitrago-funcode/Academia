@@ -15,6 +15,8 @@ data class Lesson(
     /** Versión del contenido; aumenta cada vez que el texto o los ejercicios cambian. */
     val version: Int,
     val reviewStatus: ReviewStatus,
+    /** Lección normal o evaluación de módulo. */
+    val kind: LessonKind,
     val title: String,
     val description: String,
     /** Núcleo común a todos los públicos (decisión D3). */
@@ -35,6 +37,12 @@ data class Lesson(
         return presentations[variant] ?: presentations.getValue(PresentationVariant.DEFAULT)
     }
 }
+
+/**
+ * [LESSON]: teoría y práctica, con pistas y reintentos.
+ * [ASSESSMENT]: evaluación del módulo; una sola respuesta por pregunta y sin pistas.
+ */
+enum class LessonKind { LESSON, ASSESSMENT }
 
 /** Estado de revisión del contenido (decisión D7). Solo el responsable lo cambia a [APPROVED]. */
 enum class ReviewStatus { DRAFT, APPROVED }
@@ -62,10 +70,12 @@ sealed interface Section {
 data class LineComment(val line: Int, val comment: String)
 
 /**
- * Evaluación de la lección: qué ejercicios cuentan y qué fracción hay que resolver
- * al primer intento para aprobar. El desbloqueo de módulos pertenece a la Fase 4.
+ * Evaluación: qué ejercicios cuentan para el resultado y, si está decidido, qué
+ * fracción hay que acertar al primer intento para aprobar. [passThreshold] es
+ * `null` mientras el umbral no esté aprobado (P6): entonces solo se informa del
+ * resultado, sin declarar aprobado o suspenso.
  */
-data class Assessment(val exerciseIds: List<String>, val passThreshold: Double)
+data class Assessment(val exerciseIds: List<String>, val passThreshold: Double?)
 
 /** Datos mínimos para listar lecciones sin cargarlas completas en la interfaz. */
 data class LessonSummary(
@@ -74,7 +84,10 @@ data class LessonSummary(
     val title: String,
     val description: String,
     val reviewStatus: ReviewStatus,
-    val exerciseCount: Int,
-)
+    val kind: LessonKind,
+    val exerciseIds: List<String>,
+) {
+    val exerciseCount: Int get() = exerciseIds.size
+}
 
-fun Lesson.toSummary() = LessonSummary(id, moduleId, title, description, reviewStatus, exercises.size)
+fun Lesson.toSummary() = LessonSummary(id, moduleId, title, description, reviewStatus, kind, exercises.map { it.id })

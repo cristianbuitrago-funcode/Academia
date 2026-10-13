@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,10 +23,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.funcode.academy.R
 import com.funcode.academy.domain.lesson.ContentRepository
-import com.funcode.academy.domain.lesson.LessonSummary
-import com.funcode.academy.domain.lesson.ReviewStatus
+import com.funcode.academy.domain.progress.ModuleProgress
+import com.funcode.academy.domain.progress.NextActivity
 import com.funcode.academy.domain.progress.ProgressRepository
-import com.funcode.academy.ui.components.DraftBanner
 
 /** Conecta la pantalla de Inicio con su ViewModel. */
 @Composable
@@ -33,19 +33,21 @@ fun HomeRoute(
     progressRepository: ProgressRepository,
     contentRepository: ContentRepository,
     onOpenLesson: (String) -> Unit,
+    onOpenModule: (String) -> Unit,
 ) {
     val viewModel: HomeViewModel = viewModel(factory = HomeViewModel.factory(progressRepository, contentRepository))
     val totalXp by viewModel.totalXp.collectAsStateWithLifecycle()
-    val lessons by viewModel.lessons.collectAsStateWithLifecycle()
-    HomeScreen(totalXp = totalXp, lessons = lessons, onOpenLesson = onOpenLesson)
+    val modules by viewModel.modules.collectAsStateWithLifecycle()
+    HomeScreen(totalXp = totalXp, modules = modules, onOpenLesson = onOpenLesson, onOpenModule = onOpenModule)
 }
 
 /** Pantalla de Inicio. Recibe el estado ya calculado, por eso es fácil de probar. */
 @Composable
 fun HomeScreen(
     totalXp: Int?,
-    lessons: List<LessonSummary>?,
+    modules: List<ModuleProgress>?,
     onOpenLesson: (String) -> Unit,
+    onOpenModule: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -59,35 +61,45 @@ fun HomeScreen(
         )
         Text(text = stringResource(R.string.home_intro), style = MaterialTheme.typography.bodyLarge)
         if (totalXp != null) {
-            Text(
-                text = stringResource(R.string.home_total_xp, totalXp),
-                style = MaterialTheme.typography.titleMedium,
-            )
+            Text(text = stringResource(R.string.home_total_xp, totalXp), style = MaterialTheme.typography.titleMedium)
         }
         Text(text = stringResource(R.string.home_xp_explanation), style = MaterialTheme.typography.bodyMedium)
 
         Text(
-            text = stringResource(R.string.home_lessons_title),
+            text = stringResource(R.string.home_continue_title),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.semantics { heading() },
         )
         when {
-            lessons == null -> Unit
-            lessons.isEmpty() -> Text(stringResource(R.string.home_no_lessons), style = MaterialTheme.typography.bodyLarge)
-            else -> lessons.forEach { LessonCard(it, onOpenLesson) }
+            modules == null -> Unit
+            modules.isEmpty() -> Text(stringResource(R.string.content_unavailable), style = MaterialTheme.typography.bodyLarge)
+            // Se continúa por el primer módulo que no esté terminado.
+            else -> ContinueCard(modules.firstOrNull { it.next != NextActivity.ModuleDone } ?: modules.first(), onOpenLesson, onOpenModule)
         }
     }
 }
 
 @Composable
-private fun LessonCard(lesson: LessonSummary, onOpenLesson: (String) -> Unit) {
+private fun ContinueCard(progress: ModuleProgress, onOpenLesson: (String) -> Unit, onOpenModule: (String) -> Unit) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(lesson.title, style = MaterialTheme.typography.titleMedium)
-            Text(lesson.description, style = MaterialTheme.typography.bodyMedium)
-            Text(stringResource(R.string.home_lesson_exercises, lesson.exerciseCount), style = MaterialTheme.typography.labelLarge)
-            if (lesson.reviewStatus == ReviewStatus.DRAFT) DraftBanner()
-            Button(onClick = { onOpenLesson(lesson.id) }) { Text(stringResource(R.string.home_open_lesson)) }
+            Text(progress.module.title, style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(R.string.module_lessons_progress, progress.completedLessons, progress.lessons.size),
+                style = MaterialTheme.typography.labelLarge,
+            )
+            when (val next = progress.next) {
+                is NextActivity.Lesson -> {
+                    Text(stringResource(R.string.home_next_lesson, next.lesson.title), style = MaterialTheme.typography.bodyLarge)
+                    Button(onClick = { onOpenLesson(next.lesson.id) }) { Text(stringResource(R.string.home_continue_button)) }
+                }
+                is NextActivity.Assessment -> {
+                    Text(stringResource(R.string.home_next_assessment, next.assessment.title), style = MaterialTheme.typography.bodyLarge)
+                    Button(onClick = { onOpenLesson(next.assessment.id) }) { Text(stringResource(R.string.home_continue_button)) }
+                }
+                NextActivity.ModuleDone -> Text(stringResource(R.string.home_module_done), style = MaterialTheme.typography.bodyLarge)
+            }
+            OutlinedButton(onClick = { onOpenModule(progress.module.id) }) { Text(stringResource(R.string.home_view_module)) }
         }
     }
 }

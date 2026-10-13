@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "id": "java.m02.l01",
-  "moduleId": "java.m02",
+  "id": "java.m01.l05",
+  "moduleId": "java.m01",
   "languageId": "java",
   "locale": "es",
   "version": 1,
   "reviewStatus": "DRAFT",
-  "title": "Tu primer programa: mostrar texto en pantalla",
-  "description": "Escribe y lee un programa Java que muestra mensajes con System.out.println.",
+  "title": "El método main y System.out.println",
+  "description": "Muestra mensajes en pantalla con System.out.println y predice lo que mostrará un programa.",
   "objectives": [
     {
       "id": "o1",
@@ -18,7 +18,7 @@
     "default": [
       {
         "type": "text",
-        "text": "Un programa es una lista de instrucciones que el ordenador sigue en orden, de arriba abajo. En Java, esas instrucciones se escriben dentro de una clase y empiezan a ejecutarse en un método especial llamado main."
+        "text": "Las instrucciones de un programa Java se escriben dentro del método main y se ejecutan en orden, de arriba abajo, como en el pseudocódigo."
       },
       {
         "type": "text",
@@ -30,11 +30,11 @@
         "lineComments": [
           {
             "line": 1,
-            "comment": "Declara una clase llamada HolaMundo. Todo programa Java vive dentro de una clase."
+            "comment": "Declara la clase HolaMundo."
           },
           {
             "line": 2,
-            "comment": "El método main: aquí empieza la ejecución del programa."
+            "comment": "El método main: aquí empieza la ejecución."
           },
           {
             "line": 3,
@@ -66,7 +66,7 @@
   },
   "exercises": [
     {
-      "id": "java.m02.l01.e01",
+      "id": "java.m01.l05.e01",
       "type": "trueFalse",
       "objectiveIds": [
         "o1"
@@ -82,7 +82,7 @@
       "incorrectFeedback": "Revisa el ejemplo: todas las instrucciones println acaban con el mismo símbolo."
     },
     {
-      "id": "java.m02.l01.e02",
+      "id": "java.m01.l05.e02",
       "type": "multipleChoice",
       "objectiveIds": [
         "o1"
@@ -91,8 +91,7 @@
       "prompt": "¿Qué instrucción muestra el texto Hola en pantalla y salta a la línea siguiente?",
       "options": [
         {
-          "text": "System.out.println(\"Hola\");",
-          "feedback": null
+          "text": "System.out.println(\"Hola\");"
         },
         {
           "text": "system.out.println(\"Hola\");",
@@ -118,58 +117,51 @@
       "incorrectFeedback": "Compara cada opción con el ejemplo de la lección, carácter por carácter."
     },
     {
-      "id": "java.m02.l01.e03",
+      "id": "java.m01.l05.e03",
       "type": "matchPairs",
       "objectiveIds": [
         "o1"
       ],
       "difficulty": 2,
-      "prompt": "Relaciona cada parte del programa con su función.",
+      "prompt": "Relaciona cada parte de la instrucción con su función.",
       "left": [
-        "public class HolaMundo",
-        "public static void main(String[] args)",
-        "System.out.println(...)",
-        "\"¡Hola!\"",
+        "System.out.println",
+        "\"Hola\"",
+        "( )",
         ";"
       ],
       "right": [
+        "Termina la instrucción",
         "Muestra un texto y salta a la línea siguiente",
-        "Marca el final de una instrucción",
-        "Declara la clase que contiene el programa",
-        "Texto escrito entre comillas dobles",
-        "Método donde empieza la ejecución"
+        "Rodean lo que se va a mostrar",
+        "Texto literal, entre comillas dobles"
       ],
       "pairs": [
         [
           0,
-          2
+          1
         ],
         [
           1,
-          4
-        ],
-        [
-          2,
-          0
-        ],
-        [
-          3,
           3
         ],
         [
-          4,
-          1
+          2,
+          2
+        ],
+        [
+          3,
+          0
         ]
       ],
       "hints": [
-        "Empieza por las que ya conoces del ejemplo comentado.",
         "Las comillas dobles indican un texto literal."
       ],
-      "explanation": "La clase contiene el programa, main es el punto de inicio, println muestra texto, las comillas delimitan el texto y el punto y coma termina la instrucción.",
-      "incorrectFeedback": "Revisa los comentarios línea por línea del ejemplo."
+      "explanation": "System.out.println muestra el texto y salta de línea; \"Hola\" es el texto; los paréntesis rodean lo que se muestra, y el punto y coma termina la instrucción.",
+      "incorrectFeedback": "Revisa la explicación de System.out.println."
     },
     {
-      "id": "java.m02.l01.e04",
+      "id": "java.m01.l05.e04",
       "type": "fillInBlanks",
       "objectiveIds": [
         "o1"
@@ -193,7 +185,7 @@
       "incorrectFeedback": "Mira la línea 3 del ejemplo: tiene la misma forma."
     },
     {
-      "id": "java.m02.l01.e05",
+      "id": "java.m01.l05.e05",
       "type": "orderLines",
       "objectiveIds": [
         "o1"
@@ -213,10 +205,10 @@
         "Las instrucciones se ejecutan de arriba abajo, en orden."
       ],
       "explanation": "Primero la clase, luego main, después las instrucciones en el orden en que deben mostrarse y, al final, las dos llaves de cierre.",
-      "incorrectFeedback": "Piensa en la estructura del ejemplo: clase, main, instrucciones y cierres."
+      "incorrectFeedback": "Piensa en la estructura: clase, main, instrucciones y cierres."
     },
     {
-      "id": "java.m02.l01.e06",
+      "id": "java.m01.l05.e06",
       "type": "predictOutput",
       "objectiveIds": [
         "o1"
@@ -235,7 +227,7 @@
       "incorrectFeedback": "Recuerda: println salta de línea después de cada mensaje y las comillas no se muestran."
     },
     {
-      "id": "java.m02.l01.e07",
+      "id": "java.m01.l05.e07",
       "type": "findError",
       "objectiveIds": [
         "o1"

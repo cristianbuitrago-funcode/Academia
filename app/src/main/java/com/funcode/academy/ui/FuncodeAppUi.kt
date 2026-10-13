@@ -25,12 +25,14 @@ import com.funcode.academy.domain.settings.SettingsRepository
 import com.funcode.academy.ui.navigation.HomeRoute
 import com.funcode.academy.ui.navigation.LessonDestination
 import com.funcode.academy.ui.navigation.MapRoute
+import com.funcode.academy.ui.navigation.ModuleDestination
 import com.funcode.academy.ui.navigation.ProfileRoute
 import com.funcode.academy.ui.navigation.SettingsRoute
 import com.funcode.academy.ui.navigation.TopLevelDestination
 import com.funcode.academy.ui.screens.home.HomeRoute as HomeScreenRoute
 import com.funcode.academy.ui.screens.lesson.LessonRoute as LessonScreenRoute
-import com.funcode.academy.ui.screens.map.MapScreen
+import com.funcode.academy.ui.screens.module.ModuleListRoute
+import com.funcode.academy.ui.screens.module.ModuleRoute
 import com.funcode.academy.ui.screens.profile.ProfileScreen
 import com.funcode.academy.ui.screens.settings.SettingsRoute as SettingsScreenRoute
 
@@ -78,9 +80,23 @@ fun FuncodeAppUi(
                     progressRepository = progressRepository,
                     contentRepository = contentRepository,
                     onOpenLesson = { lessonId -> navController.navigate(LessonDestination(lessonId)) },
+                    onOpenModule = { moduleId -> navController.navigate(ModuleDestination(moduleId)) },
                 )
             }
-            composable<MapRoute> { MapScreen() }
+            composable<MapRoute> {
+                ModuleListRoute(contentRepository, progressRepository) { moduleId ->
+                    navController.navigate(ModuleDestination(moduleId))
+                }
+            }
+            composable<ModuleDestination> { entry ->
+                ModuleRoute(
+                    moduleId = entry.toRoute<ModuleDestination>().moduleId,
+                    content = contentRepository,
+                    progress = progressRepository,
+                    onOpenLesson = { lessonId -> navController.navigate(LessonDestination(lessonId)) },
+                    onExit = { navController.popBackStack() },
+                )
+            }
             composable<ProfileRoute> { ProfileScreen() }
             composable<SettingsRoute> { SettingsScreenRoute(settingsRepository) }
             composable<LessonDestination> { entry ->

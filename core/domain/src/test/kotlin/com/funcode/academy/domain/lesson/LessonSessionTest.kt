@@ -63,6 +63,7 @@ class LessonSessionTest {
         assertEquals(1, summary.hintsUsed)
         assertEquals(4, summary.attempts)
         assertNull(summary.assessmentPassed)
+        assertNull(summary.assessmentScore)
     }
 
     @Test fun `la evaluacion se aprueba segun el umbral de aciertos al primer intento`() {
@@ -71,7 +72,46 @@ class LessonSessionTest {
         )
         val passed = withAssessment.submit(Answer.TrueFalse(true)).session.next().submit(Answer.TrueFalse(false)).session
         assertEquals(true, passed.summary().assessmentPassed)
+        assertEquals(AssessmentScore(1, 2), passed.summary().assessmentScore)
         val failed = withAssessment.submit(Answer.TrueFalse(false)).session
         assertEquals(false, failed.summary().assessmentPassed)
+    }
+
+    private val evaluation = LessonSession(
+        lesson(
+            exercise("q1", trueFalse, hints = emptyList()), exercise("q2", trueFalse, hints = emptyList()),
+            exercise("q3", trueFalse, hints = emptyList()),
+            assessment = Assessment(listOf("q1", "q2", "q3"), passThreshold = null), kind = LessonKind.ASSESSMENT,
+        ),
+    )
+
+    @Test fun `sin umbral aprobado la evaluacion da resultado pero no aprobado ni suspenso`() {
+        var s = evaluation.submit(Answer.TrueFalse(true)).session.next()
+        s = s.submit(Answer.TrueFalse(true)).session.next()
+        s = s.submit(Answer.TrueFalse(false)).session.next()
+        val summary = s.summary()
+        assertEquals(AssessmentScore(2, 3), summary.assessmentScore)
+        assertEquals(66, summary.assessmentScore!!.percent)
+        assertNull(summary.assessmentPassed)
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `en una evaluacion no se puede reintentar una pregunta`() {
+        evaluation.submit(Answer.TrueFalse(false)).session.submit(Answer.TrueFalse(true))
+    }
+
+    @Test fun `en una evaluacion una respuesta incompleta no gasta la oportunidad`() {
+        val s = evaluation.submit(Answer.TrueFalse(null)).session
+        assertEquals(AnswerResult.Correct, s.submit(Answer.TrueFalse(true)).result)
+    }
+
+    @Test fun `en una evaluacion no hay pistas ni reintentos`() {
+        assertFalse(evaluation.allowsRetries)
+        assertEquals(0, evaluation.revealHint().currentProgress.hintsRevealed)
+    }
+
+    @Test fun `una pregunta sin responder cuenta como no acertada`() {
+        val s = evaluation.next().next().next()
+        assertEquals(AssessmentScore(0, 3), s.summary().assessmentScore)
     }
 }

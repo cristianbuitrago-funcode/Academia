@@ -17,7 +17,6 @@
     <!-- Pantallas pendientes -->
     <string name="coming_soon">Disponible en una próxima versión</string>
     <string name="map_title">Mapa de aprendizaje</string>
-    <string name="map_pending_description">Aquí verás los módulos de la ruta de Java y tu avance en cada uno.</string>
     <string name="profile_title">Tu perfil</string>
     <string name="profile_pending_description">Aquí verás tu avatar, tu nivel y tus logros.</string>
 
@@ -30,10 +29,29 @@
     <string name="audience_adults">Persona adulta</string>
 
     <!-- Inicio: lecciones -->
-    <string name="home_lessons_title">Lecciones disponibles</string>
-    <string name="home_open_lesson">Abrir lección</string>
-    <string name="home_no_lessons">No hay lecciones disponibles.</string>
-    <string name="home_lesson_exercises">Ejercicios: %1$d</string>
+    <string name="home_continue_title">Continuar aprendiendo</string>
+    <string name="home_next_lesson">Siguiente lección: %1$s</string>
+    <string name="home_next_assessment">Siguiente paso: %1$s</string>
+    <string name="home_module_done">Has completado todas las actividades del módulo. Puedes repasar cualquier lección o repetir la evaluación.</string>
+    <string name="home_continue_button">Continuar</string>
+    <string name="home_view_module">Ver el módulo</string>
+    <string name="content_unavailable">No hay contenido disponible.</string>
+
+    <!-- Módulos -->
+    <string name="module_open">Abrir módulo</string>
+    <string name="module_unavailable">Este módulo no está disponible.</string>
+    <string name="module_lessons_title">Lecciones</string>
+    <string name="module_order_note">Te recomendamos seguirlas en orden: cada lección se apoya en la anterior.</string>
+    <string name="module_lessons_progress">Lecciones completadas: %1$d de %2$d</string>
+    <string name="module_lesson_title">%1$d. %2$s</string>
+    <string name="module_lesson_done">Completada</string>
+    <string name="module_lesson_progress">Ejercicios resueltos: %1$d de %2$d</string>
+    <string name="module_assessment_title">Evaluación del módulo</string>
+    <string name="module_assessment_not_done">Evaluación: aún no realizada</string>
+    <string name="module_best_score">Mejor resultado de la evaluación: %1$d %%</string>
+    <string name="module_assessment_start">Hacer la evaluación</string>
+    <string name="module_assessment_retake">Repetir la evaluación</string>
+
     <string name="draft_label">Borrador: contenido pendiente de revisión.</string>
 
     <!-- Lección -->
@@ -46,6 +64,11 @@
     <string name="lesson_code_comments_title">Comentarios línea por línea</string>
     <string name="lesson_line_comment">Línea %1$d: %2$s</string>
     <string name="lesson_start_exercises">Empezar ejercicios</string>
+    <string name="lesson_start_assessment">Empezar la evaluación</string>
+    <string name="assessment_rules">Una sola respuesta por pregunta y sin pistas.</string>
+    <string name="assessment_progress">Pregunta %1$d de %2$d</string>
+    <string name="assessment_next">Siguiente pregunta</string>
+    <string name="assessment_see_result">Ver resultado</string>
     <string name="lesson_exercise_progress">Ejercicio %1$d de %2$d</string>
     <string name="lesson_difficulty">Dificultad: %1$d de 5</string>
     <string name="lesson_check">Comprobar respuesta</string>
@@ -91,6 +114,8 @@
     <string name="summary_hints">Pistas usadas: %1$d</string>
     <string name="summary_exercise_solved">Ejercicio %1$d: resuelto (intentos: %2$d)</string>
     <string name="summary_exercise_unsolved">Ejercicio %1$d: sin resolver</string>
+    <string name="summary_assessment_score">Resultado: %1$d de %2$d respuestas correctas (%3$d %%)</string>
+    <string name="summary_assessment_saved">Si es tu mejor resultado, queda guardado en este dispositivo.</string>
     <string name="summary_assessment_passed">Evaluación de la lección: aprobada.</string>
     <string name="summary_assessment_failed">Evaluación de la lección: no aprobada todavía.</string>
     <string name="summary_note">Los resultados se han comprobado con las reglas de cada ejercicio; no se ha ejecutado ningún código.</string>

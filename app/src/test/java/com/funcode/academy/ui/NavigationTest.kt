@@ -77,8 +77,18 @@ class NavigationTest {
     @Test
     fun lasPantallasPendientesLoIndicanSinDatosFicticios() {
         setApp()
-        clickTab(R.string.nav_map)
+        clickTab(R.string.nav_profile)
         rule.onNodeWithText(text(R.string.coming_soon)).assertIsDisplayed()
+    }
+
+    @Test
+    fun sinContenidoElMapaLoIndicaSinInventarModulos() {
+        setApp()
+        clickTab(R.string.nav_map)
+        rule.waitUntil(timeoutMillis = 10_000) {
+            rule.onAllNodes(hasText(text(R.string.content_unavailable))).fetchSemanticsNodes().isNotEmpty()
+        }
+        rule.onNodeWithText(text(R.string.content_unavailable)).assertIsDisplayed()
     }
 
     @Test

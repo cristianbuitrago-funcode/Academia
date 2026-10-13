@@ -2,7 +2,7 @@ package com.funcode.academy.domain.lesson
 
 /** Datos comunes a todos los ejercicios. El contenido específico de cada tipo está en [content]. */
 data class Exercise(
-    /** Identificador estable, p. ej. `java.m02.l01.e03`. */
+    /** Identificador estable, p. ej. `java.m01.l05.e03`. */
     val id: String,
     val objectiveIds: List<String>,
     /** 1 (muy fácil) a 5 (difícil). */

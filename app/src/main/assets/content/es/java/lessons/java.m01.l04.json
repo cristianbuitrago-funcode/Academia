@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.l04",
+  "moduleId": "java.m01",
+  "languageId": "java",
+  "locale": "es",
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "title": "Java y la estructura de un programa",
+  "description": "Conoce las partes que tiene todo programa Java: la clase, el método main y las llaves.",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "Identificar la clase, el método main y las llaves en un programa Java."
+    },
+    {
+      "id": "o2",
+      "text": "Explicar que el nombre del archivo coincide con el de la clase pública."
+    }
+  ],
+  "presentations": {
+    "default": [
+      {
+        "type": "text",
+        "text": "Java es un lenguaje de programación muy utilizado en aplicaciones, servidores y para aprender a programar. Sus programas siguen siempre una estructura fija."
+      },
+      {
+        "type": "text",
+        "text": "Todo programa Java está dentro de una clase. La clase se declara con public class seguido de su nombre, y su contenido va entre llaves { }."
+      },
+      {
+        "type": "text",
+        "text": "Dentro de la clase está el método main: el punto de entrada, donde empieza la ejecución. Por ahora, escribe su primera línea tal cual: public static void main(String[] args). Más adelante aprenderás qué significa cada palabra."
+      },
+      {
+        "type": "code",
+        "code": "public class MiPrograma {\n    public static void main(String[] args) {\n        System.out.println(\"Mi primer programa en Java\");\n    }\n}",
+        "lineComments": [
+          {
+            "line": 1,
+            "comment": "Declara la clase MiPrograma. La llave { abre su contenido."
+          },
+          {
+            "line": 2,
+            "comment": "Empieza el método main: aquí comienza la ejecución."
+          },
+          {
+            "line": 3,
+            "comment": "Una instrucción dentro de main. La verás en detalle en la próxima lección."
+          },
+          {
+            "line": 4,
+            "comment": "Esta llave cierra el método main."
+          },
+          {
+            "line": 5,
+            "comment": "Esta llave cierra la clase."
+          }
+        ]
+      },
+      {
+        "type": "callout",
+        "text": "La clase pública se guarda en un archivo con su mismo nombre y la extensión .java: MiPrograma se guarda en MiPrograma.java. Cada llave que se abre debe cerrarse."
+      },
+      {
+        "type": "text",
+        "text": "La sangría (los espacios a la izquierda) no es obligatoria para Java, pero ayuda a ver qué está dentro de qué."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "java.m01.l04.e01",
+      "type": "trueFalse",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 1,
+      "prompt": "¿Verdadero o falso?",
+      "statement": "En Java, la ejecución de un programa empieza en el método main.",
+      "correct": true,
+      "hints": [
+        "Busca en la explicación dónde empieza la ejecución."
+      ],
+      "explanation": "Verdadero. El método main es el punto de entrada: la ejecución empieza allí.",
+      "incorrectFeedback": "Repasa qué es el método main."
+    },
+    {
+      "id": "java.m01.l04.e02",
+      "type": "matchPairs",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 2,
+      "prompt": "Relaciona cada parte del programa con su función.",
+      "left": [
+        "public class MiPrograma",
+        "public static void main(String[] args)",
+        "{",
+        "}"
+      ],
+      "right": [
+        "Cierra un bloque",
+        "Declara la clase que contiene el programa",
+        "Abre un bloque",
+        "Punto de entrada donde empieza la ejecución"
+      ],
+      "pairs": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          0
+        ]
+      ],
+      "hints": [
+        "Las llaves siempre van en pareja: una abre y otra cierra."
+      ],
+      "explanation": "public class declara la clase, main es el punto de entrada, { abre un bloque y } lo cierra.",
+      "incorrectFeedback": "Repasa los comentarios línea por línea del ejemplo."
+    },
+    {
+      "id": "java.m01.l04.e03",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 2,
+      "prompt": "La clase pública de un programa se llama Saludo. ¿Cómo debe llamarse el archivo?",
+      "options": [
+        {
+          "text": "Saludo.java"
+        },
+        {
+          "text": "saludo.java",
+          "feedback": "Java distingue mayúsculas y minúsculas: el nombre debe coincidir exactamente con el de la clase."
+        },
+        {
+          "text": "Saludo.txt",
+          "feedback": "Los programas Java usan la extensión .java."
+        },
+        {
+          "text": "Programa.java",
+          "feedback": "El archivo debe llamarse igual que la clase pública."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "hints": [
+        "Fíjate en las mayúsculas y en la extensión."
+      ],
+      "explanation": "El archivo se llama igual que la clase pública, con la extensión .java: Saludo.java.",
+      "incorrectFeedback": "Revisa el recuadro sobre el nombre del archivo."
+    },
+    {
+      "id": "java.m01.l04.e04",
+      "type": "findError",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 3,
+      "prompt": "Este programa no compila. Marca la línea con el error.",
+      "code": "Public class Aviso {\n    public static void main(String[] args) {\n        System.out.println(\"Atención\");\n    }\n}",
+      "errorLines": [
+        1
+      ],
+      "hints": [
+        "Recuerda que Java distingue mayúsculas de minúsculas."
+      ],
+      "explanation": "En la línea 1, Public está escrito con P mayúscula. La palabra de Java es public, en minúsculas.",
+      "incorrectFeedback": "Compara cada palabra con las del ejemplo de la lección."
+    },
+    {
+      "id": "java.m01.l04.e05",
+      "type": "orderLines",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 3,
+      "prompt": "Ordena las líneas para formar un programa Java correcto.",
+      "lines": [
+        "public class Inicio {",
+        "public static void main(String[] args) {",
+        "System.out.println(\"Hola\");",
+        "}",
+        "}"
+      ],
+      "hints": [
+        "La clase contiene a main, y main contiene la instrucción."
+      ],
+      "explanation": "Primero la clase, dentro el método main, dentro la instrucción y, al final, las llaves que cierran main y la clase.",
+      "incorrectFeedback": "Piensa qué está dentro de qué."
+    },
+    {
+      "id": "java.m01.l04.e06",
+      "type": "fillInBlanks",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 3,
+      "prompt": "Completa la estructura del programa.",
+      "template": "public {{0}} Bienvenida {\n    public static void {{1}}(String[] args) {\n        System.out.println(\"Te damos la bienvenida\");\n    }\n}",
+      "blanks": [
+        [
+          "class"
+        ],
+        [
+          "main"
+        ]
+      ],
+      "hints": [
+        "El primer hueco es la palabra que declara una clase.",
+        "El segundo hueco es el nombre del método donde empieza la ejecución."
+      ],
+      "explanation": "public class Bienvenida declara la clase, y main es el método donde empieza la ejecución.",
+      "incorrectFeedback": "Revisa las dos primeras líneas del ejemplo."
+    }
+  ]
+}

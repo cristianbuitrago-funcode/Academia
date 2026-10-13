@@ -8,6 +8,8 @@ package com.funcode.academy.domain.lesson
  * - Solo las respuestas completas ([AnswerResult.Correct]/[AnswerResult.Incorrect]) cuentan como intentos.
  * - Un ejercicio resuelto no admite más intentos.
  * - Las pistas se revelan de una en una y quedan registradas.
+ * - En una evaluación ([LessonKind.ASSESSMENT]) cada pregunta admite una sola
+ *   respuesta completa y no hay pistas.
  */
 data class LessonSession(
     val lesson: Lesson,
@@ -19,12 +21,15 @@ data class LessonSession(
     val currentProgress: ExerciseProgress get() = progressOf(currentExercise.id)
     val isLastExercise: Boolean get() = currentIndex == lesson.exercises.lastIndex
 
+    /** En las lecciones se puede reintentar; en las evaluaciones, no. */
+    val allowsRetries: Boolean get() = lesson.kind == LessonKind.LESSON
+
     fun progressOf(exerciseId: String): ExerciseProgress = progress[exerciseId] ?: ExerciseProgress()
 
     /** Revela la siguiente pista del ejercicio actual (si quedan). */
     fun revealHint(): LessonSession {
         val p = currentProgress
-        if (p.hintsRevealed >= currentExercise.hints.size || p.solved) return this
+        if (!allowsRetries || p.hintsRevealed >= currentExercise.hints.size || p.solved) return this
         return withProgress(p.copy(hintsRevealed = p.hintsRevealed + 1))
     }
 
@@ -32,6 +37,7 @@ data class LessonSession(
     fun submit(answer: Answer): Submission {
         val p = currentProgress
         check(!p.solved) { "El ejercicio ${currentExercise.id} ya está resuelto" }
+        check(allowsRetries || p.attempts == 0) { "En una evaluación cada pregunta admite una sola respuesta" }
         val result = AnswerValidator.validate(currentExercise.content, answer)
         val updated = when (result) {
             is AnswerResult.Incomplete -> p.copy(lastResult = result)
@@ -50,11 +56,15 @@ data class LessonSession(
             val p = progressOf(e.id)
             ExerciseOutcome(e.id, p.solved, p.attempts, p.hintsRevealed)
         }
-        val assessmentPassed = lesson.assessment?.let { a ->
-            val firstTry = a.exerciseIds.count { id -> results.first { it.exerciseId == id }.solvedFirstTry }
-            firstTry.toDouble() / a.exerciseIds.size >= a.passThreshold
+        val score = lesson.assessment?.let { a ->
+            AssessmentScore(
+                correct = a.exerciseIds.count { id -> results.first { it.exerciseId == id }.solvedFirstTry },
+                total = a.exerciseIds.size,
+            )
         }
-        return SessionSummary(results, assessmentPassed)
+        // Solo se declara aprobado/no aprobado si el umbral está definido (P6).
+        val passed = score?.let { s -> lesson.assessment?.passThreshold?.let { s.fraction >= it } }
+        return SessionSummary(results, score, passed)
     }
 
     private fun withProgress(p: ExerciseProgress) = copy(progress = progress + (currentExercise.id to p))
@@ -73,10 +83,24 @@ data class ExerciseOutcome(val exerciseId: String, val solved: Boolean, val atte
     val solvedFirstTry: Boolean get() = solved && attempts == 1
 }
 
+/** Resultado de una evaluación: respuestas comprobadas correctas al primer intento. */
+data class AssessmentScore(val correct: Int, val total: Int) {
+    init {
+        require(total > 0 && correct in 0..total) { "Resultado no válido: $correct de $total" }
+    }
+
+    val fraction: Double get() = correct.toDouble() / total
+
+    /** Porcentaje entero, redondeado hacia abajo para no exagerar el resultado. */
+    val percent: Int get() = correct * 100 / total
+}
+
 /** Resumen de la sesión. Todo se calcula a partir de los resultados; no se guarda aparte. */
 data class SessionSummary(
     val outcomes: List<ExerciseOutcome>,
     /** `null` si la lección no tiene evaluación. */
+    val assessmentScore: AssessmentScore?,
+    /** `null` si no hay evaluación o si su umbral de aprobación no está definido. */
     val assessmentPassed: Boolean?,
 ) {
     val total: Int get() = outcomes.size
@@ -91,6 +115,10 @@ data class SessionSummary(
 interface ContentRepository {
     suspend fun listLessons(): List<LessonSummary>
     suspend fun loadLesson(lessonId: String): LessonLoadResult
+
+    /** Módulos válidos, ordenados por `order`. */
+    suspend fun listModules(): List<CourseModule>
+    suspend fun loadModule(moduleId: String): ModuleLoadResult
 }
 
 sealed interface LessonLoadResult {

@@ -31,6 +31,7 @@ import com.funcode.academy.domain.lesson.AnswerResult
 import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.lesson.IncompleteReason
 import com.funcode.academy.domain.lesson.Lesson
+import com.funcode.academy.domain.lesson.LessonKind
 import com.funcode.academy.domain.lesson.ReviewStatus
 import com.funcode.academy.domain.lesson.Section
 import com.funcode.academy.domain.lesson.SessionSummary
@@ -135,7 +136,11 @@ private fun Intro(lesson: Lesson, sections: List<Section>, onStart: () -> Unit) 
             }
         }
     }
-    Button(onClick = onStart, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.lesson_start_exercises)) }
+    val isAssessment = lesson.kind == LessonKind.ASSESSMENT
+    if (isAssessment) Text(stringResource(R.string.assessment_rules), style = MaterialTheme.typography.titleSmall)
+    Button(onClick = onStart, modifier = Modifier.fillMaxWidth()) {
+        Text(stringResource(if (isAssessment) R.string.lesson_start_assessment else R.string.lesson_start_exercises))
+    }
 }
 
 @Composable
@@ -152,7 +157,11 @@ private fun ExerciseStep(
     val progress = session.currentProgress
     LessonHeader(session.lesson)
     Text(
-        stringResource(R.string.lesson_exercise_progress, session.currentIndex + 1, session.lesson.exercises.size),
+        stringResource(
+            if (session.allowsRetries) R.string.lesson_exercise_progress else R.string.assessment_progress,
+            session.currentIndex + 1,
+            session.lesson.exercises.size,
+        ),
         style = MaterialTheme.typography.labelLarge,
     )
     Text(stringResource(R.string.lesson_difficulty, exercise.difficulty), style = MaterialTheme.typography.labelMedium)
@@ -167,13 +176,20 @@ private fun ExerciseStep(
         Text(stringResource(R.string.lesson_hint, i + 1, hint), style = MaterialTheme.typography.bodyMedium)
     }
 
-    state.feedback?.let { Feedback(it, exercise.explanation, exercise.incorrectFeedback) }
+    // En una evaluación no se puede reintentar, así que tras un fallo también se explica la respuesta correcta.
+    state.feedback?.let { Feedback(it, exercise.explanation, exercise.incorrectFeedback, explainOnIncorrect = !session.allowsRetries) }
 
     when (state.feedback) {
-        AnswerResult.Correct -> Button(onClick = onNext, modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(if (session.isLastExercise) R.string.lesson_see_summary else R.string.lesson_next))
-        }
-        is AnswerResult.Incorrect -> {
+        // En una evaluación no hay reintentos: tras comprobar, solo se puede avanzar.
+        AnswerResult.Correct, is AnswerResult.Incorrect -> if (!session.allowsRetries) {
+            Button(onClick = onNext, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(if (session.isLastExercise) R.string.assessment_see_result else R.string.assessment_next))
+            }
+        } else if (state.feedback == AnswerResult.Correct) {
+            Button(onClick = onNext, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(if (session.isLastExercise) R.string.lesson_see_summary else R.string.lesson_next))
+            }
+        } else {
             Button(onClick = onRetry, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.lesson_try_again)) }
             OutlinedButton(onClick = onNext, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(if (session.isLastExercise) R.string.lesson_see_summary else R.string.lesson_skip))
@@ -192,7 +208,7 @@ private fun ExerciseStep(
 }
 
 @Composable
-private fun Feedback(result: AnswerResult, explanation: String, incorrectFeedback: String) {
+private fun Feedback(result: AnswerResult, explanation: String, incorrectFeedback: String, explainOnIncorrect: Boolean) {
     val (container, content) = when (result) {
         AnswerResult.Correct -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
         is AnswerResult.Incorrect -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
@@ -218,6 +234,7 @@ private fun Feedback(result: AnswerResult, explanation: String, incorrectFeedbac
                         Text(stringResource(R.string.feedback_partial, correct, total), style = MaterialTheme.typography.bodyLarge)
                     }
                     Text(incorrectFeedback, style = MaterialTheme.typography.bodyLarge)
+                    if (explainOnIncorrect) Text(explanation, style = MaterialTheme.typography.bodyLarge)
                 }
                 is AnswerResult.Incomplete -> Text(stringResource(result.reason.message()), style = MaterialTheme.typography.bodyLarge)
             }
@@ -249,6 +266,13 @@ private fun Summary(lesson: Lesson, summary: SessionSummary, onRestart: () -> Un
             else stringResource(R.string.summary_exercise_unsolved, i + 1),
             style = MaterialTheme.typography.bodyMedium,
         )
+    }
+    summary.assessmentScore?.let { score ->
+        Text(
+            stringResource(R.string.summary_assessment_score, score.correct, score.total, score.percent),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(stringResource(R.string.summary_assessment_saved), style = MaterialTheme.typography.bodyMedium)
     }
     summary.assessmentPassed?.let { passed ->
         Text(

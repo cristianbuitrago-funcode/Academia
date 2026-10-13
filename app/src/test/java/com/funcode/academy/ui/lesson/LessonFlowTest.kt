@@ -14,21 +14,27 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.funcode.academy.R
 import com.funcode.academy.data.content.AssetContentRepository
+import com.funcode.academy.domain.lesson.AssessmentScore
 import com.funcode.academy.testing.FakeProgressRepository
 import com.funcode.academy.testing.FakeSettingsRepository
 import com.funcode.academy.ui.FuncodeAppUi
 import com.funcode.academy.ui.theme.FuncodeTheme
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Recorrido de interfaz con el contenido real de `assets`: Inicio → lección →
- * ejercicio → retroalimentación. Robolectric; no sustituye la prueba en dispositivo.
+ * Recorrido de interfaz con el contenido real de `assets`: Inicio/Mapa → módulo →
+ * lección o evaluación → ejercicio → retroalimentación. Robolectric; no sustituye la prueba en dispositivo.
  */
 @RunWith(AndroidJUnit4::class)
 class LessonFlowTest {
+
+    private companion object {
+        const val MODULE_TITLE = "Módulo 1: Introducción a la programación y tu primer programa en Java"
+    }
 
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
@@ -54,22 +60,79 @@ class LessonFlowTest {
         node(hasText(value)).performScrollTo().assertIsDisplayed()
     }
 
-    private fun openDemoLessonFirstExercise() {
-        rule.setContent {
-            FuncodeTheme {
-                FuncodeAppUi(
-                    progressRepository = progress,
-                    settingsRepository = FakeSettingsRepository(),
-                    contentRepository = AssetContentRepository(ApplicationProvider.getApplicationContext<Context>().assets),
-                )
-            }
+    private fun setApp() = rule.setContent {
+        FuncodeTheme {
+            FuncodeAppUi(
+                progressRepository = progress,
+                settingsRepository = FakeSettingsRepository(),
+                contentRepository = AssetContentRepository(ApplicationProvider.getApplicationContext<Context>().assets),
+            )
         }
-        assertShown("Tu primer programa: mostrar texto en pantalla")
-        click(text(R.string.home_open_lesson))
+    }
+
+    private fun openModuleFromMap() {
+        setApp()
+        // La barra inferior no está dentro de una zona desplazable: se pulsa sin desplazar.
+        waitForText(text(R.string.nav_map))
+        node(hasText(text(R.string.nav_map)) and hasClickAction()).performClick()
+        assertShown(MODULE_TITLE)
+        click(text(R.string.module_open))
+        assertShown(text(R.string.module_lessons_title))
+    }
+
+    private fun openDemoLessonFirstExercise() {
+        openModuleFromMap()
+        click(text(R.string.module_lesson_title, 5, "El método main y System.out.println"))
         assertShown(text(R.string.lesson_objectives_title))
         assertShown(text(R.string.draft_label))
         click(text(R.string.lesson_start_exercises))
         assertShown(text(R.string.lesson_exercise_progress, 1, 7))
+    }
+
+    @Test
+    fun inicioPermiteContinuarPorLaPrimeraLeccionDelModulo() {
+        setApp()
+        assertShown(text(R.string.home_continue_title))
+        assertShown(text(R.string.home_next_lesson, "¿Qué es programar?"))
+        assertShown(text(R.string.module_lessons_progress, 0, 7))
+        click(text(R.string.home_continue_button))
+        assertShown("¿Qué es programar?")
+        assertShown(text(R.string.lesson_start_exercises))
+    }
+
+    @Test
+    fun elModuloMuestraLasLeccionesEnOrdenYLaEvaluacionPendiente() {
+        openModuleFromMap()
+        assertShown(text(R.string.module_lesson_title, 1, "¿Qué es programar?"))
+        assertShown(text(R.string.module_lesson_title, 7, "Leer y comprender programas sencillos"))
+        assertShown(text(R.string.module_assessment_not_done))
+        assertShown(text(R.string.module_assessment_start))
+    }
+
+    @Test
+    fun elMejorResultadoGuardadoSeMuestraEnElModulo() {
+        runBlocking { progress.recordAssessmentResult("java.m01", AssessmentScore(correct = 7, total = 10)) }
+        openModuleFromMap()
+        assertShown(text(R.string.module_best_score, 70))
+        assertShown(text(R.string.module_assessment_retake))
+    }
+
+    @Test
+    fun laEvaluacionNoOfreceReintentoTrasUnFallo() {
+        openModuleFromMap()
+        click(text(R.string.module_assessment_start))
+        assertShown(text(R.string.assessment_rules))
+        click(text(R.string.lesson_start_assessment))
+        assertShown(text(R.string.assessment_progress, 1, 10))
+        // q01 es verdadera: se responde "Falso".
+        click(text(R.string.answer_false))
+        click(text(R.string.lesson_check))
+        assertShown(text(R.string.feedback_incorrect_title))
+        assertEquals(0, rule.onAllNodes(hasText(text(R.string.lesson_try_again))).fetchSemanticsNodes().size)
+        click(text(R.string.assessment_next))
+        assertShown(text(R.string.assessment_progress, 2, 10))
+        rule.waitForIdle()
+        assertEquals(listOf(false), progress.attempts.map { it.correct })
     }
 
     @Test

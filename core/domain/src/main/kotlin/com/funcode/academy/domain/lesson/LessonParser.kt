@@ -3,9 +3,18 @@ package com.funcode.academy.domain.lesson
 import com.funcode.academy.domain.lesson.json.ExerciseJson
 import com.funcode.academy.domain.lesson.json.LessonIndexJson
 import com.funcode.academy.domain.lesson.json.LessonJson
+import com.funcode.academy.domain.lesson.json.ModuleJson
 import com.funcode.academy.domain.lesson.json.SectionJson
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+
+/** Índice del contenido: rutas relativas de módulos y de lecciones. */
+data class ContentIndex(val modules: List<String>, val lessons: List<String>)
+
+sealed interface ModuleParseResult {
+    data class Valid(val definition: ModuleDefinition) : ModuleParseResult
+    data class Invalid(val errors: List<String>) : ModuleParseResult
+}
 
 /** Resultado de leer una lección: o una lección válida, o la lista completa de problemas. */
 sealed interface LessonParseResult {
@@ -38,11 +47,42 @@ object LessonParser {
         return Builder(raw).build()
     }
 
-    /** Lee el índice de lecciones (lista de rutas relativas de archivos). */
-    fun parseIndex(text: String): List<String> {
-        val index = json.decodeFromString<LessonIndexJson>(text)
+    /** Lee el índice del contenido. Lanza [IllegalArgumentException] si no es válido. */
+    fun parseIndex(text: String): ContentIndex {
+        val index = try {
+            json.decodeFromString<LessonIndexJson>(text)
+        } catch (e: SerializationException) {
+            throw IllegalArgumentException("Índice no válido: ${e.message}", e)
+        }
         require(index.schemaVersion == SUPPORTED_SCHEMA_VERSION) { "Versión de índice no compatible: ${index.schemaVersion}" }
-        return index.lessons.orEmpty()
+        return ContentIndex(index.modules.orEmpty(), index.lessons.orEmpty())
+    }
+
+    /** Lee la definición de un módulo (las referencias a lecciones se comprueban en [ModuleAssembler]). */
+    fun parseModule(text: String): ModuleParseResult {
+        val raw = try {
+            json.decodeFromString<ModuleJson>(text)
+        } catch (e: SerializationException) {
+            return ModuleParseResult.Invalid(listOf("JSON no válido: ${e.message}"))
+        } catch (e: IllegalArgumentException) {
+            return ModuleParseResult.Invalid(listOf("JSON no válido: ${e.message}"))
+        }
+        val errors = mutableListOf<String>()
+        if (raw.schemaVersion != SUPPORTED_SCHEMA_VERSION) errors += "schemaVersion debe ser $SUPPORTED_SCHEMA_VERSION"
+        val id = raw.id
+        if (id == null || !ID_PATTERN.matches(id)) errors += "id de módulo no válido: '$id'"
+        val order = raw.order
+        if (order == null || order < 1) errors += "order debe ser un entero ≥ 1"
+        val status = ReviewStatus.entries.firstOrNull { it.name == raw.reviewStatus }
+        if (status == null) errors += "reviewStatus debe ser DRAFT o APPROVED"
+        if (raw.title.isNullOrBlank()) errors += "Falta el campo 'title'"
+        if (raw.description.isNullOrBlank()) errors += "Falta el campo 'description'"
+        val lessons = raw.lessons.orEmpty()
+        if (lessons.isEmpty()) errors += "El módulo necesita al menos una lección"
+        if (errors.isNotEmpty()) return ModuleParseResult.Invalid(errors)
+        return ModuleParseResult.Valid(
+            ModuleDefinition(id!!, order!!, raw.title!!, raw.description!!, status!!, lessons, raw.assessment),
+        )
     }
 
     private class Builder(private val raw: LessonJson) {
@@ -62,6 +102,14 @@ object LessonParser {
             if (version == null || version < 1) errors += "version debe ser un entero ≥ 1"
             val status = ReviewStatus.entries.firstOrNull { it.name == raw.reviewStatus }
             if (status == null) errors += "reviewStatus debe ser DRAFT o APPROVED (recibido: ${raw.reviewStatus})"
+            val kind = when (raw.kind) {
+                null, "lesson" -> LessonKind.LESSON
+                "assessment" -> LessonKind.ASSESSMENT
+                else -> {
+                    errors += "kind debe ser 'lesson' o 'assessment' (recibido: ${raw.kind})"
+                    LessonKind.LESSON
+                }
+            }
 
             val objectives = objectives()
             val objectiveIds = objectives.map { it.id }.toSet()
@@ -73,12 +121,22 @@ object LessonParser {
                 }
             }
             val assessment = assessment(exercises.map { it.id }.toSet())
+            if (kind == LessonKind.ASSESSMENT) {
+                if (assessment == null) {
+                    errors += "Una evaluación necesita el bloque 'assessment'"
+                } else if (assessment.exerciseIds.toSet() != exercises.map { it.id }.toSet()) {
+                    errors += "En una evaluación, assessment.exerciseIds debe incluir todos sus ejercicios"
+                }
+                exercises.filter { it.hints.isNotEmpty() }.forEach {
+                    errors += "${it.id}: los ejercicios de una evaluación no pueden tener pistas"
+                }
+            }
 
             if (errors.isNotEmpty()) return LessonParseResult.Invalid(errors.toList())
             return LessonParseResult.Valid(
                 Lesson(
                     id = id!!, moduleId = moduleId!!, languageId = languageId!!, locale = locale!!,
-                    version = version!!, reviewStatus = status!!, title = title!!, description = description!!,
+                    version = version!!, reviewStatus = status!!, kind = kind, title = title!!, description = description!!,
                     objectives = objectives, presentations = presentations, exercises = exercises,
                     assessment = assessment,
                 ),
@@ -271,11 +329,12 @@ object LessonParser {
             val ids = a.exerciseIds.orEmpty()
             if (ids.isEmpty()) errors += "assessment.exerciseIds no puede estar vacío"
             ids.filterNot { it in exerciseIds }.forEach { errors += "assessment hace referencia a un ejercicio inexistente: '$it'" }
+            // El umbral es opcional: mientras no esté aprobado (P6) no se incluye.
             val threshold = a.passThreshold
-            if (threshold == null || threshold <= 0.0 || threshold > 1.0) {
+            if (threshold != null && (threshold <= 0.0 || threshold > 1.0)) {
                 errors += "assessment.passThreshold debe estar entre 0 (excluido) y 1"
             }
-            return Assessment(ids, threshold ?: 0.0)
+            return Assessment(ids, threshold)
         }
 
         private fun duplicates(values: List<String>) = values.groupingBy { it }.eachCount().filterValues { it > 1 }.keys

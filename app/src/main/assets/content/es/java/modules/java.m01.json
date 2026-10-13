@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01",
+  "order": 1,
+  "reviewStatus": "DRAFT",
+  "title": "Módulo 1: Introducción a la programación y tu primer programa en Java",
+  "description": "Qué es programar, algoritmos, instrucciones en orden, estructura de un programa Java, System.out.println y cómo se compila y ejecuta un programa.",
+  "lessons": [
+    "java.m01.l01",
+    "java.m01.l02",
+    "java.m01.l03",
+    "java.m01.l04",
+    "java.m01.l05",
+    "java.m01.l06",
+    "java.m01.l07"
+  ],
+  "assessment": "java.m01.eval"
+}

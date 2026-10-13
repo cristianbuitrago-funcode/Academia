@@ -24,7 +24,7 @@ class AppContainer(context: Context) {
     }
 
     val progressRepository: ProgressRepository by lazy {
-        RoomProgressRepository(database.xpLedgerDao(), database.exerciseAttemptDao())
+        RoomProgressRepository(database.xpLedgerDao(), database.exerciseAttemptDao(), database.moduleProgressDao())
     }
 
     val settingsRepository: SettingsRepository by lazy {

@@ -10,6 +10,7 @@ import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.lesson.Exercise
 import com.funcode.academy.domain.lesson.ExerciseContent
 import com.funcode.academy.domain.lesson.Lesson
+import com.funcode.academy.domain.lesson.LessonKind
 import com.funcode.academy.domain.lesson.LessonLoadResult
 import com.funcode.academy.domain.lesson.LessonSession
 import com.funcode.academy.domain.lesson.Section
@@ -85,13 +86,14 @@ class LessonViewModel(
         _uiState.value = LessonUiState.Exercising(session, initialDraft(session.currentExercise), feedback = null)
     }
 
-    fun updateDraft(answer: Answer) = updateExercising { it.copy(draft = answer, feedback = null) }
+    /** Cambia la respuesta en preparación; no se puede tocar una pregunta ya cerrada. */
+    fun updateDraft(answer: Answer) = updateExercising { if (it.session.isCurrentClosed) it else it.copy(draft = answer, feedback = null) }
 
     fun revealHint() = updateExercising { it.copy(session = it.session.revealHint()) }
 
     fun check() {
         val state = _uiState.value as? LessonUiState.Exercising ?: return
-        if (state.session.currentProgress.solved) return
+        if (state.session.isCurrentClosed) return
         val submission = state.session.submit(state.draft)
         _uiState.value = state.copy(session = submission.session, feedback = submission.result)
         if (submission.result !is AnswerResult.Incomplete) {
@@ -109,18 +111,29 @@ class LessonViewModel(
     }
 
     /** Oculta la retroalimentación para volver a intentarlo, conservando la respuesta. */
-    fun retry() = updateExercising { it.copy(feedback = null) }
+    fun retry() = updateExercising { if (it.session.isCurrentClosed) it else it.copy(feedback = null) }
 
     /** Siguiente ejercicio, o resumen tras el último. */
     fun next() {
         val state = _uiState.value as? LessonUiState.Exercising ?: return
         val session = state.session.next()
-        _uiState.value = if (session.finished) {
-            LessonUiState.Finished(session.lesson, session.summary())
-        } else {
-            LessonUiState.Exercising(session, initialDraft(session.currentExercise), feedback = null)
+        if (!session.finished) {
+            _uiState.value = LessonUiState.Exercising(session, initialDraft(session.currentExercise), feedback = null)
+            return
+        }
+        val summary = session.summary()
+        _uiState.value = LessonUiState.Finished(session.lesson, summary)
+        // El resultado de una evaluación se guarda una vez por sesión terminada; el
+        // repositorio conserva solo el mejor, así que repetirla nunca lo duplica.
+        val score = summary.assessmentScore
+        if (session.lesson.kind == LessonKind.ASSESSMENT && score != null) {
+            viewModelScope.launch { runCatching { progressRepository.recordAssessmentResult(session.lesson.moduleId, score) } }
         }
     }
+
+    /** Resuelta, o ya respondida en una evaluación (una sola respuesta por pregunta). */
+    private val LessonSession.isCurrentClosed: Boolean
+        get() = currentProgress.solved || (!allowsRetries && currentProgress.attempts > 0)
 
     private fun updateExercising(transform: (LessonUiState.Exercising) -> LessonUiState.Exercising) =
         _uiState.update { if (it is LessonUiState.Exercising) transform(it) else it }

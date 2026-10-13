@@ -1,5 +1,6 @@
 package com.funcode.academy.domain.progress
 
+import com.funcode.academy.domain.lesson.AssessmentScore
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -15,4 +16,16 @@ interface ProgressRepository {
 
     /** Registra un intento comprobado (correcto o incorrecto) de un ejercicio. */
     suspend fun recordAttempt(attempt: ExerciseAttempt)
+
+    /** Ejercicios con al menos un intento correcto (se deduce de los intentos guardados). */
+    fun observeSolvedExerciseIds(): Flow<Set<String>>
+
+    /**
+     * Guarda el resultado de una evaluación de módulo. Solo se conserva el mejor
+     * resultado: repetir la evaluación nunca lo empeora ni duplica registros.
+     */
+    suspend fun recordAssessmentResult(moduleId: String, score: AssessmentScore)
+
+    /** Mejor resultado (0–1) de la evaluación de cada módulo que se haya realizado. */
+    fun observeBestAssessmentScores(): Flow<Map<String, Double>>
 }
