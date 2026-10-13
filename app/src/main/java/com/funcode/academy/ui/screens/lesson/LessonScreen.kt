@@ -80,7 +80,7 @@ fun LessonScreen(
     state: LessonUiState,
     rewardNotice: RewardNotice?,
     sessionXp: Int,
-    hintsEnabled: Boolean = true,
+    hintsEnabled: Boolean,
     onStart: () -> Unit,
     onDraftChange: (Answer) -> Unit,
     onCheck: () -> Unit,

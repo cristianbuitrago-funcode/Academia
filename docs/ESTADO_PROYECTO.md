@@ -633,6 +633,9 @@ En cada ejercicio se muestra **qué objetivo se practica**.
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con misiones de contenido y proyecto guiado | **164/164 superadas** |
 | 2026-10-13 | CI 38449467297 (commit `6fe2eb6`) | Linux + Windows | **Verde: 234/234 pruebas** (164 dominio, 70 app); APK generado; esquema de Room sin cambios; lint: 0 errores, 2 avisos (`OldTargetApi` conocido y `PluralsCandidate` en un texto de misión, corregido después reformulando el texto) |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 7 | **173/173 superadas** |
+| 2026-10-13 | CI 38451937299 (commit `075c81b`) | Linux + Windows | **Fallo de compilación** de `:app`: `stringResource` dentro de un bloque `semantics { }` (CodeBlock). Corregido en `313c03d`. |
+| 2026-10-13 | CI 38452256496 (commit `313c03d`) | Linux + Windows | **Fallo de compilación** de las pruebas: faltaba importar `assert` en `PreferencesAndAccessibilityTest`. Corregido en `6638871`. |
+| 2026-10-13 | CI 38452449808 (commit `6638871`) | Linux + Windows | **Verde: 260/260 pruebas** (173 dominio, 87 app); APK generado; esquema de Room sin cambios; lint: 0 errores, 4 avisos (`OldTargetApi` conocido y 3 `ModifierParameter` en firmas nuevas, corregidos después) |
 | 2026-10-13 | CI 38449932591 (commit `d712599`) | Linux + Windows | **Verde: 234/234 pruebas**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38441919559 (commit `ae93235`) | Linux + Windows | **Verde: 208/208 pruebas** (144 dominio, 64 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38438737589 (commit `91b7049`) | Linux + Windows | **Verde: 188/188 pruebas** (127 dominio, 61 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |

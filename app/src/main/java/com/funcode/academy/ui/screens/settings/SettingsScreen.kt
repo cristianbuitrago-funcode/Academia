@@ -58,10 +58,10 @@ fun SettingsRoute(settingsRepository: SettingsRepository) {
 fun SettingsScreen(
     uiState: SettingsUiState,
     onAudienceSelected: (Audience) -> Unit,
-    onThemeSelected: (ThemeMode) -> Unit = {},
-    onTextScaleSelected: (TextScale) -> Unit = {},
-    onHintsChanged: (Boolean) -> Unit = {},
-    onResetPreferences: () -> Unit = {},
+    onThemeSelected: (ThemeMode) -> Unit,
+    onTextScaleSelected: (TextScale) -> Unit,
+    onHintsChanged: (Boolean) -> Unit,
+    onResetPreferences: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var confirmReset by rememberSaveable { mutableStateOf(false) }

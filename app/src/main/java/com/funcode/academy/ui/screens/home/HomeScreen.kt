@@ -67,7 +67,7 @@ fun HomeScreen(
     level: LevelProgress?,
     modules: List<ModuleProgress>?,
     missions: List<MissionProgress>?,
-    recommendations: List<Recommendation> = emptyList(),
+    recommendations: List<Recommendation>,
     onOpenLesson: (String) -> Unit,
     onOpenModule: (String) -> Unit,
     onOpenMissions: () -> Unit,
