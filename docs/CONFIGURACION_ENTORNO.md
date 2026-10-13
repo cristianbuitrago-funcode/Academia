@@ -133,7 +133,7 @@ Anota cualquier fallo con su número.
 | 5 | Cerrar la app (deslizarla en Recientes) y volver a abrirla | El progreso del paso 4 se conserva. |
 | 6 | **Hacer la evaluación** | La introducción dice «Una sola respuesta por pregunta y sin pistas.»; botón «Empezar la evaluación». |
 | 7 | Responder mal la pregunta 1 y comprobar | Se muestra «Todavía no es correcto.» con la explicación; **no** aparece «Intentar de nuevo» ni «Ver una pista», y la respuesta ya no se puede cambiar; solo «Siguiente pregunta». |
-| 8 | Pulsar «Siguiente pregunta» sin responder varias preguntas hasta el final → **Ver resultado** | «Resultado: X de 10 respuestas correctas (Y %)»; las preguntas sin responder cuentan como fallos. **No** aparece «aprobado» (el umbral P6 no está aprobado). |
+| 8 | Pulsar «Siguiente pregunta» sin responder varias preguntas hasta el final → **Ver resultado** | «Respuestas correctas: X de 10 (Y %)»; las preguntas sin responder cuentan como fallos. **No** aparece «aprobado» (el umbral P6 no está aprobado). |
 | 9 | Volver al módulo | «Mejor resultado de la evaluación: Y %» y «Repetir la evaluación». |
 | 10 | Repetir la evaluación con peor resultado | El mejor resultado no baja. Con uno mejor, sube. |
 | 11 | Cerrar y reabrir la app | El mejor resultado se conserva. |

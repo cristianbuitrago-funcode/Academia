@@ -18,7 +18,7 @@ _Última actualización: 2026-10-13_
 | 1. Planificación y arquitectura | **Aprobado** (2026-10-10) | D1–D8, P1 y P3 resueltas. |
 | 2. Esqueleto y CI | **Aprobado** (2026-10-13, según el responsable: verificado manualmente en Android Studio) | El *pull request* #1 sigue abierto: `main` aún no contiene la Fase 2. Los detalles de la verificación manual (resolución del fallo de Room y del emulador en su equipo) no constan en este registro. |
 | 3. Motor de lecciones y ejercicios | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 3 — Detalle». El contenido sigue en borrador. |
-| 4. Primer módulo de Java y evaluación | **Implementado — pruebas en CI en curso; pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 4 — Detalle». Todo el contenido está en borrador. |
+| 4. Primer módulo de Java y evaluación | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 4 — Detalle». Todo el contenido está en borrador. |
 | 5–9 | Planificado — sin autorizar | — |
 
 ## Decisiones
@@ -224,10 +224,10 @@ Las lecciones son, en este orden:
 | Progreso del módulo derivado (`ModuleProgress`: lecciones completadas, siguiente actividad) | ✔ | ✔ | `ModuleProgressTest` |
 | Comprobación del Java del contenido con `javac --release 17` (los ejemplos compilan; las salidas declaradas coinciden con las reales; `findError` falla justo en las líneas marcadas; los huecos rellenados y las líneas ordenadas compilan) | ✔ | ✔ | `JavaContentCompilationTest`. Se ejecuta en las pruebas JVM del dominio (contenedor y CI), **nunca en la app**. |
 | Coherencia del contenido real (borrador, ids, dificultad no decreciente, cada objetivo practicado) | ✔ | ✔ | `ModuleContentTest` |
-| Mejor resultado en `module_progress` (transacción de lectura y escritura; se conserva solo el mejor) | ✔ | CI | `RoomProgressRepositoryTest` |
-| Progreso tras cerrar y reabrir la base de datos (archivo real) | ✔ | CI | `RoomProgressRepositoryTest.elProgresoSeRecuperaAlCerrarYReabrirLaBaseDeDatos` |
-| Mapa → módulo → lecciones en orden → evaluación → resultado; tarjeta «Continuar» en Inicio | ✔ | CI | `LessonFlowTest`, `NavigationTest` |
-| El resultado de la evaluación se guarda una sola vez por sesión terminada | ✔ | CI | `LessonViewModelTest` |
+| Mejor resultado en `module_progress` (transacción de lectura y escritura; se conserva solo el mejor) | ✔ | ✔ CI | `RoomProgressRepositoryTest` |
+| Progreso tras cerrar y reabrir la base de datos (archivo real) | ✔ | ✔ CI | `RoomProgressRepositoryTest.elProgresoSeRecuperaAlCerrarYReabrirLaBaseDeDatos` |
+| Mapa → módulo → lecciones en orden → evaluación → resultado; tarjeta «Continuar» en Inicio | ✔ | ✔ CI | `LessonFlowTest`, `NavigationTest` |
+| El resultado de la evaluación se guarda una sola vez por sesión terminada | ✔ | ✔ CI | `LessonViewModelTest` |
 | Verificación en Android Studio / dispositivo | — | **Pendiente** (responsable) | `docs/CONFIGURACION_ENTORNO.md` §6 |
 
 **No implementado (fuera del alcance de la Fase 4):**
@@ -276,6 +276,7 @@ Las lecciones son, en este orden:
 | 2026-10-13 | Contenedor | `javac`/`java` 21 sobre los 5 programas de la lección demostrativa | Salidas y error de compilación coinciden con el contenido |
 | 2026-10-13 | CI 38428986983 (commit `63c4a71`) | Linux + Windows | **Verde: 102/102 pruebas** (72 dominio, 30 app); lint: 0 errores, 1 aviso (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 4, incluida la compilación con `javac --release 17` del contenido | **97/97 superadas** |
+| 2026-10-13 | CI 38435568555 (commit `730a23b`) | Linux + Windows | **Verde: 143/143 pruebas** (97 dominio, 46 app); APK generado; esquema de Room sin cambios; lint: 0 errores, 2 avisos (`OldTargetApi` conocido y `PluralsCandidate` en el texto del resultado, corregido después reformulando el texto) |
 | 2026-10-12 | CI 38319271182 | Linux + Windows | **Verde en ambos** tras usar `OkioStorage` en la prueba de DataStore (la app sigue usando `FileStorage`, correcto en Android). |
 
 ## Errores conocidos

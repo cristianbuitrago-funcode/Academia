@@ -114,7 +114,7 @@
     <string name="summary_hints">Pistas usadas: %1$d</string>
     <string name="summary_exercise_solved">Ejercicio %1$d: resuelto (intentos: %2$d)</string>
     <string name="summary_exercise_unsolved">Ejercicio %1$d: sin resolver</string>
-    <string name="summary_assessment_score">Resultado: %1$d de %2$d respuestas correctas (%3$d %%)</string>
+    <string name="summary_assessment_score">Respuestas correctas: %1$d de %2$d (%3$d %%)</string>
     <string name="summary_assessment_saved">Si es tu mejor resultado, queda guardado en este dispositivo.</string>
     <string name="summary_assessment_passed">Evaluación de la lección: aprobada.</string>
     <string name="summary_assessment_failed">Evaluación de la lección: no aprobada todavía.</string>
