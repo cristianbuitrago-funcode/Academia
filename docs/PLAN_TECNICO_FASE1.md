@@ -415,3 +415,6 @@ Los criterios 17–18 dependen de una verificación del responsable; hasta enton
 | 2026-10-13 | Progreso del módulo derivado de `exercise_attempt`; mejor resultado en `module_progress` | Sin cambio de esquema ni migración; repetir una actividad no duplica nada. |
 | 2026-10-13 | `JavaContentCompilationTest` con `javac --release 17` (P7 provisional) en las pruebas del dominio | Cumple P8 sin herramientas externas; el código se compila en la JVM de las pruebas, nunca en la app. |
 | 2026-10-13 | Inicio muestra una tarjeta «Continuar» en lugar de la lista de lecciones; Mapa lista los módulos | Con 8 actividades, la lista plana dejaba de ser manejable y duplicaba la pantalla del módulo. |
+| 2026-10-13 | P6 aprobado: XP 10 + 5 × (dificultad − 1), −25 % por pista (mínimo 50 %), lección +20, evaluación aprobada +100; curva 100 × n; umbral 80 % | Decisión del responsable sobre la propuesta presentada antes de programar la Fase 5. |
+| 2026-10-13 | Recompensas recalculadas desde los resultados verificados (`RewardEngine`) en lugar de sumarse en cada pantalla | Un solo sistema, idempotente: reintentos, reinicios y fallos no duplican ni pierden recompensas. |
+| 2026-10-13 | Monedas fuera de la Fase 5 | Decisión del responsable: sin tienda no tienen uso; queda una propuesta documentada. |

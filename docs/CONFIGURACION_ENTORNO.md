@@ -142,3 +142,33 @@ Anota cualquier fallo con su número.
 
 Ninguna pantalla debe decir que se ejecuta código Java: solo se comprueban las respuestas. Anota cualquier fallo con su número.
 
+---
+
+## 7. Probar la Fase 5 (XP, niveles y logros) en Android Studio
+
+1. Actualiza la rama: **Git → Pull** (rama `ccr-db27c4de-czvzgb`).
+2. Pruebas automáticas: `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `.\gradlew.bat …`).
+3. Para empezar desde cero: *Settings* del emulador → *Apps* → Funcode Academy → *Storage* → **Clear storage**. No hay cambio de base de datos, así que también puedes conservar tus datos: los aciertos que ya tenías se recompensan al abrir Inicio.
+4. Ejecuta la app (▶) y comprueba:
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 1 | Inicio sin actividad | Tarjeta «Nivel 1», «XP total: 0», barra vacía y «XP que faltan para el nivel 2: 100». |
+| 2 | Perfil sin actividad | Lo mismo; «Todavía no has conseguido XP…»; «Logros (0 de 5)» y los cinco logros «Pendiente». |
+| 3 | Lección 1 → ejercicio 1: responder bien sin pistas | Aviso «XP obtenido: +10». |
+| 4 | Ejercicio 2: ver una pista y responder bien | «XP obtenido: +7» (10 − 25 %). |
+| 5 | Ejercicio 3: responder mal | Sin aviso de XP. Tras acertar, el XP es el completo de su dificultad (los fallos no penalizan). |
+| 6 | Terminar la lección 1 | En el último acierto: «¡Lección completada!» y «Logro desbloqueado: Primeros pasos». El resumen muestra «XP obtenido en esta sesión». |
+| 7 | **Repetir ejercicios** y resolver otra vez | Aviso «Este ejercicio ya te dio XP antes…»; el XP total no cambia; «XP obtenido en esta sesión: 0». |
+| 8 | Pulsar «Comprobar» y «Siguiente» muy rápido varias veces | El XP total solo sube una vez por ejercicio. |
+| 9 | Completar más lecciones hasta superar 100 XP | Aviso «¡Has subido al nivel 2!» y el logro «Subida de nivel». |
+| 10 | Evaluación con menos de 8 aciertos | «Evaluación no aprobada todavía: para aprobar hace falta un 80 %…»; sin XP. |
+| 11 | Evaluación con 8 o más aciertos | «¡Evaluación aprobada!», «XP obtenido: +100» y el logro «Evaluación superada». Repetirla no suma más. |
+| 12 | Perfil | Nivel, barra, XP total, «Ejercicios resueltos / Lecciones completadas / Evaluaciones aprobadas» con su XP, y los logros con «Conseguido el <fecha>». |
+| 13 | Cerrar la app (deslizarla en Recientes) y volver a abrirla | El nivel, el XP y los logros se conservan. |
+| 14 | Modo avión | Todo funciona igual (la app no usa Internet). |
+| 15 | TalkBack (opcional) en Perfil | Lee la barra como «Progreso hacia el nivel N: X de Y» y cada logro de una vez. |
+| 16 | Repetir 1–3, 6 y 13 en el emulador con **API 26** | Igual, sin cierres. |
+
+Anota cualquier fallo con su número.
+

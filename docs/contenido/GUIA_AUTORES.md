@@ -36,7 +36,7 @@ Una lección o un módulo que no cumpla las reglas **no se muestra**: la app ens
 | `presentations` | Sí | Mapa de variante → secciones. `default` es obligatoria; `kids`, `teens` y `adults` son opcionales y solo cambian la presentación, nunca los objetivos ni los ejercicios. |
 | `exercises` | Sí | Lista ordenada (de menor a mayor dificultad). |
 | `kind` | No | `lesson` (por defecto) o `assessment` (evaluación del módulo). |
-| `assessment` | Solo en evaluaciones | `{exerciseIds, passThreshold?}`. `exerciseIds` debe incluir **todos** los ejercicios. `passThreshold` (fracción en (0, 1] de respuestas correctas al primer intento) es opcional y **no se debe escribir mientras P6 no esté aprobada**: sin él, la app muestra el resultado, pero no «aprobado». |
+| `assessment` | Solo en evaluaciones | `{exerciseIds, passThreshold?}`. `exerciseIds` debe incluir **todos** los ejercicios. `passThreshold` (fracción en (0, 1] de respuestas correctas al primer intento) es opcional; el valor aprobado (P6) es **0.8**. Sin él, la evaluación no se puede aprobar ni da XP. |
 
 **Evaluaciones:** una sola respuesta por pregunta y sin pistas (el parser rechaza `hints` en una evaluación). Una pregunta sin responder cuenta como fallo.
 
@@ -44,7 +44,7 @@ Secciones: `{"type":"text","text":…}`, `{"type":"callout","text":…}` y `{"ty
 
 ## Campos comunes de cada ejercicio
 
-`id` (estable), `type`, `objectiveIds`, `difficulty` (1–5), `prompt`, `hints` (opcionales, progresivas), `explanation` (por qué la respuesta es correcta) e `incorrectFeedback` (orientación general si falla).
+`id` (estable), `type`, `objectiveIds`, `difficulty` (1–5; decide el XP: 10 + 5 × (dificultad − 1)), `prompt`, `hints` (opcionales, progresivas), `explanation` (por qué la respuesta es correcta) e `incorrectFeedback` (orientación general si falla).
 
 **Pistas:** deben ayudar a razonar. El validador rechaza una pista que contenga literalmente la salida esperada o una respuesta de un hueco.
 

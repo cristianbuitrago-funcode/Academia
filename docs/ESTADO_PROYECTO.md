@@ -18,8 +18,9 @@ _Última actualización: 2026-10-13_
 | 1. Planificación y arquitectura | **Aprobado** (2026-10-10) | D1–D8, P1 y P3 resueltas. |
 | 2. Esqueleto y CI | **Aprobado** (2026-10-13, según el responsable: verificado manualmente en Android Studio) | El *pull request* #1 sigue abierto: `main` aún no contiene la Fase 2. Los detalles de la verificación manual (resolución del fallo de Room y del emulador en su equipo) no constan en este registro. |
 | 3. Motor de lecciones y ejercicios | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 3 — Detalle». El contenido sigue en borrador. |
-| 4. Primer módulo de Java y evaluación | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 4 — Detalle». Todo el contenido está en borrador. |
-| 5–9 | Planificado — sin autorizar | — |
+| 4. Primer módulo de Java y evaluación | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 4 — Detalle». El contenido sigue en borrador. |
+| 5. RPG básico: XP, niveles y logros | **Implementado — CI en curso; pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 5 — Detalle». |
+| 6–9 | Planificado — sin autorizar | — |
 
 ## Decisiones
 
@@ -29,7 +30,8 @@ _Última actualización: 2026-10-13_
 | P1 Rama `main` + flujo con *pull requests* | Aprobado. `main` creada; ver `docs/FLUJO_DE_TRABAJO.md` |
 | P3 Robolectric | Aprobado con condiciones. Incorporado en la Fase 2 (justificación abajo) |
 | P4 Permiso para subir *workflows* | Resuelto: el *push* de `.github/workflows/ci.yml` funcionó |
-| P6 Umbral del 80 % para aprobar un módulo | **Pendiente.** Era solo una propuesta del plan: no se aplica. La evaluación muestra el resultado, pero no «aprobado/no aprobado». |
+| P6 Valores de XP, curva de niveles y umbral | **Aprobado** (2026-10-13): propuesta A de XP con penalización por pistas, curva 100×n y umbral del 80 %. Ver «Fase 5 — Detalle». El umbral no bloquea lecciones ni módulos. |
+| Monedas virtuales | **No implementadas** por decisión del responsable (2026-10-13); propuesta documentada en «Fase 5 — Detalle». |
 | P7 Versión de Java del contenido | **Pendiente.** Se usa Java 17 de forma provisional (`javac --release 17` en las pruebas). |
 | P8 Comprobación automática del Java del contenido | Implementada en la Fase 4 (`JavaContentCompilationTest`); pendiente de tu aprobación. |
 | P2, P5, P9, P10 | Pendiente (se deciden en su fase) |
@@ -257,6 +259,119 @@ Las lecciones son, en este orden:
 | Verificación manual en Android Studio | **Pendiente** (responsable) |
 | Aprobación del contenido | **Pendiente** (responsable) |
 
+## Fase 5 — Detalle
+
+### Revisión de entrada
+
+- Fase 4: aprobada por el responsable; CI 38436000222 en verde (143/143 pruebas, Linux y Windows).
+- Sin errores bloqueantes.
+- El plan ya preveía:
+  - `xp_ledger` con `UNIQUE(sourceType, sourceId)`;
+  - la tabla `achievement_unlocked`;
+  - el cálculo del XP y del nivel desde el registro (§6.3–6.4).
+- Los valores concretos (P6) y las monedas no estaban definidos. Se consultaron antes de programar.
+
+### Decisiones aprobadas por el responsable (2026-10-13)
+
+| Tema | Valor |
+|---|---|
+| XP por ejercicio de lección | 10 + 5 × (dificultad − 1) → 10/15/20/25 XP. |
+| Penalización por pista | −25 % del valor por cada pista revelada antes del primer acierto, con un mínimo del 50 %; se redondea hacia abajo. Ejemplos: dificultad 1 con 1 pista → 7 XP; dificultad 3 con 2 pistas o más → 10 XP. |
+| Lección completada | +20 XP (todos sus ejercicios resueltos). |
+| Evaluación aprobada | +100 XP, una sola vez. Las preguntas de la evaluación no dan XP por separado. |
+| Umbral de aprobación | 80 % de respuestas correctas al primer intento (`passThreshold: 0.8` en `java.m01.eval`). No bloquea lecciones ni módulos. |
+| Curva de niveles | Pasar del nivel n al n+1 cuesta 100 × n XP. Se empieza el nivel 2 con 100 XP, el 3 con 300, el 4 con 600 y el 5 con 1000. |
+| Monedas | No se implementan en esta fase. |
+
+**Totales del módulo 1:**
+- Sin pistas suma **910 XP** (670 por ejercicios, 140 por lecciones y 100 por la evaluación), lo que lleva al **nivel 4**.
+- La prueba `RewardEngineTest` lo comprueba con el contenido real.
+
+### Reglas aplicadas
+
+1. **Fuente única:** el XP se guarda solo en `xp_ledger`. El total y el nivel se calculan de él; no hay contador aparte.
+2. **Primera finalización válida:** `UNIQUE(sourceType, sourceId)` impide un segundo registro para la misma actividad. Repetir una actividad da 0 XP, y la app lo indica («repetirlo sirve para practicar, pero no suma más»).
+3. **Recompensas recalculadas desde lo verificado:** `RewardEngine.sync()` no recibe «XP a sumar».
+   - Recalcula lo que corresponde a partir de:
+     - los intentos correctos guardados (`exercise_attempt`), donde el **primer** acierto decide la penalización por pistas;
+     - el mejor resultado de cada evaluación (`module_progress`).
+   - Después registra solo lo que falta.
+   - Por eso es seguro frente a pulsaciones repetidas, reinicios y fallos a mitad. Si la app se cierra antes de conceder algo, se concede en la siguiente sincronización, que se lanza también al abrir Inicio.
+   - Las llamadas simultáneas se ordenan con un `Mutex`, y la base de datos rechaza los duplicados de todos modos.
+4. **Los fallos y las respuestas incompletas no dan XP.** Solo cuentan los aciertos comprobados por el validador; una evaluación por debajo del umbral no da XP.
+5. **Datos anteriores:** los aciertos guardados antes de la Fase 5 se recompensan en la primera sincronización, con la misma regla. Los ids retirados (`java.m02.l01.*`) se ignoran.
+
+### Logros
+
+| Id (estable) | Nombre | Condición |
+|---|---|---|
+| `first_lesson` | Primeros pasos | 1 lección completada |
+| `three_lessons` | Buen ritmo | 3 lecciones distintas completadas |
+| `first_assessment_passed` | Evaluación superada | 1 evaluación aprobada (≥ umbral) |
+| `first_module_mastered` | Módulo dominado | Todas las lecciones de un módulo y su evaluación aprobada |
+| `level_2` | Subida de nivel | Nivel 2 o superior |
+
+- Se guardan en `achievement_unlocked` (clave primaria = id), así que nunca se duplican.
+- **No conceden XP**, para evitar recompensas encadenadas.
+- No hay logro de racha: el progreso por días no está implementado de forma fiable.
+
+### Componentes
+
+| Componente | Implementado | Probado | Evidencia |
+|---|---|---|---|
+| `RewardRules`: valores de XP y penalización | ✔ | ✔ | `RewardRulesTest` (valores, límites, entradas no válidas) |
+| `LevelCurve` y `LevelProgress`: nivel, XP del nivel, restante y fracción | ✔ | ✔ | `LevelCurveTest` (estado inicial, límites exactos, determinismo, valores no válidos) |
+| `Achievement` y `LearningState` | ✔ | ✔ | `AchievementTest` |
+| `RewardCalculator` (puro) y `RewardEngine` (idempotente) | ✔ | ✔ | `RewardCalculatorTest`, `RewardEngineTest` (contenido real; repetición; pistas; evaluación aprobada y suspendida; 910 XP; llamadas simultáneas) |
+| Room: `AchievementDao`, `ExerciseAttemptDao.firstCorrectAttempts`, `XpLedgerDao.observeAll` | ✔ | CI | `RoomProgressRepositoryTest`, `RewardPersistenceTest` (archivo real: sin duplicados tras reabrir; recompensa pendiente concedida después) |
+| Avisos en la lección (XP, lección completada, evaluación aprobada, subida de nivel, logros; «ya recompensado») y XP de la sesión en el resumen | ✔ | CI | `LessonViewModelTest`, `LessonFlowTest` |
+| Inicio: tarjeta de nivel con barra de progreso; sincronización pendiente al abrir | ✔ | CI | `NavigationTest` |
+| Perfil: nivel, barra, XP, resumen de recompensas por tipo y logros con fecha | ✔ | CI | `ProfileStateTest`, `NavigationTest`, `LessonFlowTest` |
+| Verificación en Android Studio / dispositivo | — | **Pendiente** (responsable) | `docs/CONFIGURACION_ENTORNO.md` §7 |
+
+**Base de datos:**
+- **Sin cambio de esquema ni migración.** Las tablas `xp_ledger` y `achievement_unlocked` ya existían en la versión 1; solo se añadieron consultas (DAO).
+- El esquema exportado sigue igual; CI lo comprueba.
+
+**Accesibilidad:**
+- La barra de progreso tiene una descripción para TalkBack («Progreso hacia el nivel N: X de Y»).
+- Los avisos de recompensa se anuncian (*live region*).
+- Cada tarjeta de logro se lee como un solo elemento.
+
+**No implementado (fuera de la Fase 5 o no aprobado):**
+- monedas;
+- tienda;
+- avatar (el plan lo incluía en el perfil, pero la autorización de la Fase 5 no lo pide);
+- rachas;
+- misiones;
+- desbloqueo de módulos (hay un solo módulo);
+- animaciones;
+- historial detallado movimiento a movimiento (el perfil muestra un resumen por tipo).
+
+### Propuesta de monedas (pendiente de decisión, para la fase que traiga la tienda)
+
+- Monedas = XP total ÷ 10 (redondeo hacia abajo), **derivadas del mismo registro de XP**, menos lo gastado.
+- Lo gastado se guardaría en una tabla nueva de compras, con una migración 1→2.
+- Nunca habría dinero real, anuncios ni intercambio.
+
+### Criterios de aceptación de la Fase 5 (según la autorización)
+
+| Requisito | Estado |
+|---|---|
+| XP solo por la primera finalización válida; repetir no da más | ✔ Restricción `UNIQUE` + `RewardEngine` (pruebas de dominio y de Room) |
+| Penalización por pistas aprobada | ✔ `RewardRules` |
+| Total derivado del registro, sin contador | ✔ `SUM(amount)` de `xp_ledger` |
+| Sin duplicados por pulsaciones, reinicios o navegación | ✔ Motor idempotente + `Mutex` + restricciones de la base de datos |
+| Recompensas solo a partir de resultados comprobados; los fallos no dan XP | ✔ |
+| Niveles: total, nivel, XP restante, barra, aviso al subir, estado inicial | ✔ |
+| Cálculo determinista y en el dominio, con pruebas | ✔ `LevelCurveTest` |
+| Monedas | No implementadas (decisión del responsable) |
+| Logros con id estable, nombre, descripción, condición y estado; sin duplicados | ✔ |
+| Integración visual (Inicio, Perfil, lección) sin reconstruir la navegación | ✔ |
+| Persistencia, sin conexión, tras cerrar y abrir | ✔ CI (`RewardPersistenceTest`, `RoomProgressRepositoryTest`) |
+| Sin pagos, anuncios, analítica ni permisos nuevos | ✔ |
+| Verificación manual en Android Studio | **Pendiente** (responsable) |
+
 ## Pruebas ejecutadas
 
 | Fecha | Dónde | Prueba | Resultado |
@@ -277,6 +392,7 @@ Las lecciones son, en este orden:
 | 2026-10-13 | CI 38428986983 (commit `63c4a71`) | Linux + Windows | **Verde: 102/102 pruebas** (72 dominio, 30 app); lint: 0 errores, 1 aviso (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 4, incluida la compilación con `javac --release 17` del contenido | **97/97 superadas** |
 | 2026-10-13 | CI 38435568555 (commit `730a23b`) | Linux + Windows | **Verde: 143/143 pruebas** (97 dominio, 46 app); APK generado; esquema de Room sin cambios; lint: 0 errores, 2 avisos (`OldTargetApi` conocido y `PluralsCandidate` en el texto del resultado, corregido después reformulando el texto) |
+| 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 5 | **127/127 superadas** |
 | 2026-10-13 | CI 38436000222 (commit `ed66018`) | Linux + Windows | **Verde: 143/143 pruebas**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-12 | CI 38319271182 | Linux + Windows | **Verde en ambos** tras usar `OkioStorage` en la prueba de DataStore (la app sigue usando `FileStorage`, correcto en Android). |
 
@@ -297,13 +413,13 @@ Las lecciones son, en este orden:
 
 ## Acciones pendientes del responsable
 
-1. Verificar la Fase 4 en Android Studio siguiendo `docs/CONFIGURACION_ENTORNO.md` §6.
+1. Verificar la Fase 5 en Android Studio siguiendo `docs/CONFIGURACION_ENTORNO.md` §7.
 2. Revisar el contenido en borrador del módulo `java.m01` (7 lecciones y la evaluación) y aprobarlo o pedir cambios (D7).
-3. Decidir P6 (umbral de aprobación), P7 (versión de Java) y las decisiones 3–8 de «Fase 4 — Detalle».
+3. Decidir P7 (versión de Java), el conjunto inicial de logros, el avatar y la propuesta de monedas (ver «Fase 5 — Detalle»).
 4. Responder las decisiones F3-D1 a F3-D5 que siguen abiertas.
-5. Revisar y fusionar el *pull request* #1 (contiene las fases 2, 3 y 4).
+5. Revisar y fusionar el *pull request* #1 (contiene las fases 2 a 5).
 6. Borrar la rama `Main` duplicada y cambiar la rama por defecto a `main` (`docs/FLUJO_DE_TRABAJO.md`).
 
 ## Próximos pasos autorizados
 
-Ninguno. La Fase 5 espera autorización explícita.
+Ninguno. La Fase 6 espera autorización explícita.

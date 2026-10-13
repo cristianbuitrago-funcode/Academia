@@ -1,4 +1,4 @@
-# Funcode Academy: componentes del proyecto (fases 2 a 4)
+# Funcode Academy: componentes del proyecto (fases 2 a 5)
 
 Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase.
 
@@ -32,6 +32,11 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `lesson/LessonParser.kt`, `lesson/json/` | Lee el JSON del contenido y lo valida por completo; devuelve todos los errores en lugar de fallar. |
 | `lesson/LessonSession.kt` | Motor de la sesión (ejercicio actual, pistas, intentos, resumen) y contrato `ContentRepository`. En una evaluación: una respuesta por pregunta, sin pistas y resultado `AssessmentScore`. |
 | `lesson/Module.kt` | Módulo del curso (`CourseModule`) y `ModuleAssembler`, que lo arma a partir de su definición y comprueba sus lecciones. |
+| `rpg/RewardRules.kt` | Valores de XP aprobados (P6): por ejercicio según la dificultad, penalización por pistas, lección y evaluación. |
+| `rpg/LevelCurve.kt` | Curva de niveles (100 × n) y progreso hacia el siguiente nivel, calculados desde el XP total. |
+| `rpg/Achievement.kt` | Logros con id estable y condición de desbloqueo sobre `LearningState`. |
+| `rpg/RewardCalculator.kt` | Cálculo puro de las recompensas que corresponden a los resultados verificados. |
+| `rpg/RewardEngine.kt` | Único punto que concede XP y logros: recalcula desde lo guardado y registra lo que falta (idempotente). |
 | `progress/ModuleProgress.kt` | Progreso de un módulo **derivado** de los ejercicios resueltos y del mejor resultado: lecciones completadas y siguiente actividad. |
 
 ## `:app` (Android)
@@ -42,14 +47,17 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `AppContainer.kt` | **Inyección de dependencias manual**: crea Room y DataStore una sola vez y los entrega como interfaces del dominio. |
 | `MainActivity.kt` | Única actividad; muestra la interfaz Compose. |
 | `data/local/ProgressEntities.kt` | Tablas de Room (esquema inicial del plan, §6.3). `xp_ledger` tiene un índice **único** sobre `(sourceType, sourceId)`. |
-| `data/local/XpLedgerDao.kt` | Consultas SQL del registro de XP. `insert` ignora los duplicados y devuelve -1. |
+| `data/local/XpLedgerDao.kt` | Consultas SQL del registro de XP. `insert` ignora los duplicados y devuelve -1; `observeAll` da los movimientos. |
 | `data/local/FuncodeDatabase.kt` | Define la base de datos `funcode.db` (versión 1). |
 | `data/progress/RoomProgressRepository.kt` | Implementa `ProgressRepository` con Room. |
 | `data/settings/DataStoreSettingsRepository.kt` | Implementa `SettingsRepository` con DataStore (archivo `settings.preferences_pb`). |
 | `data/content/AssetContentRepository.kt` | Implementa `ContentRepository` leyendo `assets/content/es/java` (sin conexión). |
 | `data/local/ExerciseAttemptDao.kt` | Inserta y consulta intentos en `exercise_attempt`; también da los ejercicios resueltos. |
+| `data/local/AchievementDao.kt` | Guarda logros en `achievement_unlocked` (clave primaria: nunca se duplican). |
 | `data/local/ModuleProgressDao.kt` | Guarda el mejor resultado de la evaluación de cada módulo en `module_progress` (transacción de lectura y escritura). |
 | `ui/progress/LearningProgress.kt` | Combina módulos, ejercicios resueltos y resultados en el progreso de cada módulo. |
+| `ui/rpg/*` | Tarjeta de nivel con barra de progreso, aviso de recompensas y textos de los logros. |
+| `ui/screens/profile/*` | Perfil: nivel, XP, resumen de recompensas por tipo y logros con su fecha. |
 | `ui/screens/module/*` | Mapa (lista de módulos) y pantalla de módulo (lecciones en orden y evaluación). |
 | `assets/content/es/java/` | Contenido educativo en JSON (índice, módulos y una lección por archivo). Formato: `docs/contenido/GUIA_AUTORES.md`. |
 | `ui/screens/lesson/LessonViewModel.kt` | Carga la lección, mantiene la sesión del dominio y registra intentos. |
@@ -59,10 +67,8 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `ui/theme/Theme.kt` | Tema Material 3 claro y oscuro (paleta provisional, P10). |
 | `ui/navigation/TopLevelDestination.kt` | Rutas tipadas y destinos de la barra inferior. |
 | `ui/FuncodeAppUi.kt` | `Scaffold` con la barra de navegación y el `NavHost` que cambia de pantalla. |
-| `ui/screens/home/*` | Inicio: XP total **leído de Room** (hoy siempre 0: los ejercicios aún no dan XP) y tarjeta «Continuar aprendiendo» con la siguiente actividad. |
+| `ui/screens/home/*` | Inicio: nivel y XP **calculados desde Room**, tarjeta «Continuar aprendiendo» y sincronización de recompensas pendientes al abrir. |
 | `ui/screens/settings/*` | Ajustes: elegir el público (adolescente/adulto), guardado en DataStore. |
-| `ui/screens/profile` | Pantalla pendiente: muestra "Disponible en una próxima versión". |
-| `ui/components/ComingSoon.kt` | Componente reutilizable para ese estado vacío. |
 | `res/values/strings.xml` | Todos los textos visibles, en español. |
 | `res/xml/*backup*` | Reglas de copia de seguridad: solo la base de datos y los ajustes. |
 | `schemas/` | Esquema de Room exportado (se compara en CI con el generado). |
@@ -81,6 +87,9 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `app/src/test/.../ui/NavigationTest.kt` | Navegación, botón Atrás, recreación y ajustes en la interfaz | Robolectric + Compose: misma tarea |
 | `core/domain/.../lesson/*Test.kt` | Validadores, parser, sesión y coherencia del contenido real | `./gradlew :core:domain:test` |
 | `core/domain/.../lesson/JavaContentCompilationTest.kt` | Compila con `javac --release 17` el Java del contenido y compara las salidas declaradas (en la JVM de las pruebas, no en la app) | `./gradlew :core:domain:test` |
+| `core/domain/.../rpg/*Test.kt` | Reglas de XP, niveles, logros y motor de recompensas (con el contenido real) | `./gradlew :core:domain:test` |
+| `app/src/test/.../data/RewardPersistenceTest.kt` | Motor de recompensas con Room en archivo: sin duplicados y recuperación tras reabrir | Robolectric |
+| `app/src/test/.../ui/profile/ProfileStateTest.kt` | Estado del perfil a partir del registro | JVM |
 | `core/domain/.../progress/ModuleProgressTest.kt` | Lecciones completadas y siguiente actividad | `./gradlew :core:domain:test` |
 | `app/src/test/.../data/AssetContentRepositoryTest.kt` | Lectura del contenido real de `assets` | Robolectric |
 | `app/src/test/.../ui/lesson/LessonViewModelTest.kt` | Recorrido completo de la lección y registro de intentos | JVM |
