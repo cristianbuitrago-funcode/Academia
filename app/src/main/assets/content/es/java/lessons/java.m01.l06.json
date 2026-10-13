@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.l06",
+  "moduleId": "java.m01",
+  "languageId": "java",
+  "locale": "es",
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "title": "Código fuente, compilación y ejecución",
+  "description": "Entiende qué pasa desde que escribes un programa Java hasta que ves su resultado.",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "Distinguir código fuente, compilación y ejecución."
+    },
+    {
+      "id": "o2",
+      "text": "Diferenciar un error de compilación de un resultado incorrecto al ejecutar."
+    }
+  ],
+  "presentations": {
+    "default": [
+      {
+        "type": "text",
+        "text": "El código fuente es el texto del programa que escribe una persona, guardado en un archivo .java. El ordenador no lo ejecuta tal cual."
+      },
+      {
+        "type": "text",
+        "text": "La compilación traduce el código fuente a un formato que entiende la máquina virtual de Java (JVM), llamado bytecode, y lo guarda en un archivo .class. De eso se encarga el compilador, javac. Si el código tiene errores de escritura, la compilación falla e indica dónde están."
+      },
+      {
+        "type": "text",
+        "text": "La ejecución es el momento en que la JVM sigue las instrucciones del programa ya compilado, con el comando java. Solo un programa que compila se puede ejecutar."
+      },
+      {
+        "type": "text",
+        "text": "Ejemplo: los dos comandos que se escriben en una terminal para compilar y ejecutar el programa Hola.java."
+      },
+      {
+        "type": "code",
+        "code": "javac Hola.java\njava Hola",
+        "lineComments": [
+          {
+            "line": 1,
+            "comment": "Compila: lee Hola.java y, si no hay errores, crea Hola.class."
+          },
+          {
+            "line": 2,
+            "comment": "Ejecuta el programa compilado; aquí aparecen los mensajes de println."
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "text": "Hay dos tipos de problemas. Un error de compilación (por ejemplo, falta un punto y coma) impide ejecutar el programa. Un error de lógica deja que el programa se ejecute, pero el resultado no es el esperado (por ejemplo, los mensajes salen en el orden equivocado)."
+      },
+      {
+        "type": "callout",
+        "text": "En Funcode Academy, tus respuestas se comprueban con las reglas de cada ejercicio: la app no compila ni ejecuta tu código."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "java.m01.l06.e01",
+      "type": "matchPairs",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 1,
+      "prompt": "Relaciona cada término con su significado.",
+      "left": [
+        "Código fuente",
+        "Compilación",
+        "Ejecución",
+        "Compilador (javac)"
+      ],
+      "right": [
+        "La JVM sigue las instrucciones del programa",
+        "Programa que traduce el código fuente",
+        "Texto del programa escrito en un archivo .java",
+        "Traducción del código fuente a bytecode"
+      ],
+      "pairs": [
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "hints": [
+        "javac es un programa; la compilación es lo que hace."
+      ],
+      "explanation": "El código fuente es el texto en el archivo .java; la compilación lo traduce a bytecode; el compilador javac hace esa traducción, y la ejecución es cuando la JVM sigue las instrucciones.",
+      "incorrectFeedback": "Repasa las tres primeras explicaciones."
+    },
+    {
+      "id": "java.m01.l06.e02",
+      "type": "orderLines",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 2,
+      "prompt": "Ordena las etapas desde que escribes un programa hasta que ves su resultado.",
+      "lines": [
+        "Escribir el código fuente en Hola.java",
+        "Compilar con javac Hola.java",
+        "Ejecutar con java Hola",
+        "Ver los mensajes en la pantalla"
+      ],
+      "hints": [
+        "Todo empieza escribiendo el programa."
+      ],
+      "explanation": "Primero se escribe el código fuente, después se compila con javac, luego se ejecuta con java y, entonces, aparecen los mensajes.",
+      "incorrectFeedback": "No se puede ejecutar lo que aún no se ha compilado."
+    },
+    {
+      "id": "java.m01.l06.e03",
+      "type": "trueFalse",
+      "objectiveIds": [
+        "o1",
+        "o2"
+      ],
+      "difficulty": 2,
+      "prompt": "¿Verdadero o falso?",
+      "statement": "Un programa con un error de compilación se puede ejecutar igualmente.",
+      "correct": false,
+      "hints": [
+        "Solo un programa que compila se puede ejecutar."
+      ],
+      "explanation": "Falso. Si la compilación falla no se crea el archivo .class, así que no hay nada que ejecutar.",
+      "incorrectFeedback": "Repasa qué ocurre cuando la compilación encuentra errores."
+    },
+    {
+      "id": "java.m01.l06.e04",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 2,
+      "prompt": "Un programa compila sin problemas, pero muestra «Adiós» antes que «Hola», al revés de lo que querías. ¿Qué tipo de problema es?",
+      "options": [
+        {
+          "text": "Un error de lógica"
+        },
+        {
+          "text": "Un error de compilación",
+          "feedback": "Si fuera de compilación, el programa no se habría podido ejecutar."
+        },
+        {
+          "text": "No hay ningún problema",
+          "feedback": "El resultado no es el que querías, así que sí hay un problema."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "hints": [
+        "Si el programa se ejecutó, ¿pudo ser un error de compilación?"
+      ],
+      "explanation": "Es un error de lógica: el programa se ejecuta, pero el resultado no es el esperado.",
+      "incorrectFeedback": "Piensa si el programa llegó a ejecutarse."
+    },
+    {
+      "id": "java.m01.l06.e05",
+      "type": "findError",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 3,
+      "prompt": "Este programa no compila. Marca la línea con el error.",
+      "code": "public class Prueba {\n    public static void main(String[] args) {\n        System.out.println(\"Compilando\");\n        System.out.printn(\"Ejecutando\");\n    }\n}",
+      "errorLines": [
+        4
+      ],
+      "hints": [
+        "Lee con atención cada letra de las instrucciones."
+      ],
+      "explanation": "En la línea 4 pone printn en lugar de println. Java no conoce printn, así que la compilación falla.",
+      "incorrectFeedback": "Compara el nombre de cada instrucción con el de la línea 3."
+    },
+    {
+      "id": "java.m01.l06.e06",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 3,
+      "prompt": "¿Qué archivo crea javac al compilar Hola.java sin errores?",
+      "options": [
+        {
+          "text": "Hola.class"
+        },
+        {
+          "text": "Hola.exe",
+          "feedback": "Java no crea archivos .exe: crea bytecode para la JVM."
+        },
+        {
+          "text": "Hola.txt",
+          "feedback": "No es un archivo de texto: el bytecode se guarda en .class."
+        },
+        {
+          "text": "No crea ningún archivo",
+          "feedback": "Si no hay errores, javac sí crea un archivo con el bytecode."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "hints": [
+        "El bytecode se guarda en un archivo con otra extensión."
+      ],
+      "explanation": "javac crea Hola.class, que contiene el bytecode que ejecuta la JVM.",
+      "incorrectFeedback": "Repasa la explicación de la compilación."
+    }
+  ]
+}

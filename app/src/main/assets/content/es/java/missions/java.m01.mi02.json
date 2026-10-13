@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.mi02",
+  "moduleId": "java.m01",
+  "order": 2,
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "type": "practice",
+  "title": "Ordena los pasos de una solución",
+  "description": "Practica cómo el orden de las instrucciones cambia el resultado de un algoritmo.",
+  "objective": "Ordenar los pasos de una solución y seguir una ejecución secuencial.",
+  "prerequisites": [
+    "java.m01.mi01"
+  ],
+  "tasks": [
+    {
+      "kind": "completeLesson",
+      "lessonId": "java.m01.l03"
+    },
+    {
+      "kind": "solveExercises",
+      "exerciseIds": [
+        "java.m01.l02.e04",
+        "java.m01.l03.e02",
+        "java.m01.l03.e04",
+        "java.m01.l03.e05"
+      ],
+      "description": "Resuelve los ejercicios de ordenar pasos y de seguir una secuencia de instrucciones."
+    }
+  ]
+}

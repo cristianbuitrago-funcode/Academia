@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.mi07",
+  "moduleId": "java.m01",
+  "order": 7,
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "type": "project",
+  "title": "Proyecto guiado: tu tarjeta de presentación",
+  "description": "Construye paso a paso un programa completo que muestra una tarjeta de presentación.",
+  "objective": "Aplicar en un programa completo la estructura de Java, System.out.println, el orden de las instrucciones y la corrección de errores.",
+  "prerequisites": [
+    "java.m01.mi05"
+  ],
+  "tasks": [
+    {
+      "kind": "completeChallenge",
+      "challengeId": "java.m01.reto"
+    }
+  ]
+}

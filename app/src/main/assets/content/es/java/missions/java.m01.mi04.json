@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.mi04",
+  "moduleId": "java.m01",
+  "order": 4,
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "type": "learning",
+  "title": "Muestra mensajes con System.out.println",
+  "description": "Escribe tus primeras instrucciones de Java para mostrar texto en pantalla.",
+  "objective": "Usar System.out.println para mostrar texto y respetar las comillas, los paréntesis y el punto y coma.",
+  "prerequisites": [
+    "java.m01.mi03"
+  ],
+  "tasks": [
+    {
+      "kind": "completeLesson",
+      "lessonId": "java.m01.l05"
+    }
+  ]
+}

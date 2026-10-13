@@ -1,7 +1,7 @@
 # Funcode Academy — Plan técnico (Fase 1: Planificación y arquitectura)
 
 > **Estado:** plan con las decisiones D1–D8 **aprobadas por el responsable del proyecto (2026-10-10)**.
-> No existe todavía código de la aplicación. La Fase 2 **no** está autorizada.
+> P1 y P3 resueltas y Fase 2 autorizada (2026-10-10). El estado real de la implementación está en `docs/ESTADO_PROYECTO.md`.
 
 ---
 
@@ -60,7 +60,7 @@
 | Asincronía | Kotlin Coroutines + `Flow` | Lecturas y escrituras de la base de datos sin bloquear la UI. |
 | Inyección de dependencias | Manual (`AppContainer`) | Un objeto que crea y comparte los repositorios; sin bibliotecas extra. |
 | Pruebas | JUnit (dominio); pruebas de Room y de UI (ver P3 en §14) | — |
-| Versiones | `minSdk 26`; `compileSdk`/`targetSdk`, AGP, Kotlin y Compose BOM: la última combinación **estable y compatible entre sí** en el momento de la Fase 2, registrada en `gradle/libs.versions.toml` | Evita versiones *alpha/beta*. |
+| Versiones | `minSdk 26`; versiones fijadas en la Fase 2 en `gradle/libs.versions.toml` (tabla en `docs/ESTADO_PROYECTO.md`) | Evita versiones *alpha/beta*. |
 
 No hay ninguna dependencia de pago ni servicio remoto.
 
@@ -377,10 +377,10 @@ Los criterios 17–18 dependen de una verificación del responsable; hasta enton
 
 | # | Cuestión | Propuesta | Cuándo hace falta |
 |---|---|---|---|
-| **P1** | Rama principal: el repositorio solo tiene `ccr-db27c4de-czvzgb` como rama por defecto. ¿Crear `main` como rama estable y trabajar con *pull requests*? | Sí: `main` estable y cambios por PR con CI obligatorio. | Antes de la Fase 2. |
+| ~~P1~~ | Rama principal | **Aprobado (2026-10-10):** `main` estable y cambios por PR. Ver `docs/FLUJO_DE_TRABAJO.md`. | Resuelto |
 | **P2** | ¿Cómo se comportan los borradores (`DRAFT`) en la app? | Se muestran con la etiqueta "Borrador" solo en las compilaciones de depuración; las de publicación los excluyen. | Fase 3. |
-| **P3** | Pruebas de Room y de UI: ¿**Robolectric** (en la JVM, rápido, una dependencia más) o **emulador en GitHub Actions** (más real, más lento)? | Robolectric en cada *push*; emulador más adelante, cuando haya flujos completos que probar. | Fase 2. |
-| **P4** | Permisos del *workflow*: subir archivos a `.github/workflows/` puede requerir que la integración de GitHub tenga el permiso *workflows*. | Si el *push* falla, crearás tú el archivo desde la web de GitHub con el contenido que te entregue. | Fase 2. |
+| ~~P3~~ | Pruebas de Room y de UI | **Aprobado con condiciones (2026-10-10):** Robolectric cuando aporte valor comprobable; no sustituye la prueba en dispositivo. | Resuelto |
+| ~~P4~~ | Permisos del *workflow* | **Resuelto:** el *push* del *workflow* funcionó. | Resuelto |
 | **P5** | Avatar: ¿ilustraciones propias, iconos de Material o una biblioteca con licencia libre? | Iconos/formas de Material en el MVP; ilustraciones después. | Fase 5. |
 | **P6** | Valores de XP: XP base por dificultad, penalización por pista, curva de niveles y umbral de evaluación (propuesta 80 %). | Se propondrán con ejemplos numéricos. | Fase 5 (umbral: Fase 4). |
 | **P7** | Versión de Java de referencia del contenido. | Java 17 LTS (sintaxis estable y ampliamente instalada); mencionar novedades de 21 solo cuando aporten. | Fase 3. |
@@ -403,3 +403,21 @@ Los criterios 17–18 dependen de una verificación del responsable; hasta enton
 | 2026-10-10 | `minSdk 26` (D6) | Compatibilidad amplia y APIs modernas. |
 | 2026-10-10 | Contenido como borrador hasta su revisión (D7) | Control de calidad pedagógica y técnica. |
 | 2026-10-10 | `com.funcode.academy` (D8) | Identificador aprobado. |
+| 2026-10-10 | AGP 9.4 con Kotlin integrado; todos los plugins declarados en el archivo raíz | Versión estable actual; un único *classloader* evita errores entre los plugins de Kotlin y Android (detectado en CI). |
+| 2026-10-10 | JDK 21 en CI y `targetSdk` 36 | Requisitos de Robolectric para simular Android 16. |
+| 2026-10-10 | Modo "solo dominio" (`-Pfuncode.domainOnly=true`) | Permite probar las reglas sin Android SDK (p. ej., en el contenedor de Claude). |
+| 2026-10-13 | Fase 3: siete tipos según la autorización (verdadero/falso incluido; `STRUCTURAL_CODE` pendiente, F3-D1) | La autorización de la fase prevalece sobre la lista de §6.2; la diferencia queda registrada. |
+| 2026-10-13 | Lectura y validación del JSON del contenido en `:core:domain` (kotlinx.serialization) | Es Kotlin puro y comprobable sin Android; la app solo aporta el texto leído de `assets`. |
+| 2026-10-13 | Solo se registran intentos (`exercise_attempt`); resuelto/no resuelto se deduce | Evita datos redundantes; sin cambios de esquema (F3-D2 para las tablas sin uso). |
+| 2026-10-13 | Ordenar líneas se valida por el texto resultante, no por índices | Dos líneas idénticas (p. ej. `}`) son intercambiables sin cambiar el programa. |
+| 2026-10-13 | Fase 4: la evaluación es una lección con `kind: assessment` (una respuesta por pregunta, sin pistas) | Reutiliza el motor y el validador; la corrección es la misma que en las lecciones. |
+| 2026-10-13 | Umbral de aprobación opcional en el contenido; no se declara mientras P6 esté pendiente | No se inventa una regla educativa no aprobada; se muestra el resultado sin «aprobado». |
+| 2026-10-13 | Progreso del módulo derivado de `exercise_attempt`; mejor resultado en `module_progress` | Sin cambio de esquema ni migración; repetir una actividad no duplica nada. |
+| 2026-10-13 | `JavaContentCompilationTest` con `javac --release 17` (P7 provisional) en las pruebas del dominio | Cumple P8 sin herramientas externas; el código se compila en la JVM de las pruebas, nunca en la app. |
+| 2026-10-13 | Inicio muestra una tarjeta «Continuar» en lugar de la lista de lecciones; Mapa lista los módulos | Con 8 actividades, la lista plana dejaba de ser manejable y duplicaba la pantalla del módulo. |
+| 2026-10-13 | P6 aprobado: XP 10 + 5 × (dificultad − 1), −25 % por pista (mínimo 50 %), lección +20, evaluación aprobada +100; curva 100 × n; umbral 80 % | Decisión del responsable sobre la propuesta presentada antes de programar la Fase 5. |
+| 2026-10-13 | Recompensas recalculadas desde los resultados verificados (`RewardEngine`) en lugar de sumarse en cada pantalla | Un solo sistema, idempotente: reintentos, reinicios y fallos no duplican ni pierden recompensas. |
+| 2026-10-13 | Monedas fuera de la Fase 5 | Decisión del responsable: sin tienda no tienen uso; queda una propuesta documentada. |
+| 2026-10-13 | Fase 6: reto guiado por módulo (`kind: challenge`), abierto al completar las lecciones; 50 XP una vez; misiones de objetivos sin reloj ni XP | Decisiones del responsable antes de programar; los retos usan los 7 tipos de ejercicio (sin ejecución de Java, D2). |
+| 2026-10-13 | Fase 6 (especificación completa): misiones como contenido con requisitos declarados y 10 XP de bonificación una vez (`MISSION`); sustituyen a las misiones fijas; pantalla Misiones desde Inicio y Mapa; el reto es el proyecto guiado (situación, conceptos previos, resumen) | Decisiones del responsable antes de programar; estados derivados, sin cambio de esquema. |
+| 2026-10-13 | Fase 7: se habilita la presentación infantil (cambia D3); preferencias de tema, tamaño de texto y pistas en DataStore; recomendaciones por reglas (`StudyAdvisor`) sin XP ni bloqueos | Decisiones del responsable antes de programar; sin cambio de esquema. |

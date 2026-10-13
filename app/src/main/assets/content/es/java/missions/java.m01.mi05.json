@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.mi05",
+  "moduleId": "java.m01",
+  "order": 5,
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "type": "practice",
+  "title": "Lee programas: predice salidas y encuentra errores",
+  "description": "Entrena tu ojo de programador: entiende qué mostraría un programa y detecta por qué no compila.",
+  "objective": "Predecir la salida de programas sencillos y localizar errores que impiden compilar.",
+  "prerequisites": [
+    "java.m01.mi04"
+  ],
+  "tasks": [
+    {
+      "kind": "completeLesson",
+      "lessonId": "java.m01.l06"
+    },
+    {
+      "kind": "completeLesson",
+      "lessonId": "java.m01.l07"
+    },
+    {
+      "kind": "solveExercises",
+      "exerciseIds": [
+        "java.m01.l05.e06",
+        "java.m01.l07.e01",
+        "java.m01.l07.e05",
+        "java.m01.l04.e04",
+        "java.m01.l05.e07",
+        "java.m01.l07.e04",
+        "java.m01.l07.e06"
+      ],
+      "description": "Resuelve los ejercicios de predecir la salida y de encontrar errores de las lecciones 4 a 7."
+    }
+  ]
+}

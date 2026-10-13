@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Funcode Academy</string>
+
+    <!-- Navegación -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_map">Mapa</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="nav_settings">Ajustes</string>
+
+    <!-- Inicio -->
+    <string name="home_title">Te damos la bienvenida a Funcode Academy</string>
+    <string name="home_intro">Aprende a programar en Java desde cero, paso a paso.</string>
+    <string name="home_total_xp">XP total: %1$d</string>
+    <string name="home_xp_explanation">Ganas XP la primera vez que resuelves un ejercicio, completas una lección o apruebas una evaluación. Repetirlos sirve para practicar, pero no suma más.</string>
+
+    <!-- Pantallas pendientes -->
+    <string name="map_title">Mapa de aprendizaje</string>
+    <string name="profile_title">Tu perfil</string>
+    <string name="profile_rewards_title">Recompensas obtenidas</string>
+    <string name="profile_no_rewards">Todavía no has conseguido XP. Resuelve ejercicios para empezar.</string>
+    <string name="profile_rewards_exercises">Ejercicios resueltos: %1$d (XP: %2$d)</string>
+    <string name="profile_rewards_lessons">Lecciones completadas: %1$d (XP: %2$d)</string>
+    <string name="profile_rewards_assessments">Evaluaciones aprobadas: %1$d (XP: %2$d)</string>
+    <string name="profile_rewards_missions">Misiones completadas: %1$d (XP: %2$d)</string>
+    <string name="profile_rewards_challenges">Proyectos guiados completados: %1$d (XP: %2$d)</string>
+    <string name="profile_achievements_title">Logros (%1$d de %2$d)</string>
+
+    <!-- Niveles y recompensas -->
+    <string name="level_title">Nivel %1$d</string>
+    <string name="level_progress_description">Progreso hacia el nivel %1$d: %2$d de %3$d</string>
+    <string name="level_remaining">XP que faltan para el nivel %2$d: %1$d</string>
+    <string name="reward_xp_gained">XP obtenido: +%1$d</string>
+    <string name="reward_already_rewarded">Este ejercicio ya te dio XP antes: repetirlo sirve para practicar, pero no suma más.</string>
+    <string name="reward_lesson_completed">¡Lección completada!</string>
+    <string name="reward_assessment_passed">¡Evaluación aprobada!</string>
+    <string name="reward_level_up">¡Has subido al nivel %1$d!</string>
+    <string name="reward_achievement">Logro desbloqueado: %1$s</string>
+    <string name="summary_session_xp">XP obtenido en esta sesión: %1$d</string>
+
+    <!-- Logros -->
+    <string name="achievement_unlocked_on">Conseguido el %1$s</string>
+    <string name="achievement_locked">Pendiente</string>
+    <string name="achievement_first_lesson_title">Primeros pasos</string>
+    <string name="achievement_first_lesson_description">Completa todos los ejercicios de una lección.</string>
+    <string name="achievement_three_lessons_title">Buen ritmo</string>
+    <string name="achievement_three_lessons_description">Completa tres lecciones distintas.</string>
+    <string name="achievement_first_assessment_title">Evaluación superada</string>
+    <string name="achievement_first_assessment_description">Aprueba la evaluación de un módulo.</string>
+    <string name="achievement_first_module_title">Módulo dominado</string>
+    <string name="achievement_first_module_description">Completa todas las lecciones de un módulo y aprueba su evaluación.</string>
+    <string name="achievement_level_2_title">Subida de nivel</string>
+    <string name="achievement_level_2_description">Alcanza el nivel 2.</string>
+    <string name="achievement_first_challenge_title">Primer proyecto completado</string>
+    <string name="achievement_first_challenge_description">Resuelve todos los pasos del proyecto guiado de un módulo.</string>
+
+    <!-- Proyectos guiados (retos) -->
+    <string name="challenge_start">Empezar el proyecto</string>
+    <string name="challenge_progress">Paso %1$d de %2$d</string>
+    <string name="challenge_locked">El proyecto guiado se abre al completar todas las lecciones del módulo. Lecciones que faltan: %1$d</string>
+    <string name="module_challenge_title">Proyecto guiado del módulo</string>
+    <string name="module_challenge_progress">Pasos resueltos: %1$d de %2$d</string>
+    <string name="module_challenge_done">Proyecto completado</string>
+    <string name="module_challenge_repeat">Repetir el proyecto</string>
+    <string name="home_next_challenge">Siguiente paso: %1$s</string>
+    <string name="reward_mission_completed">¡Misión completada: %1$s!</string>
+    <string name="project_situation_title">La situación</string>
+    <string name="project_prior_title">Lo que necesitas saber antes de empezar</string>
+    <string name="project_recap_title">Lo que has aprendido</string>
+    <string name="project_unfinished">Pasos sin resolver: %1$d. Resuélvelos todos para completar el proyecto.</string>
+
+    <!-- Misiones -->
+    <string name="missions_open">Ver misiones</string>
+    <string name="missions_title">Misiones</string>
+    <string name="missions_intro">Cada misión te propone objetivos del curso. Se completa con tus resultados comprobados, no al abrirla.</string>
+    <string name="missions_none">No hay misiones disponibles.</string>
+    <string name="mission_type_learning">Misión de aprendizaje</string>
+    <string name="mission_type_practice">Misión de práctica</string>
+    <string name="mission_type_assessment">Misión de evaluación</string>
+    <string name="mission_type_project">Proyecto guiado</string>
+    <string name="mission_status_locked">Bloqueada</string>
+    <string name="mission_status_available">Disponible</string>
+    <string name="mission_status_in_progress">En progreso</string>
+    <string name="mission_status_completed">Completada</string>
+    <string name="mission_tasks_progress">Tareas completadas: %1$d de %2$d</string>
+    <string name="mission_not_found">Esta misión no está disponible.</string>
+    <string name="mission_back">Volver</string>
+    <string name="mission_objective_title">Objetivo</string>
+    <string name="mission_locked_reason">Para desbloquearla, completa antes: %1$s</string>
+    <string name="mission_tasks_title">Qué tienes que hacer</string>
+    <string name="mission_task_lesson">Completa la lección «%1$s»</string>
+    <string name="mission_task_assessment">Aprueba «%1$s» con un 80 %% o más</string>
+    <string name="mission_task_project">Completa «%1$s»</string>
+    <string name="mission_task_progress">Progreso: %1$d de %2$d</string>
+    <string name="mission_task_done">Hecho</string>
+    <string name="mission_open_activity">Abrir «%1$s»</string>
+    <string name="mission_review_activity">Repasar «%1$s»</string>
+    <string name="mission_reward_title">Recompensa</string>
+    <string name="mission_reward_pending">XP de bonificación al completarla: %1$d (una sola vez)</string>
+    <string name="mission_reward_obtained">XP de bonificación obtenido: %1$d</string>
+    <string name="mission_completed_title">¡Misión completada!</string>
+    <string name="mission_completed_summary">Tareas cumplidas con resultados comprobados: %1$d</string>
+    <string name="mission_practice_note">Puedes repetir sus actividades para practicar; la bonificación no se vuelve a sumar.</string>
+    <string name="home_recommendations_title">Recomendado para ti</string>
+    <string name="home_recommendations_note">Según tus resultados guardados. Repetir actividades sirve para practicar; no vuelve a dar XP.</string>
+    <string name="recommend_resume">Retoma «%1$s» (ejercicios resueltos: %2$d de %3$d)</string>
+    <string name="recommend_resume_button">Retomar</string>
+    <string name="recommend_review">Repasa «%1$s» (ejercicios que necesitaron reintentos o pistas: %2$d)</string>
+    <string name="recommend_review_button">Repasar</string>
+    <string name="recommend_retry">«%1$s»: tu mejor resultado es %2$d %%; para aprobar se necesita un %3$d %%.</string>
+    <string name="recommend_retry_review_first">Antes de repetirla, repasa: %1$s</string>
+    <string name="recommend_retry_button">Repetir la evaluación</string>
+    <string name="home_missions_title">Misiones</string>
+    <string name="home_missions_progress">Misiones completadas: %1$d de %2$d</string>
+    <string name="home_current_mission">Misión actual: %1$s</string>
+    <string name="home_open_mission">Ver la misión</string>
+    <string name="home_missions_done">Has completado todas las misiones disponibles.</string>
+    <string name="reward_challenge_completed">¡Proyecto guiado completado!</string>
+
+    <!-- Ajustes -->
+    <string name="settings_title">Configuración</string>
+    <string name="settings_audience_title">¿Para quién adaptamos las explicaciones?</string>
+    <string name="settings_audience_description">Cambia el estilo de las explicaciones y los ejemplos, no los contenidos ni las evaluaciones.</string>
+    <string name="settings_audience_not_chosen">Aún no has elegido una opción.</string>
+    <string name="audience_kids">Niños y niñas: explicaciones breves y sencillas, paso a paso</string>
+    <string name="audience_teens">Adolescente</string>
+    <string name="audience_adults">Persona adulta</string>
+    <string name="settings_privacy_note">Tus preferencias se guardan solo en este dispositivo. No pedimos tu edad ni ningún dato personal.</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_description">Colores claros u oscuros. «Como el sistema» sigue el ajuste del teléfono.</string>
+    <string name="theme_system">Como el sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="settings_text_title">Tamaño del texto</string>
+    <string name="settings_text_description">Se suma al tamaño de letra elegido en los ajustes del teléfono.</string>
+    <string name="text_scale_normal">Normal</string>
+    <string name="text_scale_large">Grande</string>
+    <string name="text_scale_extra_large">Muy grande</string>
+    <string name="settings_help_title">Ayudas</string>
+    <string name="settings_hints_description">Si lo desactivas, no aparece el botón de pistas en lecciones y proyectos. No cambia el XP ni la corrección.</string>
+    <string name="settings_hints_label">Mostrar el botón de pistas</string>
+    <string name="settings_reset_title">Restablecer preferencias</string>
+    <string name="settings_reset_description">Vuelve a los valores por defecto de esta pantalla. Tu progreso, XP, logros y misiones no se borran.</string>
+    <string name="settings_reset_button">Restablecer preferencias</string>
+    <string name="settings_reset_confirm_title">¿Restablecer las preferencias?</string>
+    <string name="settings_reset_confirm_text">Se restablecerán el estilo de las explicaciones, el tema, el tamaño del texto y las pistas. Tu progreso no se borrará.</string>
+    <string name="settings_reset_confirm">Restablecer</string>
+    <string name="settings_reset_cancel">Cancelar</string>
+
+    <!-- Inicio: lecciones -->
+    <string name="home_continue_title">Continuar aprendiendo</string>
+    <string name="home_next_lesson">Siguiente lección: %1$s</string>
+    <string name="home_next_assessment">Siguiente paso: %1$s</string>
+    <string name="home_module_done">Has completado todas las actividades del módulo. Puedes repasar cualquier lección o repetir la evaluación.</string>
+    <string name="home_continue_button">Continuar</string>
+    <string name="home_view_module">Ver el módulo</string>
+    <string name="content_unavailable">No hay contenido disponible.</string>
+
+    <!-- Módulos -->
+    <string name="module_open">Abrir módulo</string>
+    <string name="module_unavailable">Este módulo no está disponible.</string>
+    <string name="module_lessons_title">Lecciones</string>
+    <string name="module_order_note">Te recomendamos seguirlas en orden: cada lección se apoya en la anterior.</string>
+    <string name="module_lessons_progress">Lecciones completadas: %1$d de %2$d</string>
+    <string name="module_lesson_title">%1$d. %2$s</string>
+    <string name="module_lesson_done">Completada</string>
+    <string name="module_lesson_progress">Ejercicios resueltos: %1$d de %2$d</string>
+    <string name="module_assessment_title">Evaluación del módulo</string>
+    <string name="module_assessment_not_done">Evaluación: aún no realizada</string>
+    <string name="module_best_score">Mejor resultado de la evaluación: %1$d %%</string>
+    <string name="module_assessment_start">Hacer la evaluación</string>
+    <string name="module_assessment_retake">Repetir la evaluación</string>
+
+    <string name="draft_label">Borrador: contenido pendiente de revisión.</string>
+
+    <!-- Lección -->
+    <string name="lesson_loading">Cargando la lección…</string>
+    <string name="lesson_not_found">No se encontró esta lección.</string>
+    <string name="lesson_invalid">Esta lección tiene un error en su contenido y no se puede mostrar.</string>
+    <string name="lesson_back_home">Volver al inicio</string>
+    <string name="lesson_objectives_title">Objetivos de aprendizaje</string>
+    <string name="lesson_theory_title">Explicación</string>
+    <string name="lesson_code_comments_title">Comentarios línea por línea</string>
+    <string name="lesson_line_comment">Línea %1$d: %2$s</string>
+    <string name="lesson_start_exercises">Empezar ejercicios</string>
+    <string name="code_line_description">Línea %1$d: %2$s</string>
+    <string name="lesson_practicing">Practicas: %1$s</string>
+    <string name="lesson_start_assessment">Empezar la evaluación</string>
+    <string name="assessment_rules">Una sola respuesta por pregunta y sin pistas.</string>
+    <string name="assessment_progress">Pregunta %1$d de %2$d</string>
+    <string name="assessment_next">Siguiente pregunta</string>
+    <string name="assessment_see_result">Ver resultado</string>
+    <string name="lesson_exercise_progress">Ejercicio %1$d de %2$d</string>
+    <string name="lesson_difficulty">Dificultad: %1$d de 5</string>
+    <string name="lesson_check">Comprobar respuesta</string>
+    <string name="lesson_show_hint">Ver una pista (%1$d de %2$d)</string>
+    <string name="lesson_hint">Pista %1$d: %2$s</string>
+    <string name="lesson_try_again">Intentar de nuevo</string>
+    <string name="lesson_next">Siguiente ejercicio</string>
+    <string name="lesson_skip">Continuar sin resolver</string>
+    <string name="lesson_see_summary">Ver resumen</string>
+
+    <!-- Retroalimentación -->
+    <string name="feedback_correct_title">¡Correcto! Respuesta comprobada.</string>
+    <string name="feedback_incorrect_title">Todavía no es correcto.</string>
+    <string name="feedback_partial">Has acertado %1$d de %2$d.</string>
+    <string name="feedback_validation_note">Tu respuesta se comprueba con las reglas del ejercicio; el código no se ejecuta.</string>
+    <string name="incomplete_nothing_selected">Elige una respuesta antes de comprobar.</string>
+    <string name="incomplete_empty_blanks">Completa todos los huecos antes de comprobar.</string>
+    <string name="incomplete_empty_output">Escribe la salida antes de comprobar.</string>
+    <string name="incomplete_not_all_pairs">Relaciona todos los conceptos antes de comprobar.</string>
+    <string name="incomplete_duplicated_pair">Cada descripción solo puede usarse una vez.</string>
+    <string name="incomplete_invalid_order">El orden no es válido: usa cada línea una sola vez.</string>
+
+    <!-- Tipos de ejercicio -->
+    <string name="answer_true">Verdadero</string>
+    <string name="answer_false">Falso</string>
+    <string name="choice_select_all">Marca todas las respuestas correctas.</string>
+    <string name="blank_label">Hueco %1$d</string>
+    <string name="order_instructions">Usa los botones de flecha para mover cada línea.</string>
+    <string name="order_move_up">Subir la línea %1$d</string>
+    <string name="order_move_down">Bajar la línea %1$d</string>
+    <string name="output_label">Salida que mostraría el programa</string>
+    <string name="find_error_instructions">Marca la línea o líneas con error.</string>
+    <string name="find_error_line">Línea %1$d: %2$s</string>
+    <string name="match_choose">Elegir…</string>
+    <string name="match_pick_for">Elige la descripción para: %1$s</string>
+
+    <!-- Resumen -->
+    <string name="summary_title">Resumen de la sesión</string>
+    <string name="summary_total">Ejercicios: %1$d</string>
+    <string name="summary_first_try">Resueltos al primer intento: %1$d</string>
+    <string name="summary_retries">Resueltos tras varios intentos: %1$d</string>
+    <string name="summary_unsolved">Sin resolver: %1$d</string>
+    <string name="summary_hints">Pistas usadas: %1$d</string>
+    <string name="summary_exercise_solved">Ejercicio %1$d: resuelto (intentos: %2$d)</string>
+    <string name="summary_exercise_unsolved">Ejercicio %1$d: sin resolver</string>
+    <string name="summary_assessment_score">Respuestas correctas: %1$d de %2$d (%3$d %%)</string>
+    <string name="summary_assessment_saved">Si es tu mejor resultado, queda guardado en este dispositivo.</string>
+    <string name="summary_assessment_passed">Evaluación aprobada.</string>
+    <string name="summary_assessment_failed">Evaluación no aprobada todavía: para aprobar hace falta un %1$d %% de respuestas correctas.</string>
+    <string name="summary_note">Los resultados se han comprobado con las reglas de cada ejercicio; no se ha ejecutado ningún código.</string>
+    <string name="summary_repeat">Repetir los ejercicios</string>
+</resources>

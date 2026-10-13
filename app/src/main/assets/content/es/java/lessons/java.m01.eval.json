@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.eval",
+  "moduleId": "java.m01",
+  "languageId": "java",
+  "locale": "es",
+  "version": 2,
+  "reviewStatus": "DRAFT",
+  "kind": "assessment",
+  "title": "Evaluación del módulo 1",
+  "description": "Comprueba lo que has aprendido en el módulo: 10 preguntas de distintos tipos.",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "Explicar qué es programar y qué es un algoritmo."
+    },
+    {
+      "id": "o2",
+      "text": "Seguir y ordenar instrucciones secuenciales."
+    },
+    {
+      "id": "o3",
+      "text": "Reconocer la estructura de un programa Java y el uso de System.out.println."
+    },
+    {
+      "id": "o4",
+      "text": "Distinguir código fuente, compilación y ejecución, y localizar errores sencillos."
+    }
+  ],
+  "presentations": {
+    "default": [
+      {
+        "type": "text",
+        "text": "Esta evaluación comprueba lo aprendido en el módulo. Tiene 10 preguntas de distintos tipos."
+      },
+      {
+        "type": "text",
+        "text": "Cada pregunta admite una sola respuesta y no hay pistas. Si falta completar algo, la app te avisa antes de comprobar. Al final verás cuántas respuestas acertaste."
+      },
+      {
+        "type": "callout",
+        "text": "Tu mejor resultado se guarda en este dispositivo. Puedes repetir la evaluación cuando quieras."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "java.m01.eval.q01",
+      "type": "trueFalse",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 1,
+      "prompt": "¿Verdadero o falso?",
+      "statement": "Un algoritmo es una secuencia finita de pasos precisos y ordenados que resuelve un problema.",
+      "correct": true,
+      "explanation": "Verdadero. Esa es la definición de algoritmo.",
+      "incorrectFeedback": "Repasa la lección 2."
+    },
+    {
+      "id": "java.m01.eval.q02",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 1,
+      "prompt": "¿Qué es programar?",
+      "options": [
+        {
+          "text": "Escribir instrucciones para que un ordenador realice una tarea"
+        },
+        {
+          "text": "Reparar las piezas de un ordenador",
+          "feedback": "Eso es mantenimiento del hardware, no programación."
+        },
+        {
+          "text": "Navegar por Internet",
+          "feedback": "Navegar es usar programas, no escribirlos."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "explanation": "Programar es escribir instrucciones para que un ordenador realice una tarea.",
+      "incorrectFeedback": "Repasa la lección 1."
+    },
+    {
+      "id": "java.m01.eval.q03",
+      "type": "orderLines",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 2,
+      "prompt": "Ordena el algoritmo para preparar un vaso de agua fría y beberlo.",
+      "lines": [
+        "Coger un vaso limpio",
+        "Llenar el vaso con agua",
+        "Añadir hielo",
+        "Beber el agua"
+      ],
+      "alternativeOrders": [
+        [
+          0,
+          2,
+          1,
+          3
+        ]
+      ],
+      "explanation": "Primero se coge el vaso; el agua y el hielo se pueden añadir en cualquier orden, y beber va al final.",
+      "incorrectFeedback": "Piensa qué necesita cada paso."
+    },
+    {
+      "id": "java.m01.eval.q04",
+      "type": "predictOutput",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 2,
+      "prompt": "¿Qué mostraría este programa?",
+      "code": "public class Orden {\n    public static void main(String[] args) {\n        System.out.println(\"C\");\n        System.out.println(\"A\");\n        System.out.println(\"B\");\n    }\n}",
+      "acceptedOutputs": [
+        "C\nA\nB"
+      ],
+      "explanation": "Las instrucciones se ejecutan en el orden escrito: C, A y B.",
+      "incorrectFeedback": "El ordenador no reordena las instrucciones."
+    },
+    {
+      "id": "java.m01.eval.q05",
+      "type": "matchPairs",
+      "objectiveIds": [
+        "o3"
+      ],
+      "difficulty": 2,
+      "prompt": "Relaciona cada elemento con su función.",
+      "left": [
+        "public class Examen",
+        "public static void main(String[] args)",
+        "System.out.println(\"Hola\");",
+        "Examen.java"
+      ],
+      "right": [
+        "Archivo donde se guarda la clase",
+        "Instrucción que muestra un texto",
+        "Declara la clase",
+        "Punto de entrada del programa"
+      ],
+      "pairs": [
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          0
+        ]
+      ],
+      "explanation": "public class declara la clase, main es el punto de entrada, println muestra texto y la clase se guarda en Examen.java.",
+      "incorrectFeedback": "Repasa las lecciones 4 y 5."
+    },
+    {
+      "id": "java.m01.eval.q06",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o4"
+      ],
+      "difficulty": 2,
+      "prompt": "¿Qué hace el comando javac Final.java?",
+      "options": [
+        {
+          "text": "Compila el código fuente y crea Final.class"
+        },
+        {
+          "text": "Ejecuta el programa y muestra sus mensajes",
+          "feedback": "Eso lo hace el comando java, después de compilar."
+        },
+        {
+          "text": "Borra el archivo Final.java",
+          "feedback": "javac no borra el código fuente."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "explanation": "javac compila el código fuente y, si no hay errores, crea Final.class.",
+      "incorrectFeedback": "Repasa la lección 6."
+    },
+    {
+      "id": "java.m01.eval.q07",
+      "type": "trueFalse",
+      "objectiveIds": [
+        "o4"
+      ],
+      "difficulty": 2,
+      "prompt": "¿Verdadero o falso?",
+      "statement": "Si un programa no compila, no se puede ejecutar.",
+      "correct": true,
+      "explanation": "Verdadero. Sin compilar no hay bytecode que la JVM pueda ejecutar.",
+      "incorrectFeedback": "Repasa la lección 6."
+    },
+    {
+      "id": "java.m01.eval.q08",
+      "type": "fillInBlanks",
+      "objectiveIds": [
+        "o3"
+      ],
+      "difficulty": 3,
+      "prompt": "Completa el programa para que muestre «Fin» y salte a la línea siguiente.",
+      "template": "public class Final {\n    public static void main(String[] args) {\n        System.out.{{0}}(\"Fin\"){{1}}\n    }\n}",
+      "blanks": [
+        [
+          "println"
+        ],
+        [
+          ";"
+        ]
+      ],
+      "explanation": "System.out.println(\"Fin\"); muestra el texto y el punto y coma termina la instrucción.",
+      "incorrectFeedback": "Repasa la lección 5."
+    },
+    {
+      "id": "java.m01.eval.q09",
+      "type": "findError",
+      "objectiveIds": [
+        "o4"
+      ],
+      "difficulty": 3,
+      "prompt": "Este programa no compila. Marca la línea con el error.",
+      "code": "public class Revision {\n    public static void main(String[] args) {\n        System.out.println(\"Uno\");\n        System.out.println(Dos);\n        System.out.println(\"Tres\");\n    }\n}",
+      "errorLines": [
+        4
+      ],
+      "explanation": "En la línea 4 faltan las comillas: sin ellas, Java busca algo llamado Dos que no existe.",
+      "incorrectFeedback": "Repasa los errores frecuentes de la lección 7."
+    },
+    {
+      "id": "java.m01.eval.q10",
+      "type": "predictOutput",
+      "objectiveIds": [
+        "o3"
+      ],
+      "difficulty": 3,
+      "prompt": "¿Qué mostraría este programa?",
+      "code": "public class Despedida {\n    public static void main(String[] args) {\n        System.out.println(\"Gracias por aprender\");\n        System.out.println(\"¡Hasta pronto!\");\n    }\n}",
+      "acceptedOutputs": [
+        "Gracias por aprender\n¡Hasta pronto!"
+      ],
+      "explanation": "Cada println muestra su texto en una línea: «Gracias por aprender» y «¡Hasta pronto!».",
+      "incorrectFeedback": "Copia cada texto exactamente, sin las comillas."
+    }
+  ],
+  "assessment": {
+    "exerciseIds": [
+      "java.m01.eval.q01",
+      "java.m01.eval.q02",
+      "java.m01.eval.q03",
+      "java.m01.eval.q04",
+      "java.m01.eval.q05",
+      "java.m01.eval.q06",
+      "java.m01.eval.q07",
+      "java.m01.eval.q08",
+      "java.m01.eval.q09",
+      "java.m01.eval.q10"
+    ],
+    "passThreshold": 0.8
+  }
+}

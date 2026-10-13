@@ -1,6 +1,6 @@
 # Funcode Academy — Preparación de Android Studio y GitHub Actions
 
-Requisitos y pasos que el responsable del proyecto debe hacer **antes o durante la Fase 2**. Todo es gratuito.
+Requisitos y pasos que el responsable del proyecto debe hacer **antes o durante la Fase 2**. Todo es gratuito. La sección 4 explica cómo abrir y probar la Fase 2.
 
 ---
 
@@ -21,7 +21,7 @@ Requisitos y pasos que el responsable del proyecto debe hacer **antes o durante 
    - Uno con una versión reciente de Android (para el uso normal).
    - Uno con **API 26 (Android 8.0)** para comprobar la versión mínima.
 5. (Opcional) Dispositivo físico: activa *Opciones de desarrollador* (toca 7 veces "Número de compilación") y la *Depuración por USB*.
-6. Clona el repositorio cuando exista el proyecto de la Fase 2: **File → New → Project from Version Control** → `https://github.com/cristianbuitrago-funcode/Academia.git`, y selecciona la rama que se indique.
+6. Clona el repositorio: ver la sección 4.
 7. Espera a que termine **Gradle Sync**. Si aparece un error, copia el mensaje completo para analizarlo; no aceptes actualizaciones automáticas de versiones (AGP, Kotlin) sin consultarlo (D6).
 8. Ejecuta la app con el botón ▶ sobre el emulador y anota el resultado de los criterios 17–18 de la Fase 2.
 
@@ -29,7 +29,7 @@ Requisitos y pasos que el responsable del proyecto debe hacer **antes o durante 
 
 ## 2. GitHub Actions (en GitHub)
 
-El repositorio es **público**, así que los minutos de los *runners* estándar de GitHub son gratuitos. Los *runners* `ubuntu-latest` ya incluyen el Android SDK y JDK, así que no hay que instalar nada.
+El repositorio es **público**, así que los minutos de los *runners* estándar de GitHub son gratuitos. Los *runners* `ubuntu-latest` ya incluyen el Android SDK; el *workflow* instala JDK 21.
 
 ### Pasos
 1. **Activar Actions:** en el repositorio, **Settings → Actions → General → Actions permissions** → "Allow all actions and reusable workflows" (o, más restrictivo, permitir solo las acciones de GitHub y de creadores verificados: el *workflow* usará `actions/checkout`, `actions/setup-java`, `gradle/actions/setup-gradle` y `actions/upload-artifact`).
@@ -49,8 +49,197 @@ El repositorio es **público**, así que los minutos de los *runners* estándar 
 
 | Comprobación | Contenedor de Claude | GitHub Actions | Android Studio |
 |---|---|---|---|
-| Pruebas de `:core:domain` | Sí (si Maven Central responde) | Sí | Sí |
+| Pruebas de `:core:domain` | Sí, en modo solo dominio (si Maven Central responde) | Sí | Sí |
 | Compilar el APK | **No** (sin Android SDK) | Sí | Sí |
 | Pruebas JVM de `:app` (incl. Robolectric si se aprueba) | No | Sí | Sí |
 | Ejecutar la app y revisar la interfaz | No | No (salvo emulador en CI, P3) | **Sí** |
 | Accesibilidad con TalkBack | No | No | Sí (en dispositivo o emulador) |
+
+---
+
+## 4. Abrir y probar la Fase 2 en Android Studio
+
+### Requisitos adicionales
+- Android Studio estable que admita **Android Gradle Plugin 9.4** (cualquier versión estable publicada desde septiembre de 2026). Si tu versión es anterior, Android Studio avisará al sincronizar: actualízalo en lugar de bajar la versión del plugin.
+- **JDK 17 o superior** para Gradle (el JDK que trae Android Studio sirve). Las pruebas con Robolectric necesitan **JDK 21**: el de Android Studio (JetBrains Runtime 21) es suficiente.
+- Plataforma Android **API 37** (Android Studio la descargará al sincronizar si falta).
+
+### Pasos
+1. *File → New → Project from Version Control* → `https://github.com/cristianbuitrago-funcode/Academia.git`.
+2. Cambia a la rama de la fase: menú *Git → Branches* → `origin/ccr-db27c4de-czvzgb` → *Checkout* (hasta que se fusione en `main`).
+3. Espera a que termine **Gradle Sync**. Si aparece un error, copia el mensaje completo.
+4. Comprueba el JDK de Gradle: *Settings → Build, Execution, Deployment → Build Tools → Gradle → Gradle JDK* = el JDK 21 de Android Studio (*jbr-21*).
+5. **Pruebas automáticas:** en la terminal de Android Studio ejecuta `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `gradlew.bat`). Debe terminar en `BUILD SUCCESSFUL`.
+6. **Ejecutar la app:** elige un emulador en la barra superior y pulsa ▶ (*Run 'app'*).
+
+### Comprobaciones manuales (criterios 17–18 y parte de 5 y 9)
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 1 | Abrir la app en el emulador con Android reciente | Se ve "Te damos la bienvenida a Funcode Academy" y "XP total: 0". |
+| 2 | Tocar Mapa, Perfil, Ajustes e Inicio | Cada pantalla muestra su título; Mapa y Perfil dicen "Disponible en una próxima versión". |
+| 3 | Desde Perfil, pulsar Atrás | Vuelve a Inicio; otro Atrás cierra la app. |
+| 4 | En Ajustes, elegir "Persona adulta" | Queda marcada. |
+| 5 | Girar el emulador (botón de rotación) | Sigue en la misma pantalla, con la opción marcada. |
+| 6 | Cerrar la app (deslizarla en Recientes) y volver a abrirla → Ajustes | "Persona adulta" sigue marcada. |
+| 7 | Activar el modo oscuro del sistema | La app cambia a colores oscuros legibles. |
+| 8 | Ajustes del sistema → tamaño de fuente al máximo | Los textos crecen y nada queda cortado sin poder desplazarse. |
+| 9 | (Opcional) Activar TalkBack y recorrer la barra inferior | Lee "Inicio", "Mapa", "Perfil", "Ajustes" y las opciones como botones de opción. |
+| 10 | Repetir 1–6 en el emulador con **API 26** | Igual que arriba, sin cierres. |
+| 11 | *app/src/main/AndroidManifest.xml* → pestaña *Merged Manifest* | No aparece `android.permission.INTERNET`. |
+
+Anota cualquier fallo con el número de la comprobación, el dispositivo y, si es posible, una captura.
+
+### Instalar el APK sin compilar
+En la ejecución de CI (pestaña *Actions* → ejecución en verde → *Artifacts*) descarga `funcode-academy-debug-apk`, descomprímelo y arrastra el `.apk` al emulador. Es un APK de **depuración**: no sirve para publicar.
+
+---
+
+## 5. Probar la Fase 3 (motor de lecciones) en Android Studio
+
+1. Actualiza la rama: **Git → Pull** (rama `ccr-db27c4de-czvzgb`).
+2. Pruebas automáticas: `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `.\gradlew.bat …`).
+3. Ejecuta la app (▶) y comprueba:
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 1 | Inicio | Aparece «Lecciones disponibles» con «Tu primer programa: mostrar texto en pantalla», «Ejercicios: 7» y el aviso de borrador. |
+| 2 | **Abrir lección** | Título, aviso de borrador, objetivo, explicación, ejemplo de código con números de línea y comentarios por línea. |
+| 3 | **Empezar ejercicios** → «Comprobar respuesta» sin elegir nada | «Elige una respuesta antes de comprobar.» |
+| 4 | Ejercicio 1: **Ver una pista**, elegir *Falso* y comprobar | Se muestra la pista; después «Todavía no es correcto.» y los botones «Intentar de nuevo» / «Continuar sin resolver». |
+| 5 | *Intentar de nuevo* → *Verdadero* → comprobar | «¡Correcto! Respuesta comprobada.» con la explicación. |
+| 6 | Resolver los ejercicios 2–7 (selección, relacionar con desplegables, huecos, ordenar con flechas, salida, línea con error) | Cada tipo responde y da retroalimentación. Ninguna pantalla dice que el código se haya ejecutado. |
+| 7 | Tras el último, **Ver resumen** | Totales (al primer intento, tras varios intentos, sin resolver, pistas) y el estado de cada ejercicio. |
+| 8 | Girar la pantalla en mitad de un ejercicio | Se conservan el ejercicio y la respuesta escrita. |
+| 9 | TalkBack (opcional) en un ejercicio de ordenar | Los botones de flecha se leen como «Subir la línea N» / «Bajar la línea N». |
+
+Anota cualquier fallo con su número.
+
+---
+
+## 6. Probar la Fase 4 (módulo 1 y evaluación) en Android Studio
+
+1. Actualiza la rama: **Git → Pull** (rama `ccr-db27c4de-czvzgb`).
+2. Pruebas automáticas: `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `.\gradlew.bat …`). `JavaContentCompilationTest` compila los ejemplos con el `javac` del JDK de Gradle (JDK 17 o superior).
+3. Si tenías instalada la versión de la Fase 3, puedes conservarla: no hay cambio de base de datos. Los intentos de la lección antigua `java.m02.l01` no cuentan para el módulo nuevo.
+4. Ejecuta la app (▶) y comprueba:
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 1 | Inicio | Tarjeta «Continuar aprendiendo»: título del módulo 1, «Lecciones completadas: 0 de 7», «Siguiente lección: ¿Qué es programar?», botones «Continuar» y «Ver el módulo». |
+| 2 | Pestaña **Mapa** | «Mapa de aprendizaje» con el módulo 1, aviso de borrador, «Evaluación: aún no realizada» y «Abrir módulo». |
+| 3 | **Abrir módulo** | Lecciones numeradas del 1 al 7, nota sobre el orden recomendado, «Ejercicios resueltos: 0 de N» y la tarjeta «Evaluación del módulo». |
+| 4 | Abrir la lección 1 y resolver todos sus ejercicios | Al volver al módulo, la lección 1 dice «Completada»; en Inicio, «Siguiente lección» pasa a la 2. |
+| 5 | Cerrar la app (deslizarla en Recientes) y volver a abrirla | El progreso del paso 4 se conserva. |
+| 6 | **Hacer la evaluación** | La introducción dice «Una sola respuesta por pregunta y sin pistas.»; botón «Empezar la evaluación». |
+| 7 | Responder mal la pregunta 1 y comprobar | Se muestra «Todavía no es correcto.» con la explicación; **no** aparece «Intentar de nuevo» ni «Ver una pista», y la respuesta ya no se puede cambiar; solo «Siguiente pregunta». |
+| 8 | Pulsar «Siguiente pregunta» sin responder varias preguntas hasta el final → **Ver resultado** | «Respuestas correctas: X de 10 (Y %)»; las preguntas sin responder cuentan como fallos. **No** aparece «aprobado» (el umbral P6 no está aprobado). |
+| 9 | Volver al módulo | «Mejor resultado de la evaluación: Y %» y «Repetir la evaluación». |
+| 10 | Repetir la evaluación con peor resultado | El mejor resultado no baja. Con uno mejor, sube. |
+| 11 | Cerrar y reabrir la app | El mejor resultado se conserva. |
+| 12 | Girar la pantalla en mitad de la evaluación | Se conservan la pregunta y la respuesta. |
+| 13 | Repetir 1–3 y 6–8 en el emulador con **API 26** | Igual, sin cierres. |
+
+Ninguna pantalla debe decir que se ejecuta código Java: solo se comprueban las respuestas. Anota cualquier fallo con su número.
+
+---
+
+## 7. Probar la Fase 5 (XP, niveles y logros) en Android Studio
+
+1. Actualiza la rama: **Git → Pull** (rama `ccr-db27c4de-czvzgb`).
+2. Pruebas automáticas: `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `.\gradlew.bat …`).
+3. Para empezar desde cero: *Settings* del emulador → *Apps* → Funcode Academy → *Storage* → **Clear storage**. No hay cambio de base de datos, así que también puedes conservar tus datos: los aciertos que ya tenías se recompensan al abrir Inicio.
+4. Ejecuta la app (▶) y comprueba:
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 1 | Inicio sin actividad | Tarjeta «Nivel 1», «XP total: 0», barra vacía y «XP que faltan para el nivel 2: 100». |
+| 2 | Perfil sin actividad | Lo mismo; «Todavía no has conseguido XP…»; «Logros (0 de 5)» y los cinco logros «Pendiente». |
+| 3 | Lección 1 → ejercicio 1: responder bien sin pistas | Aviso «XP obtenido: +10». |
+| 4 | Ejercicio 2: ver una pista y responder bien | «XP obtenido: +7» (10 − 25 %). |
+| 5 | Ejercicio 3: responder mal | Sin aviso de XP. Tras acertar, el XP es el completo de su dificultad (los fallos no penalizan). |
+| 6 | Terminar la lección 1 | En el último acierto: «¡Lección completada!» y «Logro desbloqueado: Primeros pasos». El resumen muestra «XP obtenido en esta sesión». |
+| 7 | **Repetir ejercicios** y resolver otra vez | Aviso «Este ejercicio ya te dio XP antes…»; el XP total no cambia; «XP obtenido en esta sesión: 0». |
+| 8 | Pulsar «Comprobar» y «Siguiente» muy rápido varias veces | El XP total solo sube una vez por ejercicio. |
+| 9 | Completar más lecciones hasta superar 100 XP | Aviso «¡Has subido al nivel 2!» y el logro «Subida de nivel». |
+| 10 | Evaluación con menos de 8 aciertos | «Evaluación no aprobada todavía: para aprobar hace falta un 80 %…»; sin XP. |
+| 11 | Evaluación con 8 o más aciertos | «¡Evaluación aprobada!», «XP obtenido: +100» y el logro «Evaluación superada». Repetirla no suma más. |
+| 12 | Perfil | Nivel, barra, XP total, «Ejercicios resueltos / Lecciones completadas / Evaluaciones aprobadas» con su XP, y los logros con «Conseguido el <fecha>». |
+| 13 | Cerrar la app (deslizarla en Recientes) y volver a abrirla | El nivel, el XP y los logros se conservan. |
+| 14 | Modo avión | Todo funciona igual (la app no usa Internet). |
+| 15 | TalkBack (opcional) en Perfil | Lee la barra como «Progreso hacia el nivel N: X de Y» y cada logro de una vez. |
+| 16 | Repetir 1–3, 6 y 13 en el emulador con **API 26** | Igual, sin cierres. |
+
+Anota cualquier fallo con su número.
+
+---
+
+## 8. Probar la Fase 6 (misiones y proyecto guiado) en Android Studio
+
+1. Actualiza la rama: **Git → Pull** (rama `ccr-db27c4de-czvzgb`).
+2. Pruebas automáticas: `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `.\gradlew.bat …`).
+3. Para empezar desde cero: *Settings* del emulador → *Apps* → Funcode Academy → *Storage* → **Clear storage**.
+4. Ejecuta la app (▶) y comprueba:
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 1 | Inicio sin progreso | Sección «Misiones»: «Misiones completadas: 0 de 7», «Misión actual: Descubre qué es programar y qué es un algoritmo», botones «Ver la misión» y «Ver misiones». |
+| 2 | Mapa → **Ver misiones** | Lista de 7 misiones con su tipo y estado: la primera «Disponible», el resto «Bloqueada». |
+| 3 | Abrir «Ordena los pasos de una solución» | «Bloqueada», «Para desbloquearla, completa antes: «Descubre qué es programar…»», tareas visibles **sin** botones de abrir. |
+| 4 | Abrir la misión 1 | Objetivo, tareas («Completa la lección «¿Qué es programar?»»…), «XP de bonificación al completarla: 10 (una sola vez)» y botón «Abrir «¿Qué es programar?»». |
+| 5 | Abrir la lección desde la misión y resolver un ejercicio; volver | La misión está «En progreso» y la tarea muestra «Progreso: 1 de 5». Abrir la misión no cambió nada antes de resolver. |
+| 6 | Completar las lecciones 1 y 2 | En el último acierto: «¡Misión completada: Descubre qué es programar…!» además del XP. La misión 2 pasa a «En progreso», porque ya tiene un ejercicio de ordenar resuelto. |
+| 7 | Repetir la lección 1 | No se suma más XP; la misión sigue completada y su detalle dice «XP de bonificación obtenido: 10». |
+| 8 | Completar las 7 lecciones | El proyecto guiado del módulo se abre. La misión 7 queda disponible. |
+| 9 | Abrir el proyecto | «La situación» y «Lo que necesitas saber antes de empezar»; «Paso 1 de 7»; dos pistas por paso. |
+| 10 | Terminar el proyecto | «XP obtenido: +60» (50 del proyecto + 10 de la misión), «¡Proyecto guiado completado!» y, en el resumen, «Lo que has aprendido». |
+| 11 | Evaluación con 8 o más aciertos | Se completa la misión 6. |
+| 12 | Perfil | «Misiones completadas: N (XP: 10·N)» y «Proyectos guiados completados». |
+| 13 | Cerrar y reabrir la app | Los estados de las misiones y las recompensas se conservan. |
+| 14 | Modo avión; TalkBack en la lista de misiones | Funciona igual; cada misión se lee de una vez (tipo, título, estado y tareas). |
+| 15 | Repetir 1–4 y 10 en el emulador con **API 26** | Igual, sin cierres. |
+
+Anota cualquier fallo con su número.
+
+---
+
+## 9. Probar la Fase 7 (personalización y accesibilidad) en Android Studio
+
+1. Actualiza la rama: **Git → Pull** (rama `ccr-db27c4de-czvzgb`).
+2. Pruebas automáticas: `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `.\gradlew.bat …`).
+3. **No borres los datos** de la app: así compruebas que el progreso de las fases anteriores se conserva.
+
+### Preferencias
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 1 | Ajustes | Secciones «¿Para quién adaptamos las explicaciones?» (3 opciones), «Tema», «Tamaño del texto», «Ayudas» y «Restablecer preferencias»; nota de privacidad. |
+| 2 | Elegir «Niños y niñas…» y abrir la lección 1 | La teoría usa frases breves («Un programa es una lista de órdenes…»). Con «Persona adulta», el texto es estructurado («…la banca en línea, las hojas de cálculo…»). Los ejercicios son los mismos. |
+| 3 | Abrir la lección 5 con cualquier opción | Misma teoría (aún no tiene variantes). |
+| 4 | Tema «Oscuro» con el sistema en claro, y al revés | La app cambia de colores al instante. «Como el sistema» vuelve a seguir al teléfono. |
+| 5 | Tamaño «Muy grande» | Todo el texto crece; las pantallas se desplazan y no se corta nada importante. |
+| 6 | Desactivar «Mostrar el botón de pistas» y abrir un ejercicio | No aparece «Ver una pista». Se ve «Practicas: …». Al activarlo, vuelve. |
+| 7 | Cerrar y reabrir la app | Las preferencias se conservan. |
+| 8 | Restablecer preferencias → Cancelar; después → Restablecer | Al cancelar no cambia nada; al restablecer vuelven los valores por defecto. **El XP, el nivel, los logros y las misiones siguen igual.** |
+
+### Recomendaciones
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 9 | Empezar una lección sin terminarla y volver a Inicio | «Recomendado para ti: Retoma «…» (ejercicios resueltos: X de Y)» y botón «Retomar». |
+| 10 | Completar una lección fallando o pidiendo pista en 2 ejercicios | «Repasa «…» (ejercicios que necesitaron reintentos o pistas: 2)». Repasarla no suma XP. |
+| 11 | Hacer la evaluación con menos del 80 % | «…tu mejor resultado es X %; para aprobar se necesita un 80 %», con las lecciones a repasar si las hay. |
+
+### Accesibilidad (procedimiento manual)
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 12 | Ajustes del sistema → tamaño de fuente y de visualización al máximo, y la app en «Muy grande» | Se puede completar un ejercicio y llegar a todos los botones desplazándose. Anota si alguna etiqueta de la barra inferior se recorta. |
+| 13 | TalkBack en Ajustes | Lee los encabezados, cada opción como botón de opción con su estado, el interruptor de pistas como interruptor con su estado y el diálogo de restablecer. |
+| 14 | TalkBack en una lección con código | Cada línea se lee como «Línea N: …». La retroalimentación se anuncia al aparecer. |
+| 15 | TalkBack en Inicio y Perfil | Barra de nivel: «Progreso hacia el nivel N: X de Y». Las tarjetas de misiones y logros se leen de una vez. |
+| 16 | Accessibility Scanner (app gratuita de Google) en Inicio, Ajustes y una lección | Anota sus sugerencias; no deben aparecer objetivos táctiles < 48 dp ni contraste insuficiente en el texto. |
+| 17 | Repetir 1, 4, 5 y 8 en el emulador con **API 26** | Igual, sin cierres. |
+
+Anota cualquier fallo con su número.
+

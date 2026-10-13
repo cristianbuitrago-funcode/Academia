@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.l07",
+  "moduleId": "java.m01",
+  "languageId": "java",
+  "locale": "es",
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "title": "Leer y comprender programas sencillos",
+  "description": "Practica la lectura de programas Java: predice lo que muestran y encuentra errores frecuentes.",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "Leer un programa Java sencillo y predecir lo que muestra."
+    },
+    {
+      "id": "o2",
+      "text": "Localizar errores frecuentes en programas sencillos."
+    }
+  ],
+  "presentations": {
+    "default": [
+      {
+        "type": "text",
+        "text": "Leer código es tan importante como escribirlo. Para entender un programa: busca la clase, entra en main y sigue las instrucciones de arriba abajo, una por una."
+      },
+      {
+        "type": "code",
+        "code": "public class Receta {\n    public static void main(String[] args) {\n        System.out.println(\"Ingredientes:\");\n        System.out.println(\"- 2 huevos\");\n        System.out.println(\"- 1 pizca de sal\");\n        System.out.println(\"¡A cocinar!\");\n    }\n}",
+        "lineComments": [
+          {
+            "line": 1,
+            "comment": "Clase Receta: el archivo se llama Receta.java."
+          },
+          {
+            "line": 2,
+            "comment": "Empieza la ejecución."
+          },
+          {
+            "line": 3,
+            "comment": "Primera línea que se muestra."
+          },
+          {
+            "line": 4,
+            "comment": "El guion forma parte del texto, así que también se muestra."
+          },
+          {
+            "line": 5,
+            "comment": "Todo lo que va entre comillas se muestra tal cual, incluidos los espacios."
+          },
+          {
+            "line": 6,
+            "comment": "Última instrucción del programa."
+          },
+          {
+            "line": 7,
+            "comment": "Cierra main."
+          },
+          {
+            "line": 8,
+            "comment": "Cierra la clase."
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "text": "Al ejecutarlo mostraría cuatro líneas: «Ingredientes:», «- 2 huevos», «- 1 pizca de sal» y «¡A cocinar!»."
+      },
+      {
+        "type": "callout",
+        "text": "Errores frecuentes: olvidar el punto y coma, no cerrar las comillas, escribir system con minúscula o no cerrar una llave."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "java.m01.l07.e01",
+      "type": "predictOutput",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 2,
+      "prompt": "¿Qué mostraría este programa?",
+      "code": "public class Saludos {\n    public static void main(String[] args) {\n        System.out.println(\"Hola, Ana\");\n        System.out.println(\"Hola, Luis\");\n    }\n}",
+      "acceptedOutputs": [
+        "Hola, Ana\nHola, Luis"
+      ],
+      "hints": [
+        "La coma y el espacio forman parte del texto."
+      ],
+      "explanation": "Cada println muestra su texto en una línea: «Hola, Ana» y después «Hola, Luis».",
+      "incorrectFeedback": "Sigue las instrucciones de arriba abajo y copia el texto que hay entre comillas."
+    },
+    {
+      "id": "java.m01.l07.e02",
+      "type": "multipleChoice",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 2,
+      "prompt": "¿Cuántas líneas muestra el programa Receta del ejemplo?",
+      "options": [
+        {
+          "text": "4"
+        },
+        {
+          "text": "6",
+          "feedback": "Cuenta solo las instrucciones println: la clase y main no muestran nada."
+        },
+        {
+          "text": "8",
+          "feedback": "8 son las líneas del código, no las que se muestran."
+        },
+        {
+          "text": "1",
+          "feedback": "Cada println muestra su propia línea."
+        }
+      ],
+      "correctIndices": [
+        0
+      ],
+      "hints": [
+        "La clase, main y las llaves no muestran nada."
+      ],
+      "explanation": "Muestra 4 líneas, una por cada println.",
+      "incorrectFeedback": "Cuenta solo las instrucciones que muestran algo."
+    },
+    {
+      "id": "java.m01.l07.e03",
+      "type": "trueFalse",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 2,
+      "prompt": "¿Verdadero o falso?",
+      "statement": "System.out.println también muestra las comillas que rodean el texto.",
+      "correct": false,
+      "hints": [
+        "Mira si «Ingredientes:» aparece con comillas en la salida."
+      ],
+      "explanation": "Falso. Las comillas indican dónde empieza y termina el texto, pero no se muestran.",
+      "incorrectFeedback": "Repasa la salida del ejemplo Receta."
+    },
+    {
+      "id": "java.m01.l07.e04",
+      "type": "findError",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 3,
+      "prompt": "Este programa no compila. Marca la línea con el error.",
+      "code": "public class Lista {\n    public static void main(String[] args) {\n        System.out.println(\"Pan\");\n        system.out.println(\"Leche\");\n        System.out.println(\"Huevos\");\n    }\n}",
+      "errorLines": [
+        4
+      ],
+      "hints": [
+        "Uno de los errores frecuentes tiene que ver con las mayúsculas."
+      ],
+      "explanation": "En la línea 4, system está escrito con minúscula. Debe ser System, con S mayúscula.",
+      "incorrectFeedback": "Compara cada instrucción con las demás."
+    },
+    {
+      "id": "java.m01.l07.e05",
+      "type": "predictOutput",
+      "objectiveIds": [
+        "o1"
+      ],
+      "difficulty": 3,
+      "prompt": "¿Qué mostraría este programa?",
+      "code": "public class Marcador {\n    public static void main(String[] args) {\n        System.out.println(\"Equipo A: 3\");\n        System.out.println(\"Equipo B: 1\");\n        System.out.println(\"Fin del partido\");\n    }\n}",
+      "acceptedOutputs": [
+        "Equipo A: 3\nEquipo B: 1\nFin del partido"
+      ],
+      "hints": [
+        "Los dos puntos y los números forman parte del texto."
+      ],
+      "explanation": "Se muestran las tres líneas en orden, con los dos puntos y los espacios tal como están entre comillas.",
+      "incorrectFeedback": "Copia cada texto exactamente, con sus espacios y signos."
+    },
+    {
+      "id": "java.m01.l07.e06",
+      "type": "findError",
+      "objectiveIds": [
+        "o2"
+      ],
+      "difficulty": 4,
+      "prompt": "Este programa tiene dos errores. Marca las dos líneas.",
+      "code": "public class Doble {\n    public static void main(String[] args) {\n        System.out.println(\"Primera\")\n        System.out.println(\"Segunda\");\n        System.out.println(\"Tercera);\n    }\n}",
+      "errorLines": [
+        3,
+        5
+      ],
+      "hints": [
+        "Revisa el final de cada instrucción y las comillas de cada texto."
+      ],
+      "explanation": "En la línea 3 falta el punto y coma, y en la línea 5 no se cierran las comillas del texto.",
+      "incorrectFeedback": "Revisa los errores frecuentes del recuadro."
+    }
+  ]
+}
