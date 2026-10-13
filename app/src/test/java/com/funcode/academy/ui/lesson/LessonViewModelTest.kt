@@ -322,9 +322,11 @@ class LessonViewModelTest {
             }
             vm.next()
         }
-        assertEquals(50, vm.sessionXp.value)
+        // 50 XP del proyecto + 10 de la misión del proyecto (sus requisitos ya estaban cumplidos).
+        assertEquals(60, vm.sessionXp.value)
         val notice = vm.rewardNotice.value!!
         assertTrue(notice.challengeCompleted)
+        assertEquals(listOf("Proyecto guiado: tu tarjeta de presentación"), notice.completedMissions)
         assertTrue(Achievement.FIRST_CHALLENGE in notice.achievements)
         assertEquals(listOf(50), progress.ledgerEntries.filter { it.source.type == XpSourceType.CHALLENGE }.map { it.amount })
 

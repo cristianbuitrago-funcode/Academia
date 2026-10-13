@@ -72,7 +72,24 @@ class AssetContentRepositoryTest {
         val empty = AssetContentRepository(ApplicationProvider.getApplicationContext<Context>().assets, basePath = "content/xx/nada")
         assertTrue(empty.listLessons().isEmpty())
         assertTrue(empty.listModules().isEmpty())
+        assertTrue(empty.listMissions().isEmpty())
         assertEquals(LessonLoadResult.NotFound, empty.loadLesson("java.m01.l01"))
         assertEquals(ModuleLoadResult.NotFound, empty.loadModule("java.m01"))
+    }
+
+    @Test
+    fun cargaLasSieteMisionesValidasEnOrden() = runTest {
+        val missions = repository.listMissions()
+        assertEquals((1..7).map { "java.m01.mi0$it" }, missions.map { it.id })
+        assertTrue(missions.all { it.reviewStatus == ReviewStatus.DRAFT })
+        assertEquals(emptyList<String>(), repository.missionErrors())
+    }
+
+    @Test
+    fun elProyectoGuiadoTraeSituacionConceptosYResumen() = runTest {
+        val project = (repository.loadLesson("java.m01.reto") as LessonLoadResult.Loaded).lesson.project!!
+        assertTrue(project.situation.isNotBlank())
+        assertTrue(project.priorConcepts.isNotEmpty())
+        assertTrue(project.recap.isNotEmpty())
     }
 }

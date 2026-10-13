@@ -3,9 +3,8 @@ package com.funcode.academy.ui.rpg
 import androidx.annotation.StringRes
 import com.funcode.academy.R
 import com.funcode.academy.domain.rpg.Achievement
-import com.funcode.academy.domain.rpg.Mission
 
-/** Textos visibles de cada logro y misión (los identificadores viven en el dominio). */
+/** Textos visibles de cada logro (los identificadores viven en el dominio). */
 @get:StringRes
 val Achievement.titleRes: Int
     get() = when (this) {
@@ -28,13 +27,3 @@ val Achievement.descriptionRes: Int
         Achievement.FIRST_CHALLENGE -> R.string.achievement_first_challenge_description
     }
 
-/** Texto de cada misión (los identificadores y las metas viven en el dominio). */
-@get:StringRes
-val Mission.titleRes: Int
-    get() = when (this) {
-        Mission.SOLVE_5_NO_HINTS -> R.string.mission_solve_5_no_hints
-        Mission.SOLVE_20_EXERCISES -> R.string.mission_solve_20_exercises
-        Mission.COMPLETE_5_LESSONS -> R.string.mission_complete_5_lessons
-        Mission.PASS_ASSESSMENT -> R.string.mission_pass_assessment
-        Mission.COMPLETE_CHALLENGE -> R.string.mission_complete_challenge
-    }

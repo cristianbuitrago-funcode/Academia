@@ -4,11 +4,26 @@
   "moduleId": "java.m01",
   "languageId": "java",
   "locale": "es",
-  "version": 1,
+  "version": 2,
   "reviewStatus": "DRAFT",
   "kind": "challenge",
-  "title": "Reto: tu tarjeta de presentación en Java",
-  "description": "Construye paso a paso un programa que muestra una tarjeta de presentación. Aplica todo lo aprendido en el módulo.",
+  "title": "Proyecto guiado: tu tarjeta de presentación en Java",
+  "description": "Construye paso a paso un programa que muestra una tarjeta de presentación, aplicando todo lo aprendido en el módulo.",
+  "project": {
+    "situation": "Vas a presentarte en un club de programación y quieres hacerlo con estilo: con un programa en Java que muestre tu tarjeta de presentación en pantalla. Tu tarea es construirlo, revisarlo y saber cómo ponerlo en marcha.",
+    "priorConcepts": [
+      "Un programa es una secuencia de instrucciones que se ejecutan en orden.",
+      "Un programa Java tiene una clase y un método main; el archivo se llama como la clase.",
+      "System.out.println muestra un texto entre comillas y salta de línea.",
+      "Antes de ejecutar un programa hay que compilarlo."
+    ],
+    "recap": [
+      "Has escrito la estructura completa de un programa Java: la clase y el método main.",
+      "Has mostrado varias líneas en el orden que querías, porque las instrucciones se ejecutan de arriba abajo.",
+      "Has encontrado un error de mayúsculas que impedía compilar.",
+      "Sabes que primero se compila con javac y después se ejecuta con java."
+    ]
+  },
   "objectives": [
     {
       "id": "o1",
@@ -27,7 +42,7 @@
     "default": [
       {
         "type": "text",
-        "text": "En este reto vas a construir, paso a paso, un programa que muestra una tarjeta de presentación con tu nombre y tu afición. No hay teoría nueva: solo necesitas lo que has aprendido en las siete lecciones del módulo."
+        "text": "En este proyecto vas a construir, paso a paso, un programa que muestra una tarjeta de presentación con tu nombre y tu afición. No hay teoría nueva: solo necesitas lo que has aprendido en las siete lecciones del módulo."
       },
       {
         "type": "text",
@@ -73,7 +88,7 @@
       },
       {
         "type": "callout",
-        "text": "Puedes pedir pistas y volver a intentarlo tantas veces como quieras. El reto se supera al resolver todos los pasos."
+        "text": "Puedes pedir pistas progresivas y volver a intentarlo tantas veces como quieras. El proyecto se completa al resolver todos los pasos."
       }
     ]
   },
@@ -107,7 +122,8 @@
         0
       ],
       "hints": [
-        "Recuerda la lección sobre la estructura de un programa: el archivo y la clase pública se llaman igual."
+        "Recuerda la lección sobre la estructura de un programa: el archivo y la clase pública se llaman igual.",
+        "El nombre del archivo debe coincidir letra por letra con la clase, y termina en .java."
       ],
       "explanation": "La clase pública se guarda en un archivo con su mismo nombre, respetando mayúsculas, y la extensión .java.",
       "incorrectFeedback": "Fíjate en las mayúsculas y en la extensión del código fuente."
@@ -128,7 +144,8 @@
         "}"
       ],
       "hints": [
-        "Primero se declara la clase y, dentro de ella, el método main."
+        "Primero se declara la clase y, dentro de ella, el método main.",
+        "Dentro de main va la instrucción; al final se cierran primero main y después la clase."
       ],
       "explanation": "La clase envuelve al método main, la instrucción va dentro de main y cada llave abierta se cierra al final.",
       "incorrectFeedback": "Piensa en la estructura: clase, main, instrucción y las dos llaves de cierre."
@@ -195,7 +212,8 @@
         "}"
       ],
       "hints": [
-        "El orden de las instrucciones dentro de main es el orden en que aparecen las líneas en pantalla."
+        "El orden de las instrucciones dentro de main es el orden en que aparecen las líneas en pantalla.",
+        "Coloca las dos instrucciones del centro en el orden pedido: primero la afición."
       ],
       "explanation": "Las instrucciones se ejecutan de arriba abajo, así que se colocan en el mismo orden en que deben verse: línea, afición, nombre y línea.",
       "incorrectFeedback": "Fíjate en el orden pedido: esta vez la afición va antes que el nombre."
@@ -213,7 +231,8 @@
         5
       ],
       "hints": [
-        "Compara letra por letra el comienzo de cada instrucción."
+        "Compara letra por letra el comienzo de cada instrucción.",
+        "Busca una palabra que empiece en minúscula cuando debería empezar en mayúscula."
       ],
       "explanation": "En la línea 5 pone system con s minúscula. Java distingue mayúsculas y minúsculas, así que debe ser System.",
       "incorrectFeedback": "El error es de una sola letra: revisa las mayúsculas."
@@ -247,7 +266,8 @@
         0
       ],
       "hints": [
-        "Recuerda la lección sobre código fuente, compilación y ejecución: son dos pasos distintos."
+        "Recuerda la lección sobre código fuente, compilación y ejecución: son dos pasos distintos.",
+        "Recuerda: javac compila y java ejecuta, siempre en ese orden."
       ],
       "explanation": "Primero se compila (javac TarjetaPresentacion.java) y después se ejecuta (java TarjetaPresentacion). Solo al ejecutar aparece la salida.",
       "incorrectFeedback": "Piensa en qué hace cada herramienta: javac compila y java ejecuta."

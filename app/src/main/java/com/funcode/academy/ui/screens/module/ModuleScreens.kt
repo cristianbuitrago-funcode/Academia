@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,16 +33,27 @@ import kotlin.math.roundToInt
 
 /** Mapa de aprendizaje: lista de módulos con su progreso. */
 @Composable
-fun ModuleListRoute(content: ContentRepository, progress: ProgressRepository, onOpenModule: (String) -> Unit) {
+fun ModuleListRoute(
+    content: ContentRepository,
+    progress: ProgressRepository,
+    onOpenModule: (String) -> Unit,
+    onOpenMissions: () -> Unit,
+) {
     val viewModel: ModuleListViewModel = viewModel(factory = ModuleListViewModel.factory(content, progress))
     val modules by viewModel.modules.collectAsStateWithLifecycle()
-    ModuleListScreen(modules, onOpenModule)
+    ModuleListScreen(modules, onOpenModule, onOpenMissions)
 }
 
 @Composable
-fun ModuleListScreen(modules: List<ModuleProgress>?, onOpenModule: (String) -> Unit, modifier: Modifier = Modifier) {
+fun ModuleListScreen(
+    modules: List<ModuleProgress>?,
+    onOpenModule: (String) -> Unit,
+    onOpenMissions: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     ScreenColumn(modifier) {
         Heading(stringResource(R.string.map_title), large = true)
+        OutlinedButton(onClick = onOpenMissions) { Text(stringResource(R.string.missions_open)) }
         when {
             modules == null -> Unit
             modules.isEmpty() -> Text(stringResource(R.string.content_unavailable), style = MaterialTheme.typography.bodyLarge)

@@ -27,12 +27,16 @@ import com.funcode.academy.domain.settings.SettingsRepository
 import com.funcode.academy.ui.navigation.HomeRoute
 import com.funcode.academy.ui.navigation.LessonDestination
 import com.funcode.academy.ui.navigation.MapRoute
+import com.funcode.academy.ui.navigation.MissionDestination
+import com.funcode.academy.ui.navigation.MissionsDestination
 import com.funcode.academy.ui.navigation.ModuleDestination
 import com.funcode.academy.ui.navigation.ProfileRoute
 import com.funcode.academy.ui.navigation.SettingsRoute
 import com.funcode.academy.ui.navigation.TopLevelDestination
 import com.funcode.academy.ui.screens.home.HomeRoute as HomeScreenRoute
 import com.funcode.academy.ui.screens.lesson.LessonRoute as LessonScreenRoute
+import com.funcode.academy.ui.screens.mission.MissionRoute
+import com.funcode.academy.ui.screens.mission.MissionsRoute
 import com.funcode.academy.ui.screens.module.ModuleListRoute
 import com.funcode.academy.ui.screens.module.ModuleRoute
 import com.funcode.academy.ui.screens.profile.ProfileRoute as ProfileScreenRoute
@@ -86,12 +90,32 @@ fun FuncodeAppUi(
                     rewardEngine = rewardEngine,
                     onOpenLesson = { lessonId -> navController.navigate(LessonDestination(lessonId)) },
                     onOpenModule = { moduleId -> navController.navigate(ModuleDestination(moduleId)) },
+                    onOpenMissions = { navController.navigate(MissionsDestination) },
+                    onOpenMission = { missionId -> navController.navigate(MissionDestination(missionId)) },
                 )
             }
             composable<MapRoute> {
-                ModuleListRoute(contentRepository, progressRepository) { moduleId ->
-                    navController.navigate(ModuleDestination(moduleId))
+                ModuleListRoute(
+                    content = contentRepository,
+                    progress = progressRepository,
+                    onOpenModule = { moduleId -> navController.navigate(ModuleDestination(moduleId)) },
+                    onOpenMissions = { navController.navigate(MissionsDestination) },
+                )
+            }
+            composable<MissionsDestination> {
+                MissionsRoute(contentRepository, progressRepository, rewardEngine) { missionId ->
+                    navController.navigate(MissionDestination(missionId))
                 }
+            }
+            composable<MissionDestination> { entry ->
+                MissionRoute(
+                    missionId = entry.toRoute<MissionDestination>().missionId,
+                    content = contentRepository,
+                    progress = progressRepository,
+                    engine = rewardEngine,
+                    onOpenActivity = { lessonId -> navController.navigate(LessonDestination(lessonId)) },
+                    onExit = { navController.popBackStack() },
+                )
             }
             composable<ModuleDestination> { entry ->
                 ModuleRoute(
@@ -102,7 +126,7 @@ fun FuncodeAppUi(
                     onExit = { navController.popBackStack() },
                 )
             }
-            composable<ProfileRoute> { ProfileScreenRoute(progressRepository, rewardEngine) }
+            composable<ProfileRoute> { ProfileScreenRoute(progressRepository) }
             composable<SettingsRoute> { SettingsScreenRoute(settingsRepository) }
             composable<LessonDestination> { entry ->
                 LessonScreenRoute(

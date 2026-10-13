@@ -10,6 +10,9 @@ import com.funcode.academy.domain.lesson.ModuleAssembler
 import com.funcode.academy.domain.lesson.ModuleLoadResult
 import com.funcode.academy.domain.lesson.ModuleParseResult
 import com.funcode.academy.domain.lesson.toSummary
+import com.funcode.academy.domain.mission.MissionAssembler
+import com.funcode.academy.domain.mission.MissionDefinition
+import com.funcode.academy.domain.mission.MissionParseResult
 import java.io.File
 
 /** Contenido real de la app, leído del disco (las pruebas JVM se ejecutan en el directorio del módulo). */
@@ -36,8 +39,17 @@ object DemoContent {
         return (ModuleAssembler.assemble(definition, summaries) as ModuleLoadResult.Loaded).module
     }
 
-    /** Repositorio de contenido con todo el contenido real (lecciones y módulo). */
-    fun repository() = FakeContentRepository(allLessons(), listOf(module()))
+    /** Misiones reales, validadas contra las lecciones. */
+    fun missions(): List<MissionDefinition> {
+        val definitions = LessonParser.parseIndex(File("$ROOT/index.json").readText()).missions
+            .map { path -> (LessonParser.parseMission(File("$ROOT/$path").readText()) as MissionParseResult.Valid).mission }
+        val set = MissionAssembler.assemble(definitions, allLessons().associate { it.id to it.toSummary() })
+        check(set.errors.isEmpty()) { set.errors.toString() }
+        return set.missions
+    }
+
+    /** Repositorio de contenido con todo el contenido real (lecciones, módulo y misiones). */
+    fun repository() = FakeContentRepository(allLessons(), listOf(module()), missions())
 
     fun correctAnswerFor(content: ExerciseContent): Answer = when (content) {
         is ExerciseContent.MultipleChoice -> Answer.Choice(content.correctIndices)

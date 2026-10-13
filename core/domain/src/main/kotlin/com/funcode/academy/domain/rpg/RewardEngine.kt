@@ -2,9 +2,12 @@ package com.funcode.academy.domain.rpg
 
 import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.lesson.LessonLoadResult
+import com.funcode.academy.domain.mission.MissionDefinition
+import com.funcode.academy.domain.mission.MissionProgress
 import com.funcode.academy.domain.progress.ProgressRepository
 import com.funcode.academy.domain.progress.XpAward
 import com.funcode.academy.domain.progress.XpAwardResult
+import com.funcode.academy.domain.progress.XpSourceType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -12,6 +15,8 @@ import kotlinx.coroutines.sync.withLock
 /** Lo que ha cambiado en una sincronización de recompensas. */
 data class RewardOutcome(
     val granted: List<XpAward>,
+    /** Misiones completadas en esta sincronización (su bonificación está en [granted]). */
+    val completedMissions: List<MissionDefinition> = emptyList(),
     val newAchievements: List<Achievement>,
     val levelBefore: Int,
     val levelAfter: Int,
@@ -53,10 +58,17 @@ class RewardEngine(
             .filter { it.id !in unlocked && it.isMet(state) }
             .filter { progress.unlockAchievement(it.id) }
 
-        RewardOutcome(granted, newAchievements, levelBefore, LevelCurve.progressFor(totalXp).level)
+        val completedMissionIds = granted.filter { it.source.type == XpSourceType.MISSION }.map { it.source.id }.toSet()
+        RewardOutcome(
+            granted = granted,
+            completedMissions = catalog.missions.filter { it.id in completedMissionIds },
+            newAchievements = newAchievements,
+            levelBefore = levelBefore,
+            levelAfter = LevelCurve.progressFor(totalXp).level,
+        )
     }
 
-    /** Avance de las misiones según los resultados guardados (solo lectura). */
+    /** Estado de las misiones según los resultados guardados (solo lectura). */
     suspend fun missions(): List<MissionProgress> {
         val catalog = mutex.withLock { catalog() }
         return RewardCalculator.missions(catalog, verifiedResults())
@@ -69,7 +81,8 @@ class RewardEngine(
 
     /** Ejercicios de lecciones (con su dificultad), evaluaciones y retos de cada módulo. */
     private suspend fun loadCatalog(): RewardCatalog = RewardCatalog(
-        content.listModules().map { module ->
+        missions = content.listMissions(),
+        modules = content.listModules().map { module ->
             ModuleRewards(
                 moduleId = module.id,
                 lessons = module.lessons.mapNotNull { summary ->

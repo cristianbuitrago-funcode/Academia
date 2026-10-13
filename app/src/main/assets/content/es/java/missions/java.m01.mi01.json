@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.mi01",
+  "moduleId": "java.m01",
+  "order": 1,
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "type": "learning",
+  "title": "Descubre qué es programar y qué es un algoritmo",
+  "description": "Empieza tu aventura: aprende qué significa programar y cómo se describe un problema como una secuencia de pasos.",
+  "objective": "Explicar qué es un programa y qué es un algoritmo, y reconocer pasos precisos y ordenados.",
+  "prerequisites": [],
+  "tasks": [
+    {
+      "kind": "completeLesson",
+      "lessonId": "java.m01.l01"
+    },
+    {
+      "kind": "completeLesson",
+      "lessonId": "java.m01.l02"
+    }
+  ]
+}

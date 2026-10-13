@@ -23,6 +23,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.funcode.academy.R
 import com.funcode.academy.domain.lesson.ContentRepository
+import com.funcode.academy.domain.mission.MissionProgress
+import com.funcode.academy.domain.mission.MissionStatus
 import com.funcode.academy.domain.progress.ModuleProgress
 import com.funcode.academy.domain.progress.NextActivity
 import com.funcode.academy.domain.progress.ProgressRepository
@@ -38,11 +40,22 @@ fun HomeRoute(
     rewardEngine: RewardEngine,
     onOpenLesson: (String) -> Unit,
     onOpenModule: (String) -> Unit,
+    onOpenMissions: () -> Unit,
+    onOpenMission: (String) -> Unit,
 ) {
     val viewModel: HomeViewModel = viewModel(factory = HomeViewModel.factory(progressRepository, contentRepository, rewardEngine))
     val level by viewModel.level.collectAsStateWithLifecycle()
     val modules by viewModel.modules.collectAsStateWithLifecycle()
-    HomeScreen(level = level, modules = modules, onOpenLesson = onOpenLesson, onOpenModule = onOpenModule)
+    val missions by viewModel.missions.collectAsStateWithLifecycle()
+    HomeScreen(
+        level = level,
+        modules = modules,
+        missions = missions,
+        onOpenLesson = onOpenLesson,
+        onOpenModule = onOpenModule,
+        onOpenMissions = onOpenMissions,
+        onOpenMission = onOpenMission,
+    )
 }
 
 /** Pantalla de Inicio. Recibe el estado ya calculado, por eso es fácil de probar. */
@@ -50,8 +63,11 @@ fun HomeRoute(
 fun HomeScreen(
     level: LevelProgress?,
     modules: List<ModuleProgress>?,
+    missions: List<MissionProgress>?,
     onOpenLesson: (String) -> Unit,
     onOpenModule: (String) -> Unit,
+    onOpenMissions: () -> Unit,
+    onOpenMission: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -77,6 +93,34 @@ fun HomeScreen(
             modules.isEmpty() -> Text(stringResource(R.string.content_unavailable), style = MaterialTheme.typography.bodyLarge)
             // Se continúa por el primer módulo que no esté terminado.
             else -> ContinueCard(modules.firstOrNull { it.next != NextActivity.ModuleDone } ?: modules.first(), onOpenLesson, onOpenModule)
+        }
+        if (!missions.isNullOrEmpty()) MissionHomeCard(missions, onOpenMissions, onOpenMission)
+    }
+}
+
+/** Misión actual: la primera en curso o, si no hay, la primera disponible. */
+@Composable
+private fun MissionHomeCard(missions: List<MissionProgress>, onOpenMissions: () -> Unit, onOpenMission: (String) -> Unit) {
+    val current = missions.firstOrNull { it.status == MissionStatus.IN_PROGRESS }
+        ?: missions.firstOrNull { it.status == MissionStatus.AVAILABLE }
+    Text(
+        text = stringResource(R.string.home_missions_title),
+        style = MaterialTheme.typography.titleLarge,
+        modifier = Modifier.semantics { heading() },
+    )
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                stringResource(R.string.home_missions_progress, missions.count { it.status == MissionStatus.COMPLETED }, missions.size),
+                style = MaterialTheme.typography.labelLarge,
+            )
+            if (current != null) {
+                Text(stringResource(R.string.home_current_mission, current.mission.title), style = MaterialTheme.typography.bodyLarge)
+                Button(onClick = { onOpenMission(current.mission.id) }) { Text(stringResource(R.string.home_open_mission)) }
+            } else {
+                Text(stringResource(R.string.home_missions_done), style = MaterialTheme.typography.bodyLarge)
+            }
+            OutlinedButton(onClick = onOpenMissions) { Text(stringResource(R.string.missions_open)) }
         }
     }
 }

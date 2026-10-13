@@ -1,11 +1,16 @@
 package com.funcode.academy.domain.rpg
 
+import com.funcode.academy.domain.mission.MissionDefinition
+import com.funcode.academy.domain.mission.MissionProgress
+import com.funcode.academy.domain.mission.MissionStatus
+import com.funcode.academy.domain.mission.MissionTask
+import com.funcode.academy.domain.mission.TaskProgress
 import com.funcode.academy.domain.progress.XpAward
 import com.funcode.academy.domain.progress.XpSource
 import com.funcode.academy.domain.progress.XpSourceType
 
 /** Lo que el contenido permite recompensar (se construye a partir de los JSON). */
-data class RewardCatalog(val modules: List<ModuleRewards>)
+data class RewardCatalog(val modules: List<ModuleRewards>, val missions: List<MissionDefinition> = emptyList())
 
 data class ModuleRewards(
     val moduleId: String,
@@ -57,6 +62,9 @@ object RewardCalculator {
                 add(XpAward(XpSource(XpSourceType.CHALLENGE, module.challenge!!.challengeId), RewardRules.CHALLENGE_XP))
             }
         }
+        missions(catalog, results).filter { it.status == MissionStatus.COMPLETED }.forEach {
+            add(XpAward(XpSource(XpSourceType.MISSION, it.mission.id), RewardRules.MISSION_XP))
+        }
     }
 
     fun learningState(catalog: RewardCatalog, results: VerifiedResults, totalXp: Int): LearningState {
@@ -71,23 +79,56 @@ object RewardCalculator {
         )
     }
 
-    /** Avance de cada misión. Las misiones no conceden XP: solo muestran el progreso. */
+    /**
+     * Estado de cada misión, en orden de requisitos. Una misión se completa cuando
+     * sus requisitos están completados y todas sus tareas se cumplen con resultados
+     * verificados; abrirla no cambia nada.
+     */
     fun missions(catalog: RewardCatalog, results: VerifiedResults): List<MissionProgress> {
-        val practiceIds = catalog.modules.flatMap { m ->
-            m.lessons.flatMap { it.exerciseDifficulty.keys } + m.challenge?.stepIds.orEmpty()
-        }.toSet()
-        val lessonExerciseIds = catalog.modules.flatMap { m -> m.lessons.flatMap { it.exerciseDifficulty.keys } }
-        val state = learningState(catalog, results, totalXp = 0)
-        return Mission.entries.map { mission ->
-            val current = when (mission) {
-                Mission.SOLVE_5_NO_HINTS -> practiceIds.count { results.firstCorrectHints[it] == 0 }
-                Mission.SOLVE_20_EXERCISES -> lessonExerciseIds.count { it in results.firstCorrectHints }
-                Mission.COMPLETE_5_LESSONS -> state.completedLessons
-                Mission.PASS_ASSESSMENT -> state.passedAssessments
-                Mission.COMPLETE_CHALLENGE -> state.completedChallenges
+        val lessons = catalog.modules.flatMap { it.lessons }.associateBy { it.lessonId }
+        val exerciseOwner = catalog.modules.flatMap { m ->
+            m.lessons.flatMap { l -> l.exerciseDifficulty.keys.map { it to l.lessonId } } +
+                m.challenge?.let { c -> c.stepIds.map { it to c.challengeId } }.orEmpty()
+        }.toMap()
+        val solved = results.firstCorrectHints.keys
+
+        fun taskProgress(task: MissionTask): TaskProgress = when (task) {
+            is MissionTask.CompleteLesson -> {
+                val ids = lessons[task.lessonId]?.exerciseDifficulty?.keys.orEmpty()
+                TaskProgress(task, ids.count { it in solved }, ids.size.coerceAtLeast(1), task.lessonId)
             }
-            MissionProgress(mission, minOf(current, mission.target))
+            is MissionTask.SolveExercises -> {
+                val next = task.exerciseIds.firstOrNull { it !in solved } ?: task.exerciseIds.first()
+                TaskProgress(task, task.exerciseIds.count { it in solved }, task.exerciseIds.size, exerciseOwner[next] ?: next)
+            }
+            is MissionTask.PassAssessment -> {
+                val module = catalog.modules.firstOrNull { it.assessment?.assessmentId == task.assessmentId }
+                TaskProgress(task, if (module != null && isAssessmentPassed(module, results)) 1 else 0, 1, task.assessmentId)
+            }
+            is MissionTask.CompleteChallenge -> {
+                val module = catalog.modules.firstOrNull { it.challenge?.challengeId == task.challengeId }
+                val steps = module?.challenge?.stepIds.orEmpty()
+                // Los pasos solo cuentan con el reto abierto (todas las lecciones completadas).
+                val current = if (module != null && isChallengeCompleted(module, results)) steps.size
+                else steps.count { it in solved }.coerceAtMost(steps.size - 1).coerceAtLeast(0)
+                TaskProgress(task, current, steps.size.coerceAtLeast(1), task.challengeId)
+            }
         }
+
+        val byId = catalog.missions.associateBy { it.id }
+        val memo = mutableMapOf<String, MissionProgress>()
+        fun evaluate(m: MissionDefinition): MissionProgress = memo.getOrPut(m.id) {
+            val missing = m.prerequisiteIds.mapNotNull { byId[it] }.filter { evaluate(it).status != MissionStatus.COMPLETED }
+            val tasks = m.tasks.map(::taskProgress)
+            val status = when {
+                missing.isNotEmpty() -> MissionStatus.LOCKED
+                tasks.all { it.done } -> MissionStatus.COMPLETED
+                tasks.any { it.current > 0 } -> MissionStatus.IN_PROGRESS
+                else -> MissionStatus.AVAILABLE
+            }
+            MissionProgress(m, status, tasks, missing)
+        }
+        return catalog.missions.map(::evaluate)
     }
 
     /** El reto cuenta si se resolvieron todos sus pasos estando abierto (todas las lecciones completadas). */

@@ -6,6 +6,7 @@ enum class XpSourceType {
     LESSON,
     ASSESSMENT,
     CHALLENGE,
+    MISSION,
 }
 
 /**

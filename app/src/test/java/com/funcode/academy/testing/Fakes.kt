@@ -8,6 +8,7 @@ import com.funcode.academy.domain.lesson.LessonLoadResult
 import com.funcode.academy.domain.lesson.LessonSummary
 import com.funcode.academy.domain.lesson.ModuleLoadResult
 import com.funcode.academy.domain.lesson.toSummary
+import com.funcode.academy.domain.mission.MissionDefinition
 import com.funcode.academy.domain.model.Audience
 import com.funcode.academy.domain.progress.ExerciseAttempt
 import com.funcode.academy.domain.progress.ProgressRepository
@@ -84,7 +85,9 @@ class FakeSettingsRepository(initial: Audience? = null) : SettingsRepository {
 class FakeContentRepository(
     private val lessons: List<Lesson> = emptyList(),
     private val modules: List<CourseModule> = emptyList(),
+    private val missions: List<MissionDefinition> = emptyList(),
 ) : ContentRepository {
+    override suspend fun listMissions(): List<MissionDefinition> = missions
     override suspend fun listLessons(): List<LessonSummary> = lessons.map { it.toSummary() }
     override suspend fun listModules(): List<CourseModule> = modules
     override suspend fun loadModule(moduleId: String): ModuleLoadResult =

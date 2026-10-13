@@ -22,18 +22,8 @@
     <string name="profile_rewards_exercises">Ejercicios resueltos: %1$d (XP: %2$d)</string>
     <string name="profile_rewards_lessons">Lecciones completadas: %1$d (XP: %2$d)</string>
     <string name="profile_rewards_assessments">Evaluaciones aprobadas: %1$d (XP: %2$d)</string>
-    <string name="profile_rewards_challenges">Retos superados: %1$d (XP: %2$d)</string>
-    <string name="profile_missions_title">Misiones (%1$d de %2$d)</string>
-    <string name="profile_missions_note">Metas para guiar tu práctica. Se completan con tu progreso real y no dan XP extra.</string>
-
-    <!-- Misiones -->
-    <string name="mission_solve_5_no_hints">Resuelve 5 ejercicios sin pedir pistas</string>
-    <string name="mission_solve_20_exercises">Resuelve 20 ejercicios distintos de las lecciones</string>
-    <string name="mission_complete_5_lessons">Completa 5 lecciones</string>
-    <string name="mission_pass_assessment">Aprueba la evaluación de un módulo</string>
-    <string name="mission_complete_challenge">Supera el reto de un módulo</string>
-    <string name="mission_progress">Progreso: %1$d de %2$d</string>
-    <string name="mission_completed">Completada</string>
+    <string name="profile_rewards_missions">Misiones completadas: %1$d (XP: %2$d)</string>
+    <string name="profile_rewards_challenges">Proyectos guiados completados: %1$d (XP: %2$d)</string>
     <string name="profile_achievements_title">Logros (%1$d de %2$d)</string>
 
     <!-- Niveles y recompensas -->
@@ -61,19 +51,62 @@
     <string name="achievement_first_module_description">Completa todas las lecciones de un módulo y aprueba su evaluación.</string>
     <string name="achievement_level_2_title">Subida de nivel</string>
     <string name="achievement_level_2_description">Alcanza el nivel 2.</string>
-    <string name="achievement_first_challenge_title">Primer reto superado</string>
-    <string name="achievement_first_challenge_description">Resuelve todos los pasos del reto de un módulo.</string>
+    <string name="achievement_first_challenge_title">Primer proyecto completado</string>
+    <string name="achievement_first_challenge_description">Resuelve todos los pasos del proyecto guiado de un módulo.</string>
 
-    <!-- Retos -->
-    <string name="challenge_start">Empezar el reto</string>
+    <!-- Proyectos guiados (retos) -->
+    <string name="challenge_start">Empezar el proyecto</string>
     <string name="challenge_progress">Paso %1$d de %2$d</string>
-    <string name="challenge_locked">El reto se abre al completar todas las lecciones del módulo. Lecciones que faltan: %1$d</string>
-    <string name="module_challenge_title">Reto del módulo</string>
+    <string name="challenge_locked">El proyecto guiado se abre al completar todas las lecciones del módulo. Lecciones que faltan: %1$d</string>
+    <string name="module_challenge_title">Proyecto guiado del módulo</string>
     <string name="module_challenge_progress">Pasos resueltos: %1$d de %2$d</string>
-    <string name="module_challenge_done">Reto superado</string>
-    <string name="module_challenge_repeat">Repetir el reto</string>
+    <string name="module_challenge_done">Proyecto completado</string>
+    <string name="module_challenge_repeat">Repetir el proyecto</string>
     <string name="home_next_challenge">Siguiente paso: %1$s</string>
-    <string name="reward_challenge_completed">¡Reto superado!</string>
+    <string name="reward_mission_completed">¡Misión completada: %1$s!</string>
+    <string name="project_situation_title">La situación</string>
+    <string name="project_prior_title">Lo que necesitas saber antes de empezar</string>
+    <string name="project_recap_title">Lo que has aprendido</string>
+    <string name="project_unfinished">Pasos sin resolver: %1$d. Resuélvelos todos para completar el proyecto.</string>
+
+    <!-- Misiones -->
+    <string name="missions_open">Ver misiones</string>
+    <string name="missions_title">Misiones</string>
+    <string name="missions_intro">Cada misión te propone objetivos del curso. Se completa con tus resultados comprobados, no al abrirla.</string>
+    <string name="missions_none">No hay misiones disponibles.</string>
+    <string name="mission_type_learning">Misión de aprendizaje</string>
+    <string name="mission_type_practice">Misión de práctica</string>
+    <string name="mission_type_assessment">Misión de evaluación</string>
+    <string name="mission_type_project">Proyecto guiado</string>
+    <string name="mission_status_locked">Bloqueada</string>
+    <string name="mission_status_available">Disponible</string>
+    <string name="mission_status_in_progress">En progreso</string>
+    <string name="mission_status_completed">Completada</string>
+    <string name="mission_tasks_progress">Tareas completadas: %1$d de %2$d</string>
+    <string name="mission_not_found">Esta misión no está disponible.</string>
+    <string name="mission_back">Volver</string>
+    <string name="mission_objective_title">Objetivo</string>
+    <string name="mission_locked_reason">Para desbloquearla, completa antes: %1$s</string>
+    <string name="mission_tasks_title">Qué tienes que hacer</string>
+    <string name="mission_task_lesson">Completa la lección «%1$s»</string>
+    <string name="mission_task_assessment">Aprueba «%1$s» con un 80 %% o más</string>
+    <string name="mission_task_project">Completa «%1$s»</string>
+    <string name="mission_task_progress">Progreso: %1$d de %2$d</string>
+    <string name="mission_task_done">Hecho</string>
+    <string name="mission_open_activity">Abrir «%1$s»</string>
+    <string name="mission_review_activity">Repasar «%1$s»</string>
+    <string name="mission_reward_title">Recompensa</string>
+    <string name="mission_reward_pending">XP de bonificación al completarla: %1$d (una sola vez)</string>
+    <string name="mission_reward_obtained">XP de bonificación obtenido: %1$d</string>
+    <string name="mission_completed_title">¡Misión completada!</string>
+    <string name="mission_completed_summary">Has cumplido las %1$d tareas con resultados comprobados.</string>
+    <string name="mission_practice_note">Puedes repetir sus actividades para practicar; la bonificación no se vuelve a sumar.</string>
+    <string name="home_missions_title">Misiones</string>
+    <string name="home_missions_progress">Misiones completadas: %1$d de %2$d</string>
+    <string name="home_current_mission">Misión actual: %1$s</string>
+    <string name="home_open_mission">Ver la misión</string>
+    <string name="home_missions_done">Has completado todas las misiones disponibles.</string>
+    <string name="reward_challenge_completed">¡Proyecto guiado completado!</string>
 
     <!-- Ajustes -->
     <string name="settings_title">Configuración</string>

@@ -62,6 +62,8 @@ data class RewardNotice(
     val lessonCompleted: Boolean,
     val assessmentPassed: Boolean,
     val challengeCompleted: Boolean,
+    /** Títulos de las misiones completadas con esta respuesta. */
+    val completedMissions: List<String>,
     /** Nuevo nivel alcanzado, o `null` si no se ha subido de nivel. */
     val newLevel: Int?,
     val achievements: List<Achievement>,
@@ -76,6 +78,7 @@ data class RewardNotice(
                 lessonCompleted = XpSourceType.LESSON in types,
                 assessmentPassed = XpSourceType.ASSESSMENT in types,
                 challengeCompleted = XpSourceType.CHALLENGE in types,
+                completedMissions = outcome.completedMissions.map { it.title },
                 newLevel = outcome.levelAfter.takeIf { outcome.leveledUp },
                 achievements = outcome.newAchievements,
                 alreadyRewarded = exerciseId != null &&

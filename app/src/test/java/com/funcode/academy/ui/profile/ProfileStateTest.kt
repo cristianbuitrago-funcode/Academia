@@ -4,8 +4,6 @@ import com.funcode.academy.domain.progress.XpEntry
 import com.funcode.academy.domain.progress.XpSource
 import com.funcode.academy.domain.progress.XpSourceType
 import com.funcode.academy.domain.rpg.Achievement
-import com.funcode.academy.domain.rpg.Mission
-import com.funcode.academy.domain.rpg.MissionProgress
 import com.funcode.academy.ui.screens.profile.ProfileViewModel
 import com.funcode.academy.ui.screens.profile.RewardTotals
 import org.junit.Assert.assertEquals
@@ -45,13 +43,5 @@ class ProfileStateTest {
         assertEquals(1, state.unlockedCount)
         assertEquals(42L, state.achievements.single { it.achievement == Achievement.FIRST_LESSON }.unlockedAt)
         assertNull(state.achievements.single { it.achievement == Achievement.LEVEL_2 }.unlockedAt)
-    }
-
-    @Test
-    fun incluyeLasMisionesRecibidas() {
-        val missions = listOf(MissionProgress(Mission.PASS_ASSESSMENT, 1), MissionProgress(Mission.SOLVE_5_NO_HINTS, 2))
-        val state = ProfileViewModel.profileStateOf(emptyList(), emptyMap(), missions)
-        assertEquals(missions, state.missions)
-        assertEquals(1, state.missions.count { it.completed })
     }
 }

@@ -132,6 +132,12 @@ private fun LessonHeader(lesson: Lesson) {
 private fun Intro(lesson: Lesson, sections: List<Section>, onStart: () -> Unit) {
     LessonHeader(lesson)
     Text(lesson.description, style = MaterialTheme.typography.bodyLarge)
+    lesson.project?.let { project ->
+        Heading(stringResource(R.string.project_situation_title))
+        Text(project.situation, style = MaterialTheme.typography.bodyLarge)
+        Heading(stringResource(R.string.project_prior_title))
+        project.priorConcepts.forEach { Text("• $it", style = MaterialTheme.typography.bodyLarge) }
+    }
     Heading(stringResource(R.string.lesson_objectives_title))
     lesson.objectives.forEach { Text("• ${it.text}", style = MaterialTheme.typography.bodyLarge) }
     Heading(stringResource(R.string.lesson_theory_title))
@@ -310,6 +316,14 @@ private fun Summary(lesson: Lesson, summary: SessionSummary, sessionXp: Int, onR
             else stringResource(R.string.summary_assessment_failed, (threshold * 100).roundToInt()),
             style = MaterialTheme.typography.titleMedium,
         )
+    }
+    lesson.project?.let { project ->
+        if (summary.unsolved == 0) {
+            Heading(stringResource(R.string.project_recap_title))
+            project.recap.forEach { Text("• $it", style = MaterialTheme.typography.bodyLarge) }
+        } else {
+            Text(stringResource(R.string.project_unfinished, summary.unsolved), style = MaterialTheme.typography.bodyLarge)
+        }
     }
     Text(stringResource(R.string.summary_note), style = MaterialTheme.typography.bodySmall)
     Button(onClick = onRestart, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.summary_repeat)) }

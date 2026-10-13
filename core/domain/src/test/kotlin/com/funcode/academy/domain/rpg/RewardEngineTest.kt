@@ -8,6 +8,7 @@ import com.funcode.academy.domain.lesson.LessonLoadResult
 import com.funcode.academy.domain.lesson.LessonSummary
 import com.funcode.academy.domain.lesson.ModuleLoadResult
 import com.funcode.academy.domain.lesson.toSummary
+import com.funcode.academy.domain.mission.MissionStatus
 import com.funcode.academy.domain.progress.ExerciseAttempt
 import com.funcode.academy.domain.progress.ProgressRepository
 import com.funcode.academy.domain.progress.XpAward
@@ -36,6 +37,7 @@ class RewardEngineTest {
         override suspend fun listModules(): List<CourseModule> = ContentFiles.modules
         override suspend fun loadModule(moduleId: String) =
             ContentFiles.modules.firstOrNull { it.id == moduleId }?.let { ModuleLoadResult.Loaded(it) } ?: ModuleLoadResult.NotFound
+        override suspend fun listMissions() = ContentFiles.missions
     }
 
     /** Registro en memoria con las mismas garantías que Room: una entrada por actividad. */
@@ -130,11 +132,12 @@ class RewardEngineTest {
         assertEquals(0, engine.sync().xpGained)
     }
 
-    @Test fun `el modulo completo sin pistas suma 910 XP y llega al nivel 4`() = runTest {
+    @Test fun `el modulo completo sin el proyecto suma 910 XP mas 60 de seis misiones y llega al nivel 4`() = runTest {
         lessons.indices.forEach { solveLesson(it) }
         progress.recordAssessmentResult("java.m01", AssessmentScore(10, 10))
         val outcome = engine.sync()
-        assertEquals(910, outcome.xpGained)
+        assertEquals(910 + 6 * RewardRules.MISSION_XP, outcome.xpGained)
+        assertEquals((1..6).map { "java.m01.mi0$it" }, outcome.completedMissions.map { it.id })
         assertEquals(4, outcome.levelAfter)
         assertEquals(Achievement.entries.toSet() - Achievement.FIRST_CHALLENGE, outcome.newAchievements.toSet())
         // Sincronizar otra vez no cambia nada.
@@ -159,16 +162,38 @@ class RewardEngineTest {
         assertEquals(0, engine.sync().xpGained)
     }
 
-    @Test fun `el modulo completo con el reto suma 960 XP y desbloquea todos los logros`() = runTest {
+    @Test fun `el modulo completo con el proyecto y las siete misiones suma 1030 XP y llega al nivel 5`() = runTest {
         lessons.indices.forEach { solveLesson(it) }
         progress.recordAssessmentResult("java.m01", AssessmentScore(10, 10))
-        assertEquals(910, engine.sync().xpGained)
+        assertEquals(970, engine.sync().xpGained)
         challenge.exercises.forEach { solve(it.id, hints = 3) } // las pistas no afectan al XP del reto
         val outcome = engine.sync()
-        assertEquals(RewardRules.CHALLENGE_XP, outcome.xpGained)
+        assertEquals(RewardRules.CHALLENGE_XP + RewardRules.MISSION_XP, outcome.xpGained)
+        assertEquals(listOf("java.m01.mi07"), outcome.completedMissions.map { it.id })
         assertEquals(listOf(Achievement.FIRST_CHALLENGE), outcome.newAchievements)
-        assertEquals(960, progress.ledger.value.sumOf { it.amount })
+        assertEquals(1030, progress.ledger.value.sumOf { it.amount })
+        assertEquals(5, outcome.levelAfter)
         assertTrue(engine.sync().granted.isEmpty())
-        assertTrue(engine.missions().filter { it.mission != Mission.SOLVE_5_NO_HINTS }.all { it.completed })
+        assertTrue(engine.missions().all { it.status == MissionStatus.COMPLETED })
+    }
+
+    @Test fun `las misiones avanzan en cadena y su bonificacion no se repite`() = runTest {
+        assertEquals(
+            listOf(MissionStatus.AVAILABLE) + List(6) { MissionStatus.LOCKED },
+            engine.missions().map { it.status },
+        )
+        solveLesson(0)
+        engine.sync()
+        assertEquals(MissionStatus.IN_PROGRESS, engine.missions().first().status)
+        solveLesson(1)
+        val outcome = engine.sync()
+        assertEquals(listOf("java.m01.mi01"), outcome.completedMissions.map { it.id })
+        val states = engine.missions().map { it.status }
+        // mi02 ya tiene progreso: incluye un ejercicio de ordenar de la lección 2.
+        assertEquals(listOf(MissionStatus.COMPLETED, MissionStatus.IN_PROGRESS, MissionStatus.LOCKED), states.take(3))
+        // Repetir ejercicios de la misión completada no da más bonificación.
+        solveLesson(0)
+        assertTrue(engine.sync().granted.isEmpty())
+        assertEquals(1, progress.ledger.value.count { it.source.type == XpSourceType.MISSION })
     }
 }

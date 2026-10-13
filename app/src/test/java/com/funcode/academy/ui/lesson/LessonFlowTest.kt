@@ -108,7 +108,7 @@ class LessonFlowTest {
         assertShown(text(R.string.module_assessment_not_done))
         assertShown(text(R.string.module_assessment_start))
         // El reto está cerrado: se explica qué falta y no hay botón para abrirlo.
-        assertShown("Reto: tu tarjeta de presentación en Java")
+        assertShown("Proyecto guiado: tu tarjeta de presentación en Java")
         assertShown(text(R.string.challenge_locked, 7))
         assertEquals(0, rule.onAllNodes(hasText(text(R.string.challenge_start))).fetchSemanticsNodes().size)
     }
@@ -189,6 +189,33 @@ class LessonFlowTest {
         assertShown(text(R.string.home_total_xp, 10))
         assertShown(text(R.string.profile_rewards_exercises, 1, 10))
         assertShown(text(R.string.profile_achievements_title, 0, 6))
-        assertShown(text(R.string.profile_missions_title, 0, 5))
+    }
+
+    @Test
+    fun inicioMuestraLaMisionActualYAbreSuActividad() {
+        setApp()
+        assertShown(text(R.string.home_missions_progress, 0, 7))
+        assertShown(text(R.string.home_current_mission, "Descubre qué es programar y qué es un algoritmo"))
+        click(text(R.string.home_open_mission))
+        assertShown(text(R.string.mission_type_learning))
+        assertShown(text(R.string.mission_status_available))
+        assertShown(text(R.string.mission_task_lesson, "¿Qué es programar?"))
+        click(text(R.string.mission_open_activity, "¿Qué es programar?"))
+        assertShown(text(R.string.lesson_start_exercises))
+        // Abrir la misión o la lección no completa nada.
+        assertEquals(0, progress.ledgerEntries.size)
+    }
+
+    @Test
+    fun unaMisionBloqueadaExplicaQueFaltaYNoOfreceActividades() {
+        setApp()
+        waitForText(text(R.string.nav_map))
+        node(hasText(text(R.string.nav_map)) and hasClickAction()).performClick()
+        click(text(R.string.missions_open))
+        assertShown(text(R.string.missions_title))
+        click("Ordena los pasos de una solución")
+        assertShown(text(R.string.mission_status_locked))
+        assertShown(text(R.string.mission_locked_reason, "«Descubre qué es programar y qué es un algoritmo»"))
+        assertEquals(0, rule.onAllNodes(hasText(text(R.string.mission_open_activity, "Instrucciones y orden: la ejecución secuencial"))).fetchSemanticsNodes().size)
     }
 }

@@ -159,13 +159,26 @@ class LessonParserTest {
         assertTrue(errors.any { "lección" in it })
     }
 
-    @Test fun `un reto se lee con su tipo y permite pistas`() {
-        val lesson = (LessonParser.parse(json(extra = ""","kind":"challenge"""")) as LessonParseResult.Valid).lesson
+    private val project = ""","project":{"situation":"S","priorConcepts":["C"],"recap":["R"]}"""
+
+    @Test fun `un reto se lee con su tipo y su proyecto guiado`() {
+        val lesson = (LessonParser.parse(json(extra = ""","kind":"challenge"$project""")) as LessonParseResult.Valid).lesson
         assertEquals(LessonKind.CHALLENGE, lesson.kind)
+        assertEquals(ProjectInfo("S", listOf("C"), listOf("R")), lesson.project)
     }
 
+    @Test fun `un reto necesita el bloque project completo`() {
+        assertError(json(extra = ""","kind":"challenge""""), "bloque 'project'")
+        val errors = errorsOf(json(extra = ""","kind":"challenge","project":{"situation":" ","priorConcepts":[],"recap":[""]}"""))
+        assertTrue(errors.any { "situation" in it })
+        assertTrue(errors.any { "priorConcepts" in it })
+        assertTrue(errors.any { "recap" in it })
+    }
+
+    @Test fun `una leccion normal no admite bloque project`() = assertError(json(extra = project), "Solo los retos")
+
     @Test fun `un reto no puede tener bloque assessment`() =
-        assertError(json(extra = ""","kind":"challenge","assessment":{"exerciseIds":["t.e1"]}"""), "Un reto")
+        assertError(json(extra = ""","kind":"challenge","assessment":{"exerciseIds":["t.e1"]}$project"""), "Un reto")
 
     @Test fun `modulo con reto`() {
         val r = LessonParser.parseModule(

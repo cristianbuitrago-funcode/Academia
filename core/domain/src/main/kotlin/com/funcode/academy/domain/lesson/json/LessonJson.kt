@@ -15,7 +15,7 @@ internal data class LessonJson(
     val locale: String? = null,
     val version: Int? = null,
     val reviewStatus: String? = null,
-    /** "lesson" (por defecto) o "assessment". */
+    /** "lesson" (por defecto), "assessment" o "challenge". */
     val kind: String? = null,
     val title: String? = null,
     val description: String? = null,
@@ -23,6 +23,41 @@ internal data class LessonJson(
     val presentations: Map<String, List<SectionJson>>? = null,
     val exercises: List<ExerciseJson>? = null,
     val assessment: AssessmentJson? = null,
+    /** Solo en los retos (proyectos guiados): situación, conceptos previos y resumen final. */
+    val project: ProjectJson? = null,
+)
+
+@Serializable
+internal data class ProjectJson(
+    val situation: String? = null,
+    val priorConcepts: List<String>? = null,
+    val recap: List<String>? = null,
+)
+
+@Serializable
+internal data class MissionJson(
+    val schemaVersion: Int? = null,
+    val id: String? = null,
+    val moduleId: String? = null,
+    val order: Int? = null,
+    val version: Int? = null,
+    val reviewStatus: String? = null,
+    val type: String? = null,
+    val title: String? = null,
+    val description: String? = null,
+    val objective: String? = null,
+    val prerequisites: List<String>? = null,
+    val tasks: List<MissionTaskJson>? = null,
+)
+
+@Serializable
+internal data class MissionTaskJson(
+    val kind: String? = null,
+    val lessonId: String? = null,
+    val exerciseIds: List<String>? = null,
+    val description: String? = null,
+    val assessmentId: String? = null,
+    val challengeId: String? = null,
 )
 
 @Serializable
@@ -82,6 +117,7 @@ internal data class LessonIndexJson(
     val schemaVersion: Int? = null,
     val modules: List<String>? = null,
     val lessons: List<String>? = null,
+    val missions: List<String>? = null,
 )
 
 @Serializable

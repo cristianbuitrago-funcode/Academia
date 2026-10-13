@@ -1,5 +1,7 @@
 package com.funcode.academy.domain.lesson
 
+import com.funcode.academy.domain.mission.MissionDefinition
+
 /**
  * Estado de una sesión de ejercicios de una lección. Es inmutable: cada acción
  * devuelve una sesión nueva, lo que facilita probarla y restaurarla en la interfaz.
@@ -119,6 +121,9 @@ interface ContentRepository {
     /** Módulos válidos, ordenados por `order`. */
     suspend fun listModules(): List<CourseModule>
     suspend fun loadModule(moduleId: String): ModuleLoadResult
+
+    /** Misiones válidas (las inválidas se descartan), ordenadas por módulo y `order`. */
+    suspend fun listMissions(): List<MissionDefinition> = emptyList()
 }
 
 sealed interface LessonLoadResult {

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.mi03",
+  "moduleId": "java.m01",
+  "order": 3,
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "type": "learning",
+  "title": "Conoce la estructura de un programa Java",
+  "description": "Descubre las partes que tiene cualquier programa Java: la clase, el método main y las llaves.",
+  "objective": "Identificar la clase, el método main y la forma básica de un programa Java.",
+  "prerequisites": [
+    "java.m01.mi02"
+  ],
+  "tasks": [
+    {
+      "kind": "completeLesson",
+      "lessonId": "java.m01.l04"
+    }
+  ]
+}

@@ -10,6 +10,8 @@ import com.funcode.academy.domain.progress.ProgressRepository
 import com.funcode.academy.domain.rpg.LevelCurve
 import com.funcode.academy.domain.rpg.LevelProgress
 import com.funcode.academy.domain.rpg.RewardEngine
+import com.funcode.academy.domain.mission.MissionProgress
+import com.funcode.academy.ui.progress.observeMissions
 import com.funcode.academy.ui.progress.observeModulesProgress
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +29,10 @@ class HomeViewModel(
     /** `null` mientras se lee la base de datos por primera vez. */
     val level: StateFlow<LevelProgress?> = progressRepository.observeTotalXp()
         .map { LevelCurve.progressFor(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), initialValue = null)
+
+    /** Estado de las misiones (`null` mientras se calcula). */
+    val missions: StateFlow<List<MissionProgress>?> = observeMissions(progressRepository, rewardEngine)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), initialValue = null)
 
     /** `null` mientras se lee el contenido. */

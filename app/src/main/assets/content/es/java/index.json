@@ -13,5 +13,14 @@
     "lessons/java.m01.l07.json",
     "lessons/java.m01.eval.json",
     "lessons/java.m01.reto.json"
+  ],
+  "missions": [
+    "missions/java.m01.mi01.json",
+    "missions/java.m01.mi02.json",
+    "missions/java.m01.mi03.json",
+    "missions/java.m01.mi04.json",
+    "missions/java.m01.mi05.json",
+    "missions/java.m01.mi06.json",
+    "missions/java.m01.mi07.json"
   ]
 }

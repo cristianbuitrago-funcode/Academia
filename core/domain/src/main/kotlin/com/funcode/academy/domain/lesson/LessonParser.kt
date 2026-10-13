@@ -3,13 +3,19 @@ package com.funcode.academy.domain.lesson
 import com.funcode.academy.domain.lesson.json.ExerciseJson
 import com.funcode.academy.domain.lesson.json.LessonIndexJson
 import com.funcode.academy.domain.lesson.json.LessonJson
+import com.funcode.academy.domain.lesson.json.MissionJson
+import com.funcode.academy.domain.lesson.json.MissionTaskJson
 import com.funcode.academy.domain.lesson.json.ModuleJson
 import com.funcode.academy.domain.lesson.json.SectionJson
+import com.funcode.academy.domain.mission.MissionDefinition
+import com.funcode.academy.domain.mission.MissionParseResult
+import com.funcode.academy.domain.mission.MissionTask
+import com.funcode.academy.domain.mission.MissionType
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
-/** Índice del contenido: rutas relativas de módulos y de lecciones. */
-data class ContentIndex(val modules: List<String>, val lessons: List<String>)
+/** Índice del contenido: rutas relativas de módulos, lecciones y misiones. */
+data class ContentIndex(val modules: List<String>, val lessons: List<String>, val missions: List<String> = emptyList())
 
 sealed interface ModuleParseResult {
     data class Valid(val definition: ModuleDefinition) : ModuleParseResult
@@ -55,7 +61,7 @@ object LessonParser {
             throw IllegalArgumentException("Índice no válido: ${e.message}", e)
         }
         require(index.schemaVersion == SUPPORTED_SCHEMA_VERSION) { "Versión de índice no compatible: ${index.schemaVersion}" }
-        return ContentIndex(index.modules.orEmpty(), index.lessons.orEmpty())
+        return ContentIndex(index.modules.orEmpty(), index.lessons.orEmpty(), index.missions.orEmpty())
     }
 
     /** Lee la definición de un módulo (las referencias a lecciones se comprueban en [ModuleAssembler]). */
@@ -83,6 +89,72 @@ object LessonParser {
         return ModuleParseResult.Valid(
             ModuleDefinition(id!!, order!!, raw.title!!, raw.description!!, status!!, lessons, raw.assessment, raw.challenge),
         )
+    }
+
+    /** Lee una misión. Las referencias a lecciones y a otras misiones se comprueban en [com.funcode.academy.domain.mission.MissionAssembler]. */
+    fun parseMission(text: String): MissionParseResult {
+        val raw = try {
+            json.decodeFromString<MissionJson>(text)
+        } catch (e: SerializationException) {
+            return MissionParseResult.Invalid(listOf("JSON no válido: ${e.message}"))
+        } catch (e: IllegalArgumentException) {
+            return MissionParseResult.Invalid(listOf("JSON no válido: ${e.message}"))
+        }
+        val errors = mutableListOf<String>()
+        if (raw.schemaVersion != SUPPORTED_SCHEMA_VERSION) errors += "schemaVersion debe ser $SUPPORTED_SCHEMA_VERSION"
+        fun id(field: String, value: String?): String? = value.also {
+            if (it == null || !ID_PATTERN.matches(it)) errors += "$field no válido: '$it'"
+        }
+        val id = id("id", raw.id)
+        val moduleId = id("moduleId", raw.moduleId)
+        val order = raw.order
+        if (order == null || order < 1) errors += "order debe ser un entero ≥ 1"
+        val version = raw.version
+        if (version == null || version < 1) errors += "version debe ser un entero ≥ 1"
+        val status = ReviewStatus.entries.firstOrNull { it.name == raw.reviewStatus }
+        if (status == null) errors += "reviewStatus debe ser DRAFT o APPROVED"
+        val type = MissionType.entries.firstOrNull { it.jsonName == raw.type }
+        if (type == null) errors += "type debe ser ${MissionType.entries.joinToString { "'${it.jsonName}'" }} (recibido: ${raw.type})"
+        listOf("title" to raw.title, "description" to raw.description, "objective" to raw.objective)
+            .filter { it.second.isNullOrBlank() }.forEach { errors += "Falta el campo '${it.first}'" }
+        val prerequisites = raw.prerequisites.orEmpty()
+        prerequisites.forEach { id("prerequisites", it) }
+        if (id != null && id in prerequisites) errors += "Una misión no puede requerirse a sí misma"
+        val rawTasks = raw.tasks.orEmpty()
+        if (rawTasks.isEmpty()) errors += "Una misión necesita al menos una tarea"
+        val tasks = rawTasks.mapIndexedNotNull { i, t -> missionTask("tasks[$i]", t, errors) }
+        if (errors.isNotEmpty()) return MissionParseResult.Invalid(errors)
+        return MissionParseResult.Valid(
+            MissionDefinition(
+                id = id!!, moduleId = moduleId!!, order = order!!, version = version!!, reviewStatus = status!!, type = type!!,
+                title = raw.title!!, description = raw.description!!, objective = raw.objective!!,
+                prerequisiteIds = prerequisites, tasks = tasks,
+            ),
+        )
+    }
+
+    private fun missionTask(p: String, t: MissionTaskJson, errors: MutableList<String>): MissionTask? {
+        fun ref(field: String, value: String?): String? {
+            if (value == null || !ID_PATTERN.matches(value)) errors += "$p.$field no válido: '$value'"
+            return value
+        }
+        return when (t.kind) {
+            "completeLesson" -> ref("lessonId", t.lessonId)?.let { MissionTask.CompleteLesson(it) }
+            "solveExercises" -> {
+                val ids = t.exerciseIds.orEmpty()
+                if (ids.isEmpty()) errors += "$p.exerciseIds no puede estar vacío"
+                if (ids.toSet().size != ids.size) errors += "$p.exerciseIds repite ejercicios"
+                ids.forEach { ref("exerciseIds", it) }
+                if (t.description.isNullOrBlank()) errors += "$p.description es obligatoria en solveExercises"
+                MissionTask.SolveExercises(ids, t.description.orEmpty())
+            }
+            "passAssessment" -> ref("assessmentId", t.assessmentId)?.let { MissionTask.PassAssessment(it) }
+            "completeChallenge" -> ref("challengeId", t.challengeId)?.let { MissionTask.CompleteChallenge(it) }
+            else -> {
+                errors += "$p.kind debe ser completeLesson, solveExercises, passAssessment o completeChallenge (recibido: ${t.kind})"
+                null
+            }
+        }
     }
 
     private class Builder(private val raw: LessonJson) {
@@ -135,6 +207,7 @@ object LessonParser {
             if (kind == LessonKind.CHALLENGE && raw.assessment != null) {
                 errors += "Un reto no puede tener bloque 'assessment': se supera resolviendo todos sus pasos"
             }
+            val project = project(kind)
 
             if (errors.isNotEmpty()) return LessonParseResult.Invalid(errors.toList())
             return LessonParseResult.Valid(
@@ -142,9 +215,29 @@ object LessonParser {
                     id = id!!, moduleId = moduleId!!, languageId = languageId!!, locale = locale!!,
                     version = version!!, reviewStatus = status!!, kind = kind, title = title!!, description = description!!,
                     objectives = objectives, presentations = presentations, exercises = exercises,
-                    assessment = assessment,
+                    assessment = assessment, project = project,
                 ),
             )
+        }
+
+        /** Un reto (proyecto guiado) necesita situación, conceptos previos y resumen; otra lección no lo admite. */
+        private fun project(kind: LessonKind): ProjectInfo? {
+            val p = raw.project
+            if (kind != LessonKind.CHALLENGE) {
+                if (p != null) errors += "Solo los retos pueden tener bloque 'project'"
+                return null
+            }
+            if (p == null) {
+                errors += "Un reto necesita el bloque 'project' (situation, priorConcepts y recap)"
+                return null
+            }
+            val situation = p.situation
+            if (situation.isNullOrBlank()) errors += "project.situation no puede estar vacío"
+            val prior = p.priorConcepts.orEmpty()
+            if (prior.isEmpty() || prior.any { it.isBlank() }) errors += "project.priorConcepts necesita al menos un concepto no vacío"
+            val recap = p.recap.orEmpty()
+            if (recap.isEmpty() || recap.any { it.isBlank() }) errors += "project.recap necesita al menos una idea no vacía"
+            return if (situation.isNullOrBlank()) null else ProjectInfo(situation, prior, recap)
         }
 
         private fun text(field: String, value: String?): String? {

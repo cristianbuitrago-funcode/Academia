@@ -8,7 +8,9 @@ import com.funcode.academy.data.content.AssetContentRepository
 import com.funcode.academy.data.local.FuncodeDatabase
 import com.funcode.academy.data.progress.RoomProgressRepository
 import com.funcode.academy.domain.lesson.AssessmentScore
+import com.funcode.academy.domain.mission.MissionStatus
 import com.funcode.academy.domain.progress.ExerciseAttempt
+import com.funcode.academy.domain.progress.XpSourceType
 import com.funcode.academy.domain.rpg.RewardEngine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -81,5 +83,26 @@ class RewardPersistenceTest {
 
         assertEquals(7, RewardEngine(content, progress).sync().xpGained)
         assertEquals(7, progress.observeTotalXp().first())
+    }
+
+    @Test
+    fun laBonificacionDeUnaMisionSeConcedeUnaVezYSobreviveAReabrir() = runTest {
+        val first = openDatabase()
+        val progress = repositoryFor(first)
+        // Misión 1: lecciones 1 y 2 completas.
+        listOf("java.m01.l01" to 5, "java.m01.l02" to 6).forEach { (lesson, count) ->
+            (1..count).forEach { progress.recordAttempt(ExerciseAttempt("$lesson.e0$it", correct = true, hintsUsed = 0)) }
+        }
+        val outcome = RewardEngine(content, progress).sync()
+        assertEquals(listOf("java.m01.mi01"), outcome.completedMissions.map { it.id })
+        first.close()
+
+        val second = openDatabase()
+        val reopened = repositoryFor(second)
+        val again = RewardEngine(content, reopened)
+        assertTrue(again.sync().granted.isEmpty())
+        val missionEntries = reopened.observeXpEntries().first().filter { it.source.type == XpSourceType.MISSION }
+        assertEquals(listOf(10), missionEntries.map { it.amount })
+        assertEquals(MissionStatus.COMPLETED, again.missions().first().status)
     }
 }

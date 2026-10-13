@@ -17,6 +17,12 @@ import kotlinx.serialization.Serializable
 /** Pantalla de una lección o evaluación (Fase 3). No es un destino de la barra inferior. */
 @Serializable data class LessonDestination(val lessonId: String)
 
+/** Lista de misiones (Fase 6), abierta desde Inicio y desde el Mapa. */
+@Serializable data object MissionsDestination
+
+/** Detalle de una misión (Fase 6). */
+@Serializable data class MissionDestination(val missionId: String)
+
 /** Destinos de la barra de navegación inferior. */
 enum class TopLevelDestination(
     val route: Any,

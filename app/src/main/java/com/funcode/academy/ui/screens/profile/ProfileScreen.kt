@@ -10,14 +10,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -26,8 +24,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.funcode.academy.R
 import com.funcode.academy.domain.progress.ProgressRepository
 import com.funcode.academy.domain.progress.XpSourceType
-import com.funcode.academy.domain.rpg.MissionProgress
-import com.funcode.academy.domain.rpg.RewardEngine
 import com.funcode.academy.ui.rpg.LevelProgressCard
 import com.funcode.academy.ui.rpg.descriptionRes
 import com.funcode.academy.ui.rpg.titleRes
@@ -35,13 +31,13 @@ import java.text.DateFormat
 import java.util.Date
 
 @Composable
-fun ProfileRoute(progressRepository: ProgressRepository, rewardEngine: RewardEngine) {
-    val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.factory(progressRepository, rewardEngine))
+fun ProfileRoute(progressRepository: ProgressRepository) {
+    val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.factory(progressRepository))
     val state by viewModel.state.collectAsStateWithLifecycle()
     ProfileScreen(state)
 }
 
-/** Perfil: nivel, resumen de recompensas, misiones y logros. */
+/** Perfil: nivel, resumen de recompensas y logros. Las misiones tienen su propia pantalla. */
 @Composable
 fun ProfileScreen(state: ProfileState?, modifier: Modifier = Modifier) {
     Column(
@@ -60,12 +56,7 @@ fun ProfileScreen(state: ProfileState?, modifier: Modifier = Modifier) {
                 RewardLine(R.string.profile_rewards_lessons, state.rewards[XpSourceType.LESSON])
                 RewardLine(R.string.profile_rewards_assessments, state.rewards[XpSourceType.ASSESSMENT])
                 RewardLine(R.string.profile_rewards_challenges, state.rewards[XpSourceType.CHALLENGE])
-            }
-
-            if (state.missions.isNotEmpty()) {
-                Heading(stringResource(R.string.profile_missions_title, state.missions.count { it.completed }, state.missions.size))
-                Text(stringResource(R.string.profile_missions_note), style = MaterialTheme.typography.bodyMedium)
-                state.missions.forEach { MissionRow(it) }
+                RewardLine(R.string.profile_rewards_missions, state.rewards[XpSourceType.MISSION])
             }
 
             Heading(stringResource(R.string.profile_achievements_title, state.unlockedCount, state.achievements.size))
@@ -78,21 +69,6 @@ fun ProfileScreen(state: ProfileState?, modifier: Modifier = Modifier) {
 private fun RewardLine(@StringRes label: Int, totals: RewardTotals?) {
     val value = totals ?: RewardTotals(0, 0)
     Text(stringResource(label, value.count, value.xp), style = MaterialTheme.typography.bodyLarge)
-}
-
-@Composable
-private fun MissionRow(progress: MissionProgress) {
-    val title = stringResource(progress.mission.titleRes)
-    val status = if (progress.completed) stringResource(R.string.mission_completed)
-    else stringResource(R.string.mission_progress, progress.current, progress.mission.target)
-    Card(modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {}) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(title, style = MaterialTheme.typography.titleSmall)
-            // La barra es decorativa: el texto de debajo ya da el avance exacto.
-            LinearProgressIndicator(progress = { progress.fraction }, modifier = Modifier.fillMaxWidth().clearAndSetSemantics {})
-            Text(status, style = MaterialTheme.typography.labelLarge)
-        }
-    }
 }
 
 @Composable

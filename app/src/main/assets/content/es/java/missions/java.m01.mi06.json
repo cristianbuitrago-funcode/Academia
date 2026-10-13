@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "java.m01.mi06",
+  "moduleId": "java.m01",
+  "order": 6,
+  "version": 1,
+  "reviewStatus": "DRAFT",
+  "type": "assessment",
+  "title": "Supera la evaluación del módulo 1",
+  "description": "Demuestra lo que has aprendido en el módulo con una evaluación sin pistas.",
+  "objective": "Comprobar el dominio de los conceptos del módulo alcanzando el umbral de aprobación (80 %).",
+  "prerequisites": [
+    "java.m01.mi05"
+  ],
+  "tasks": [
+    {
+      "kind": "passAssessment",
+      "assessmentId": "java.m01.eval"
+    }
+  ]
+}

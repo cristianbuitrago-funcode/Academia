@@ -78,4 +78,25 @@ class ModuleContentTest {
         val ids = ContentFiles.lessons.flatMap { it.exercises }.map { it.id }
         assertEquals(ids.size, ids.toSet().size)
     }
+
+    @Test fun `el proyecto guiado tiene situacion, conceptos previos, pistas progresivas y resumen`() {
+        val project = ContentFiles.lessons.single { it.id == "java.m01.reto" }
+        val info = project.project!!
+        assertTrue(info.situation.isNotBlank())
+        assertTrue(info.priorConcepts.size >= 2)
+        assertTrue(info.recap.size >= 2)
+        assertTrue(project.exercises.all { it.hints.size >= 2 })
+    }
+
+    @Test fun `las misiones son borradores validos que cubren las siete lecciones y los cuatro tipos`() {
+        val missions = ContentFiles.missions
+        assertEquals((1..7).map { "java.m01.mi0$it" }, missions.map { it.id })
+        assertTrue(missions.all { it.reviewStatus == ReviewStatus.DRAFT && it.version >= 1 })
+        assertEquals(com.funcode.academy.domain.mission.MissionType.entries.toSet(), missions.map { it.type }.toSet())
+        val lessons = missions.flatMap { it.tasks }.filterIsInstance<com.funcode.academy.domain.mission.MissionTask.CompleteLesson>()
+            .map { it.lessonId }
+        assertEquals((1..7).map { "java.m01.l0$it" }, lessons.sorted())
+        // Solo la primera está disponible sin requisitos.
+        assertEquals(listOf("java.m01.mi01"), missions.filter { it.prerequisiteIds.isEmpty() }.map { it.id })
+    }
 }

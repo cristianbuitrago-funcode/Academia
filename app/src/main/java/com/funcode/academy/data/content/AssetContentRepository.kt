@@ -12,6 +12,9 @@ import com.funcode.academy.domain.lesson.ModuleAssembler
 import com.funcode.academy.domain.lesson.ModuleLoadResult
 import com.funcode.academy.domain.lesson.ModuleParseResult
 import com.funcode.academy.domain.lesson.toSummary
+import com.funcode.academy.domain.mission.MissionAssembler
+import com.funcode.academy.domain.mission.MissionDefinition
+import com.funcode.academy.domain.mission.MissionParseResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
@@ -29,7 +32,13 @@ class AssetContentRepository(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ContentRepository {
 
-    private class Content(val lessons: Map<String, LessonParseResult>, val modules: Map<String, ModuleLoadResult>)
+    private class Content(
+        val lessons: Map<String, LessonParseResult>,
+        val modules: Map<String, ModuleLoadResult>,
+        /** Misiones válidas; las inválidas se descartan (sus errores se pueden consultar en [missionErrors]). */
+        val missions: List<MissionDefinition>,
+        val missionErrors: List<String>,
+    )
 
     private val mutex = Mutex()
     private var cache: Content? = null
@@ -48,6 +57,11 @@ class AssetContentRepository(
 
     override suspend fun loadModule(moduleId: String): ModuleLoadResult = load().modules[moduleId] ?: ModuleLoadResult.NotFound
 
+    override suspend fun listMissions(): List<MissionDefinition> = load().missions
+
+    /** Problemas de las misiones descartadas (para pruebas y diagnóstico). */
+    suspend fun missionErrors(): List<String> = load().missionErrors
+
     private suspend fun load(): Content = mutex.withLock {
         cache ?: withContext(ioDispatcher) { readAll() }.also { cache = it }
     }
@@ -56,9 +70,9 @@ class AssetContentRepository(
         val index = try {
             LessonParser.parseIndex(read("$basePath/index.json"))
         } catch (e: IOException) {
-            ContentIndex(emptyList(), emptyList())
+            ContentIndex(emptyList(), emptyList(), emptyList())
         } catch (e: IllegalArgumentException) {
-            ContentIndex(emptyList(), emptyList())
+            ContentIndex(emptyList(), emptyList(), emptyList())
         }
         val lessons = index.lessons.associate { path ->
             val result = try {
@@ -81,7 +95,21 @@ class AssetContentRepository(
                 is ModuleParseResult.Invalid -> idFromPath(path) to ModuleLoadResult.Invalid(parsed.errors)
             }
         }
-        return Content(lessons, modules)
+        val definitions = mutableListOf<MissionDefinition>()
+        val missionErrors = mutableListOf<String>()
+        index.missions.forEach { path ->
+            val parsed = try {
+                LessonParser.parseMission(read("$basePath/$path"))
+            } catch (e: IOException) {
+                MissionParseResult.Invalid(listOf("No se pudo leer: ${e.message}"))
+            }
+            when (parsed) {
+                is MissionParseResult.Valid -> definitions += parsed.mission
+                is MissionParseResult.Invalid -> missionErrors += parsed.errors.map { "$path: $it" }
+            }
+        }
+        val missionSet = MissionAssembler.assemble(definitions, validSummaries)
+        return Content(lessons, modules, missionSet.missions, missionErrors + missionSet.errors)
     }
 
     private fun read(path: String): String = assets.open(path).bufferedReader(Charsets.UTF_8).use { it.readText() }

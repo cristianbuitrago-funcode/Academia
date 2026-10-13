@@ -25,6 +25,8 @@ data class Lesson(
     val presentations: Map<PresentationVariant, List<Section>>,
     val exercises: List<Exercise>,
     val assessment: Assessment?,
+    /** Datos del proyecto guiado; obligatorio solo en los retos ([LessonKind.CHALLENGE]). */
+    val project: ProjectInfo? = null,
 ) {
     /** Secciones para un público: usa su variante si existe y, si no, la variante por defecto. */
     fun sectionsFor(audience: Audience?): List<Section> {
@@ -37,6 +39,12 @@ data class Lesson(
         return presentations[variant] ?: presentations.getValue(PresentationVariant.DEFAULT)
     }
 }
+
+/**
+ * Proyecto guiado: situación que plantea el problema, conceptos que hay que conocer
+ * antes de empezar y resumen final de lo aprendido.
+ */
+data class ProjectInfo(val situation: String, val priorConcepts: List<String>, val recap: List<String>)
 
 /**
  * [LESSON]: teoría y práctica, con pistas y reintentos.
