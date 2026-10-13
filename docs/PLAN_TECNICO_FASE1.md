@@ -406,3 +406,7 @@ Los criterios 17–18 dependen de una verificación del responsable; hasta enton
 | 2026-10-10 | AGP 9.4 con Kotlin integrado; todos los plugins declarados en el archivo raíz | Versión estable actual; un único *classloader* evita errores entre los plugins de Kotlin y Android (detectado en CI). |
 | 2026-10-10 | JDK 21 en CI y `targetSdk` 36 | Requisitos de Robolectric para simular Android 16. |
 | 2026-10-10 | Modo "solo dominio" (`-Pfuncode.domainOnly=true`) | Permite probar las reglas sin Android SDK (p. ej., en el contenedor de Claude). |
+| 2026-10-13 | Fase 3: siete tipos según la autorización (verdadero/falso incluido; `STRUCTURAL_CODE` pendiente, F3-D1) | La autorización de la fase prevalece sobre la lista de §6.2; la diferencia queda registrada. |
+| 2026-10-13 | Lectura y validación del JSON del contenido en `:core:domain` (kotlinx.serialization) | Es Kotlin puro y comprobable sin Android; la app solo aporta el texto leído de `assets`. |
+| 2026-10-13 | Solo se registran intentos (`exercise_attempt`); resuelto/no resuelto se deduce | Evita datos redundantes; sin cambios de esquema (F3-D2 para las tablas sin uso). |
+| 2026-10-13 | Ordenar líneas se valida por el texto resultante, no por índices | Dos líneas idénticas (p. ej. `}`) son intercambiables sin cambiar el programa. |

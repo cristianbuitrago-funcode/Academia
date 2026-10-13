@@ -92,3 +92,25 @@ Anota cualquier fallo con el número de la comprobación, el dispositivo y, si e
 
 ### Instalar el APK sin compilar
 En la ejecución de CI (pestaña *Actions* → ejecución en verde → *Artifacts*) descarga `funcode-academy-debug-apk`, descomprímelo y arrastra el `.apk` al emulador. Es un APK de **depuración**: no sirve para publicar.
+
+---
+
+## 5. Probar la Fase 3 (motor de lecciones) en Android Studio
+
+1. Actualiza la rama: **Git → Pull** (rama `ccr-db27c4de-czvzgb`).
+2. Pruebas automáticas: `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `.\gradlew.bat …`).
+3. Ejecuta la app (▶) y comprueba:
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 1 | Inicio | Aparece «Lecciones disponibles» con «Tu primer programa: mostrar texto en pantalla», «Ejercicios: 7» y el aviso de borrador. |
+| 2 | **Abrir lección** | Título, aviso de borrador, objetivo, explicación, ejemplo de código con números de línea y comentarios por línea. |
+| 3 | **Empezar ejercicios** → «Comprobar respuesta» sin elegir nada | «Elige una respuesta antes de comprobar.» |
+| 4 | Ejercicio 1: **Ver una pista**, elegir *Falso* y comprobar | Se muestra la pista; después «Todavía no es correcto.» y los botones «Intentar de nuevo» / «Continuar sin resolver». |
+| 5 | *Intentar de nuevo* → *Verdadero* → comprobar | «¡Correcto! Respuesta comprobada.» con la explicación. |
+| 6 | Resolver los ejercicios 2–7 (selección, relacionar con desplegables, huecos, ordenar con flechas, salida, línea con error) | Cada tipo responde y da retroalimentación. Ninguna pantalla dice que el código se haya ejecutado. |
+| 7 | Tras el último, **Ver resumen** | Totales (al primer intento, tras varios intentos, sin resolver, pistas) y el estado de cada ejercicio. |
+| 8 | Girar la pantalla en mitad de un ejercicio | Se conservan el ejercicio y la respuesta escrita. |
+| 9 | TalkBack (opcional) en un ejercicio de ordenar | Los botones de flecha se leen como «Subir la línea N» / «Bajar la línea N». |
+
+Anota cualquier fallo con su número.

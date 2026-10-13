@@ -1,6 +1,6 @@
 # Funcode Academy — Registro de estado del proyecto
 
-_Última actualización: 2026-10-12_
+_Última actualización: 2026-10-13_
 
 **Significado de los estados**
 - **Planificado:** descrito en un documento; no hay código.
@@ -16,8 +16,9 @@ _Última actualización: 2026-10-12_
 | Fase | Estado | Notas |
 |---|---|---|
 | 1. Planificación y arquitectura | **Aprobado** (2026-10-10) | D1–D8, P1 y P3 resueltas. |
-| 2. Esqueleto y CI | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en dispositivo y de aprobación** | Faltan los criterios 17–18; la verificación manual está bloqueada por el emulador y por el fallo de Room en el equipo del responsable. |
-| 3–9 | Planificado — sin autorizar | — |
+| 2. Esqueleto y CI | **Aprobado** (2026-10-13, según el responsable: verificado manualmente en Android Studio) | El *pull request* #1 sigue abierto: `main` aún no contiene la Fase 2. Los detalles de la verificación manual (resolución del fallo de Room y del emulador en su equipo) no constan en este registro. |
+| 3. Motor de lecciones y ejercicios | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 3 — Detalle». Contenido en borrador. |
+| 4–9 | Planificado — sin autorizar | — |
 
 ## Decisiones
 
@@ -99,6 +100,68 @@ Aporta valor comprobable: permite probar **Room real** (la restricción única d
 
 ---
 
+## Fase 3 — Detalle
+
+### Discrepancias encontradas al empezar (documentadas antes de programar)
+
+1. **Estado de la Fase 2:** el registro la marcaba como pendiente; el responsable la declaró aprobada el 2026-10-13. El PR #1 no se ha fusionado, así que la Fase 3 se desarrolla en la misma rama (`ccr-db27c4de-czvzgb`) y el PR #1 incluye ahora las fases 2 y 3.
+2. **Tipos de ejercicio:** el plan (§6.2) y D2 incluían una respuesta escrita validada con reglas estructurales (`STRUCTURAL_CODE`) y no incluían verdadero/falso. La autorización de la Fase 3 enumera siete tipos con **verdadero/falso** y sin `STRUCTURAL_CODE`. Se implementan los siete autorizados; `STRUCTURAL_CODE` queda **sin implementar, pendiente de decisión (F3-D1)**.
+3. **Tablas `exercise_progress` y `lesson_progress`:** su contenido se puede deducir de `exercise_attempt`. Siguiendo la regla de no guardar datos redundantes, solo se escribe en `exercise_attempt`; esas tablas siguen sin uso y **no se ha cambiado el esquema** (sigue en versión 1, sin migración). Su eliminación queda pendiente de decisión (F3-D2).
+
+### Componentes
+
+| Componente | Implementado | Probado | Evidencia |
+|---|---|---|---|
+| Modelo de lección (`Lesson`, objetivos, secciones de teoría y código con comentarios por línea, variantes de presentación, versión, estado de revisión, evaluación opcional) | ✔ | ✔ | `LessonParserTest`, `DemoLessonContentTest` |
+| Modelo de ejercicio común (id estable, instrucciones, dificultad, pistas, explicación, retroalimentación) | ✔ | ✔ | idem |
+| Validación de los 7 tipos (`AnswerValidator`): correcta / incorrecta / incompleta | ✔ | ✔ 25 pruebas | `AnswerValidatorTest` |
+| Normalización (tokens de Java para huecos; saltos de línea y espacios finales para salidas) | ✔ | ✔ 5 pruebas | `CodeTextTest` |
+| Lectura del JSON con validación completa (errores acumulados, nunca excepciones por contenido) | ✔ | ✔ 22 pruebas | `LessonParserTest` |
+| Sesión de ejercicios y resumen (`LessonSession`, `SessionSummary`) | ✔ | ✔ 8 pruebas | `LessonSessionTest` |
+| Lección demostrativa `java.m02.l01` (borrador) | ✔ | ✔ 5 pruebas + `javac` | `DemoLessonContentTest`; verificación manual con `javac` 21 (ver abajo) |
+| Repositorio de contenido en `assets` (sin conexión) | ✔ | ✔ 4 pruebas | `AssetContentRepositoryTest` (Robolectric) |
+| Registro de intentos en `exercise_attempt` (sin guardar el texto de la respuesta) | ✔ | ✔ 1 prueba nueva | `RoomProgressRepositoryTest` |
+| `LessonViewModel` (carga, ejercicios, pistas, reintentos, resumen) | ✔ | ✔ 7 pruebas | `LessonViewModelTest` |
+| Pantalla de lección (introducción, ejercicios, retroalimentación, resumen) y acceso desde Inicio | ✔ | ✔ 3 pruebas de flujo | `LessonFlowTest` (Robolectric) |
+| Verificación en Android Studio / dispositivo | — | **Pendiente** (responsable) | — |
+
+**No implementado (fuera del alcance de la Fase 3):** XP por ejercicios, desbloqueo de módulos, mapa de módulos, misiones, variantes por edad, `CodeRunner` y cualquier ejecución de Java, `STRUCTURAL_CODE`.
+
+### Contenido en borrador
+
+| Bloque | Estado | Verificación técnica |
+|---|---|---|
+| `java.m02.l01` «Tu primer programa: mostrar texto en pantalla» (1 objetivo, 7 ejercicios, uno de cada tipo, dificultad 1→4) | **DRAFT — pendiente de tu revisión** | 2026-10-13, contenedor, `javac`/`java` 21.0.12: `HolaMundo`, `Ejemplo`, `Saludo` (huecos completados) y `Contar` (orden correcto) compilan y producen exactamente la salida declarada; `Mensaje` falla con `Mensaje.java:4: error: ';' expected`, la línea que marca el ejercicio. |
+
+### Decisiones que requieren aprobación
+
+| # | Cuestión | Propuesta |
+|---|---|---|
+| **F3-D1** | `STRUCTURAL_CODE` (respuesta escrita con reglas estructurales, aprobado en D2 pero no incluido en la autorización de la Fase 3) | Mantenerlo fuera hasta la Fase 4 y diseñarlo junto al contenido que lo necesite, con reglas muy acotadas. |
+| **F3-D2** | Tablas `exercise_progress` y `lesson_progress` sin uso (redundantes con `exercise_attempt`) | Eliminarlas con una migración 1→2 cuando haya que cambiar el esquema por otro motivo; mientras tanto, no se usan. |
+| **F3-D3 (= P2)** | Comportamiento de los borradores | Hoy se muestran **con la etiqueta «Borrador: contenido pendiente de revisión»** en todas las compilaciones (no hay otro contenido). Antes de publicar, decidir si las compilaciones de publicación los ocultan. |
+| **F3-D4** | Formato del contenido (JSON v1, `docs/contenido/GUIA_AUTORES.md`) y su lectura en `:core:domain` | Aprobar el formato como base de la Fase 4. |
+| **F3-D5 (= P8)** | Comprobación automática del Java del contenido | Añadir en CI la compilación de los ejemplos con `javac` antes de producir más contenido (Fase 4). |
+
+### Criterios de aceptación de la Fase 3 (según la autorización)
+
+| Requisito | Estado |
+|---|---|
+| Cargar lecciones estructuradas, sin conexión | ✔ CI (`AssetContentRepositoryTest`, `LessonFlowTest`) |
+| Mostrar objetivos, explicación y ejemplos | ✔ CI (`LessonFlowTest` comprueba objetivos y aviso de borrador); revisión visual pendiente |
+| Siete tipos de ejercicio con validación probada | ✔ CI (25 pruebas de validación + coherencia de la lección real) |
+| Correcta / incorrecta / incompleta y retroalimentación con explicación | ✔ CI |
+| Pistas progresivas que no revelan la solución | ✔ Validado en el contenido (`LessonParser` rechaza pistas que contienen la respuesta) |
+| Sin afirmar ejecución de código; sin botón ni ejecutor simulado | ✔ Textos «Respuesta comprobada» y avisos de que no se ejecuta código |
+| Registrar resultados para el progreso | ✔ `exercise_attempt` (CI) |
+| Contenido separado de la lógica | ✔ JSON en `assets`; validación en el dominio |
+| Resumen de resultados de la sesión | ✔ CI (`LessonSessionTest`, `LessonViewModelTest`) |
+| Contenido marcado como borrador | ✔ `reviewStatus: DRAFT` y aviso visible |
+| Compilación y pruebas | ✔ CI 38428986983: 102/102 pruebas, lint sin errores (1 aviso conocido), APK generado; Windows en verde |
+| Verificación manual en Android Studio | **Pendiente** (responsable) |
+| Aprobación del contenido | **Pendiente** (responsable) |
+
+
 ## Pruebas ejecutadas
 
 | Fecha | Dónde | Prueba | Resultado |
@@ -114,12 +177,15 @@ Aporta valor comprobable: permite probar **Room real** (la restricción única d
 | 2026-10-12 | Equipo Windows del responsable | `:core:domain:test :app:testDebugUnitTest` | **5 de 15 fallos** en `:app`: `UnsatisfiedLinkError` en `SQLiteConnection.nativeOpen` (SQLite nativo de Robolectric). Gradle Sync correcto. Emulador: "failed to connect within 5 minutes". |
 | 2026-10-12 | CI, nuevo trabajo Windows (38318582592) | Pruebas en Windows | Room **pasa**; **falla** `DataStoreSettingsRepositoryTest.cambiarDePublicoReemplazaElAnterior` (`Unable to rename ... settings.preferences_pb`): en la JVM de Windows `FileStorage` no puede reemplazar un archivo existente. |
 | 2026-10-12 | CI Windows con rutas con espacios (38319034324) | Hipótesis "espacio en la ruta" | Room **pasa** con espacios en el proyecto y en TEMP → hipótesis descartada. |
+| 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con el motor de la Fase 3 | **72/72 superadas** |
+| 2026-10-13 | Contenedor | `javac`/`java` 21 sobre los 5 programas de la lección demostrativa | Salidas y error de compilación coinciden con el contenido |
+| 2026-10-13 | CI 38428986983 (commit `63c4a71`) | Linux + Windows | **Verde: 102/102 pruebas** (72 dominio, 30 app); lint: 0 errores, 1 aviso (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-12 | CI 38319271182 | Linux + Windows | **Verde en ambos** tras usar `OkioStorage` en la prueba de DataStore (la app sigue usando `FileStorage`, correcto en Android). |
 
 ## Errores conocidos
 
-- **Abierto (entorno del responsable):** las pruebas de Room fallan en su equipo Windows con `UnsatisfiedLinkError` (SQLite nativo de Robolectric), aunque pasan en Windows y Linux de CI. Causa sin confirmar; pendiente de `gradlew --version` (JDK y arquitectura usados por la terminal).
-- **Abierto (entorno del responsable):** el emulador no arranca ("failed to connect within 5 minutes"); pendiente de comprobar la virtualización.
+- **Según el responsable, resuelto** (2026-10-13; la causa no consta en este registro): las pruebas de Room fallaban en su equipo Windows con `UnsatisfiedLinkError` (SQLite nativo de Robolectric), aunque pasan en Windows y Linux de CI. Causa sin confirmar; pendiente de `gradlew --version` (JDK y arquitectura usados por la terminal).
+- **Según el responsable, resuelto** (2026-10-13): el emulador no arrancaba ("failed to connect within 5 minutes"); pendiente de comprobar la virtualización.
 - **Corregido:** fallo de la prueba de DataStore en la JVM de Windows (ver tabla de pruebas).
 
 ## Limitaciones y avisos conocidos
@@ -133,10 +199,12 @@ Aporta valor comprobable: permite probar **Room real** (la restricción única d
 
 ## Acciones pendientes del responsable
 
-1. Verificación manual (criterios 17–18) siguiendo `docs/CONFIGURACION_ENTORNO.md` §4.
-2. Borrar la rama `Main` duplicada y cambiar la rama por defecto a `main` (`docs/FLUJO_DE_TRABAJO.md`).
-3. Revisar la Fase 2 y decidir si se abre el *pull request* hacia `main`.
+1. Verificar la Fase 3 en Android Studio siguiendo `docs/CONFIGURACION_ENTORNO.md` §5.
+2. Revisar el contenido en borrador `java.m02.l01` y aprobarlo o pedir cambios (D7).
+3. Responder las decisiones F3-D1 a F3-D5.
+4. Revisar y fusionar el *pull request* #1 (contiene las fases 2 y 3).
+5. Borrar la rama `Main` duplicada y cambiar la rama por defecto a `main` (`docs/FLUJO_DE_TRABAJO.md`).
 
 ## Próximos pasos autorizados
 
-Ninguno. La Fase 3 espera autorización explícita.
+Ninguno. La Fase 4 espera autorización explícita.
