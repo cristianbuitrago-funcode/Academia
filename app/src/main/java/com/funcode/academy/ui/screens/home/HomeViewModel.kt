@@ -11,7 +11,9 @@ import com.funcode.academy.domain.rpg.LevelCurve
 import com.funcode.academy.domain.rpg.LevelProgress
 import com.funcode.academy.domain.rpg.RewardEngine
 import com.funcode.academy.domain.mission.MissionProgress
+import com.funcode.academy.domain.learning.Recommendation
 import com.funcode.academy.ui.progress.observeMissions
+import com.funcode.academy.ui.progress.observeRecommendations
 import com.funcode.academy.ui.progress.observeModulesProgress
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +36,10 @@ class HomeViewModel(
     /** Estado de las misiones (`null` mientras se calcula). */
     val missions: StateFlow<List<MissionProgress>?> = observeMissions(progressRepository, rewardEngine)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), initialValue = null)
+
+    /** Recomendaciones basadas en los resultados guardados (reglas sencillas). */
+    val recommendations: StateFlow<List<Recommendation>> = observeRecommendations(contentRepository, progressRepository)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), initialValue = emptyList())
 
     /** `null` mientras se lee el contenido. */
     val modules: StateFlow<List<ModuleProgress>?> = observeModulesProgress(contentRepository, progressRepository)

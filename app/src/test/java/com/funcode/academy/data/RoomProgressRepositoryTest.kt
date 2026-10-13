@@ -10,6 +10,7 @@ import com.funcode.academy.data.local.XpLedgerEntity
 import com.funcode.academy.data.progress.RoomProgressRepository
 import com.funcode.academy.domain.lesson.AssessmentScore
 import com.funcode.academy.domain.progress.ExerciseAttempt
+import com.funcode.academy.domain.progress.ExerciseHistory
 import com.funcode.academy.domain.progress.XpAward
 import com.funcode.academy.domain.progress.XpEntry
 import com.funcode.academy.domain.progress.XpAwardResult
@@ -190,5 +191,16 @@ class RoomProgressRepositoryTest {
         assertTrue(repository.unlockAchievement("first_lesson"))
         assertFalse(repository.unlockAchievement("first_lesson"))
         assertEquals(mapOf("first_lesson" to 1_000L), repository.observeUnlockedAchievements().first())
+    }
+
+    @Test
+    fun elHistorialDeCadaEjercicioSeDeduceDeLosIntentos() = runTest {
+        repository.recordAttempt(ExerciseAttempt("a", correct = false, hintsUsed = 0))
+        repository.recordAttempt(ExerciseAttempt("a", correct = true, hintsUsed = 1))
+        repository.recordAttempt(ExerciseAttempt("b", correct = true, hintsUsed = 0))
+
+        val h = repository.observeExerciseHistories().first()
+        assertEquals(ExerciseHistory("a", attempts = 2, failedBeforeFirstCorrect = true, hintsAtFirstCorrect = 1), h["a"])
+        assertEquals(false, h.getValue("b").struggled)
     }
 }

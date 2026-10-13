@@ -25,6 +25,9 @@ import com.funcode.academy.domain.rpg.RewardEngine
 import com.funcode.academy.domain.rpg.RewardOutcome
 import com.funcode.academy.domain.settings.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -114,6 +117,10 @@ class LessonViewModel(
 
     /** XP conseguido en esta sesión de ejercicios. */
     val sessionXp: StateFlow<Int> = _sessionXp.asStateFlow()
+
+    /** Preferencia «Mostrar el botón de pistas» (no cambia el XP ni la corrección). */
+    val hintsEnabled: StateFlow<Boolean> = settingsRepository.preferences.map { it.hintsEnabled }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), initialValue = true)
 
     init {
         viewModelScope.launch {

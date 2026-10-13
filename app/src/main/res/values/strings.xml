@@ -101,6 +101,15 @@
     <string name="mission_completed_title">¡Misión completada!</string>
     <string name="mission_completed_summary">Tareas cumplidas con resultados comprobados: %1$d</string>
     <string name="mission_practice_note">Puedes repetir sus actividades para practicar; la bonificación no se vuelve a sumar.</string>
+    <string name="home_recommendations_title">Recomendado para ti</string>
+    <string name="home_recommendations_note">Según tus resultados guardados. Repetir actividades sirve para practicar; no vuelve a dar XP.</string>
+    <string name="recommend_resume">Retoma «%1$s» (ejercicios resueltos: %2$d de %3$d)</string>
+    <string name="recommend_resume_button">Retomar</string>
+    <string name="recommend_review">Repasa «%1$s» (ejercicios que necesitaron reintentos o pistas: %2$d)</string>
+    <string name="recommend_review_button">Repasar</string>
+    <string name="recommend_retry">«%1$s»: tu mejor resultado es %2$d %%; para aprobar se necesita un %3$d %%.</string>
+    <string name="recommend_retry_review_first">Antes de repetirla, repasa: %1$s</string>
+    <string name="recommend_retry_button">Repetir la evaluación</string>
     <string name="home_missions_title">Misiones</string>
     <string name="home_missions_progress">Misiones completadas: %1$d de %2$d</string>
     <string name="home_current_mission">Misión actual: %1$s</string>
@@ -113,8 +122,30 @@
     <string name="settings_audience_title">¿Para quién adaptamos las explicaciones?</string>
     <string name="settings_audience_description">Cambia el estilo de las explicaciones y los ejemplos, no los contenidos ni las evaluaciones.</string>
     <string name="settings_audience_not_chosen">Aún no has elegido una opción.</string>
+    <string name="audience_kids">Niños y niñas: explicaciones breves y sencillas, paso a paso</string>
     <string name="audience_teens">Adolescente</string>
     <string name="audience_adults">Persona adulta</string>
+    <string name="settings_privacy_note">Tus preferencias se guardan solo en este dispositivo. No pedimos tu edad ni ningún dato personal.</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_description">Colores claros u oscuros. «Como el sistema» sigue el ajuste del teléfono.</string>
+    <string name="theme_system">Como el sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="settings_text_title">Tamaño del texto</string>
+    <string name="settings_text_description">Se suma al tamaño de letra elegido en los ajustes del teléfono.</string>
+    <string name="text_scale_normal">Normal</string>
+    <string name="text_scale_large">Grande</string>
+    <string name="text_scale_extra_large">Muy grande</string>
+    <string name="settings_help_title">Ayudas</string>
+    <string name="settings_hints_description">Si lo desactivas, no aparece el botón de pistas en lecciones y proyectos. No cambia el XP ni la corrección.</string>
+    <string name="settings_hints_label">Mostrar el botón de pistas</string>
+    <string name="settings_reset_title">Restablecer preferencias</string>
+    <string name="settings_reset_description">Vuelve a los valores por defecto de esta pantalla. Tu progreso, XP, logros y misiones no se borran.</string>
+    <string name="settings_reset_button">Restablecer preferencias</string>
+    <string name="settings_reset_confirm_title">¿Restablecer las preferencias?</string>
+    <string name="settings_reset_confirm_text">Se restablecerán el estilo de las explicaciones, el tema, el tamaño del texto y las pistas. Tu progreso no se borrará.</string>
+    <string name="settings_reset_confirm">Restablecer</string>
+    <string name="settings_reset_cancel">Cancelar</string>
 
     <!-- Inicio: lecciones -->
     <string name="home_continue_title">Continuar aprendiendo</string>
@@ -152,6 +183,8 @@
     <string name="lesson_code_comments_title">Comentarios línea por línea</string>
     <string name="lesson_line_comment">Línea %1$d: %2$s</string>
     <string name="lesson_start_exercises">Empezar ejercicios</string>
+    <string name="code_line_description">Línea %1$d: %2$s</string>
+    <string name="lesson_practicing">Practicas: %1$s</string>
     <string name="lesson_start_assessment">Empezar la evaluación</string>
     <string name="assessment_rules">Una sola respuesta por pregunta y sin pistas.</string>
     <string name="assessment_progress">Pregunta %1$d de %2$d</string>

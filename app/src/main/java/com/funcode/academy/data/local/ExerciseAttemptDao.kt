@@ -15,6 +15,10 @@ interface ExerciseAttemptDao {
     @Query("SELECT * FROM exercise_attempt WHERE exerciseId = :exerciseId ORDER BY timestamp, id")
     suspend fun attemptsFor(exerciseId: String): List<ExerciseAttemptEntity>
 
+    /** Todos los intentos, en el orden en que se hicieron (para el historial de cada ejercicio). */
+    @Query("SELECT * FROM exercise_attempt ORDER BY id")
+    fun observeAll(): Flow<List<ExerciseAttemptEntity>>
+
     /** Ejercicios con al menos un intento correcto. */
     @Query("SELECT DISTINCT exerciseId FROM exercise_attempt WHERE correct = 1")
     fun observeSolvedExerciseIds(): Flow<List<String>>

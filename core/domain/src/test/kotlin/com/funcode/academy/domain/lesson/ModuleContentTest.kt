@@ -99,4 +99,23 @@ class ModuleContentTest {
         // Solo la primera está disponible sin requisitos.
         assertEquals(listOf("java.m01.mi01"), missions.filter { it.prerequisiteIds.isEmpty() }.map { it.id })
     }
+
+    @Test fun `la leccion 1 tiene variantes para los tres publicos con el mismo ejemplo y los mismos ejercicios`() {
+        val lesson = ContentFiles.lessons.single { it.id == "java.m01.l01" }
+        assertEquals(PresentationVariant.entries.toSet(), lesson.presentations.keys)
+        val sections = com.funcode.academy.domain.model.Audience.entries.map { lesson.sectionsFor(it) } + listOf(lesson.sectionsFor(null))
+        // Cada variante cambia el texto, pero conserva el ejemplo del robot al que se refieren los ejercicios.
+        assertEquals(sections.size, sections.toSet().size)
+        val codes = sections.map { s -> s.filterIsInstance<Section.Code>().single().code }.toSet()
+        assertEquals(1, codes.size)
+        // Los objetivos y los ejercicios son únicos para la lección: no dependen de la variante.
+        assertEquals(2, lesson.objectives.size)
+    }
+
+    @Test fun `una leccion sin variantes usa la presentacion comun para cualquier publico`() {
+        val lesson = ContentFiles.lessons.single { it.id == "java.m01.l05" }
+        com.funcode.academy.domain.model.Audience.entries.forEach {
+            assertEquals(lesson.sectionsFor(null), lesson.sectionsFor(it))
+        }
+    }
 }

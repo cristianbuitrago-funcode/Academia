@@ -9,6 +9,7 @@ import com.funcode.academy.data.local.XpLedgerDao
 import com.funcode.academy.data.local.XpLedgerEntity
 import com.funcode.academy.domain.lesson.AssessmentScore
 import com.funcode.academy.domain.progress.ExerciseAttempt
+import com.funcode.academy.domain.progress.ExerciseHistory
 import com.funcode.academy.domain.progress.ProgressRepository
 import com.funcode.academy.domain.progress.XpAward
 import com.funcode.academy.domain.progress.XpAwardResult
@@ -79,4 +80,9 @@ class RoomProgressRepository(
 
     override fun observeUnlockedAchievements(): Flow<Map<String, Long>> =
         achievementDao.observeAll().map { rows -> rows.associate { it.achievementId to it.unlockedAt } }
+
+    override fun observeExerciseHistories(): Flow<Map<String, ExerciseHistory>> =
+        exerciseAttemptDao.observeAll().map { rows ->
+            ExerciseHistory.fromAttempts(rows.map { ExerciseAttempt(it.exerciseId, it.correct, it.hintsUsed) })
+        }
 }

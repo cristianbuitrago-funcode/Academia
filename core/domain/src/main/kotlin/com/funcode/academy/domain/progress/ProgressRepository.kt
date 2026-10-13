@@ -40,4 +40,7 @@ interface ProgressRepository {
 
     /** Logros desbloqueados: id → momento del desbloqueo (milisegundos). */
     fun observeUnlockedAchievements(): Flow<Map<String, Long>>
+
+    /** Historial de intentos de cada ejercicio (para recomendar repasos). */
+    fun observeExerciseHistories(): Flow<Map<String, ExerciseHistory>>
 }

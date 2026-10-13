@@ -4,6 +4,8 @@ import com.funcode.academy.domain.lesson.Answer
 import com.funcode.academy.domain.lesson.AnswerResult
 import com.funcode.academy.domain.lesson.AssessmentScore
 import com.funcode.academy.domain.lesson.LessonKind
+import com.funcode.academy.domain.model.Audience
+import com.funcode.academy.domain.settings.LearningPreferences
 import com.funcode.academy.domain.progress.ExerciseAttempt
 import com.funcode.academy.domain.progress.XpSource
 import com.funcode.academy.domain.progress.XpSourceType
@@ -15,6 +17,7 @@ import com.funcode.academy.testing.FakeSettingsRepository
 import com.funcode.academy.ui.screens.lesson.LessonUiState
 import com.funcode.academy.ui.screens.lesson.LessonViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -339,5 +342,27 @@ class LessonViewModelTest {
         }
         assertEquals(0, again.sessionXp.value)
         assertEquals(1, progress.ledgerEntries.count { it.source.type == XpSourceType.CHALLENGE })
+    }
+
+    @Test
+    fun laVarianteElegidaCambiaLaTeoriaPeroNoLosObjetivosNiLosEjercicios() {
+        val l01 = DemoContent.lesson("java.m01.l01")
+        val intros = Audience.entries.associateWith { audience ->
+            val vm = LessonViewModel(l01.id, content, progress, FakeSettingsRepository(audience), engine)
+            vm.uiState.value as LessonUiState.Intro
+        }
+        assertEquals(Audience.entries.size, intros.values.map { it.sections }.toSet().size)
+        intros.forEach { (audience, intro) ->
+            assertEquals(l01.sectionsFor(audience), intro.sections)
+            assertEquals(l01.objectives, intro.lesson.objectives)
+            assertEquals(l01.exercises, intro.lesson.exercises)
+        }
+    }
+
+    @Test
+    fun laPreferenciaDePistasSeExponeALaPantalla() = runBlocking {
+        val settings = FakeSettingsRepository(LearningPreferences(hintsEnabled = false))
+        val vm = LessonViewModel(lesson.id, content, progress, settings, engine)
+        assertEquals(false, vm.hintsEnabled.first { !it })
     }
 }

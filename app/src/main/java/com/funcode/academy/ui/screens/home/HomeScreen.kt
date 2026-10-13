@@ -23,6 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.funcode.academy.R
 import com.funcode.academy.domain.lesson.ContentRepository
+import com.funcode.academy.domain.learning.Recommendation
 import com.funcode.academy.domain.mission.MissionProgress
 import com.funcode.academy.domain.mission.MissionStatus
 import com.funcode.academy.domain.progress.ModuleProgress
@@ -47,10 +48,12 @@ fun HomeRoute(
     val level by viewModel.level.collectAsStateWithLifecycle()
     val modules by viewModel.modules.collectAsStateWithLifecycle()
     val missions by viewModel.missions.collectAsStateWithLifecycle()
+    val recommendations by viewModel.recommendations.collectAsStateWithLifecycle()
     HomeScreen(
         level = level,
         modules = modules,
         missions = missions,
+        recommendations = recommendations,
         onOpenLesson = onOpenLesson,
         onOpenModule = onOpenModule,
         onOpenMissions = onOpenMissions,
@@ -64,6 +67,7 @@ fun HomeScreen(
     level: LevelProgress?,
     modules: List<ModuleProgress>?,
     missions: List<MissionProgress>?,
+    recommendations: List<Recommendation> = emptyList(),
     onOpenLesson: (String) -> Unit,
     onOpenModule: (String) -> Unit,
     onOpenMissions: () -> Unit,
@@ -94,9 +98,52 @@ fun HomeScreen(
             // Se continúa por el primer módulo que no esté terminado.
             else -> ContinueCard(modules.firstOrNull { it.next != NextActivity.ModuleDone } ?: modules.first(), onOpenLesson, onOpenModule)
         }
+        if (recommendations.isNotEmpty()) RecommendationsCard(recommendations, onOpenLesson)
         if (!missions.isNullOrEmpty()) MissionHomeCard(missions, onOpenMissions, onOpenMission)
     }
 }
+
+/** Recomendaciones de repaso: solo con resultados reales; nunca bloquean ni dan XP. */
+@Composable
+private fun RecommendationsCard(recommendations: List<Recommendation>, onOpenLesson: (String) -> Unit) {
+    Text(
+        text = stringResource(R.string.home_recommendations_title),
+        style = MaterialTheme.typography.titleLarge,
+        modifier = Modifier.semantics { heading() },
+    )
+    Text(stringResource(R.string.home_recommendations_note), style = MaterialTheme.typography.bodyMedium)
+    recommendations.take(MAX_RECOMMENDATIONS).forEach { r ->
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                when (r) {
+                    is Recommendation.ResumeLesson -> {
+                        Text(stringResource(R.string.recommend_resume, r.lesson.title, r.solved, r.total), style = MaterialTheme.typography.bodyLarge)
+                        Button(onClick = { onOpenLesson(r.lesson.id) }) { Text(stringResource(R.string.recommend_resume_button)) }
+                    }
+                    is Recommendation.ReviewLesson -> {
+                        Text(stringResource(R.string.recommend_review, r.lesson.title, r.struggledExercises), style = MaterialTheme.typography.bodyLarge)
+                        Button(onClick = { onOpenLesson(r.lesson.id) }) { Text(stringResource(R.string.recommend_review_button)) }
+                    }
+                    is Recommendation.RetryAssessment -> {
+                        Text(
+                            stringResource(R.string.recommend_retry, r.assessment.title, r.bestPercent, r.thresholdPercent),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        if (r.lessonsToReview.isNotEmpty()) {
+                            Text(
+                                stringResource(R.string.recommend_retry_review_first, r.lessonsToReview.joinToString { "«${it.title}»" }),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                        Button(onClick = { onOpenLesson(r.assessment.id) }) { Text(stringResource(R.string.recommend_retry_button)) }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private const val MAX_RECOMMENDATIONS = 3
 
 /** Misión actual: la primera en curso o, si no hay, la primera disponible. */
 @Composable

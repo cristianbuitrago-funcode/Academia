@@ -4,8 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.funcode.academy.ui.FuncodeAppUi
-import com.funcode.academy.ui.theme.FuncodeTheme
+import com.funcode.academy.ui.FuncodeRoot
 
 /** Única actividad de la app; la navegación entre pantallas la gestiona Compose. */
 class MainActivity : ComponentActivity() {
@@ -15,13 +14,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         val container = (application as FuncodeApp).container
         setContent {
-            FuncodeTheme {
-                FuncodeAppUi(
-                    progressRepository = container.progressRepository,
-                    settingsRepository = container.settingsRepository,
-                    contentRepository = container.contentRepository,
-                )
-            }
+            FuncodeRoot(
+                progressRepository = container.progressRepository,
+                settingsRepository = container.settingsRepository,
+                contentRepository = container.contentRepository,
+            )
         }
     }
 }

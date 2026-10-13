@@ -15,12 +15,17 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.funcode.academy.R
 import com.funcode.academy.data.content.AssetContentRepository
 import com.funcode.academy.domain.lesson.AssessmentScore
+import com.funcode.academy.domain.progress.ExerciseAttempt
+import com.funcode.academy.domain.progress.XpSource
+import com.funcode.academy.domain.progress.XpSourceType
+import com.funcode.academy.domain.settings.LearningPreferences
 import com.funcode.academy.testing.FakeProgressRepository
 import com.funcode.academy.testing.FakeSettingsRepository
 import com.funcode.academy.ui.FuncodeAppUi
 import com.funcode.academy.ui.theme.FuncodeTheme
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -60,11 +65,11 @@ class LessonFlowTest {
         node(hasText(value)).performScrollTo().assertIsDisplayed()
     }
 
-    private fun setApp() = rule.setContent {
+    private fun setApp(settings: FakeSettingsRepository = FakeSettingsRepository()) = rule.setContent {
         FuncodeTheme {
             FuncodeAppUi(
                 progressRepository = progress,
-                settingsRepository = FakeSettingsRepository(),
+                settingsRepository = settings,
                 contentRepository = AssetContentRepository(ApplicationProvider.getApplicationContext<Context>().assets),
             )
         }
@@ -217,5 +222,39 @@ class LessonFlowTest {
         assertShown(text(R.string.mission_status_locked))
         assertShown(text(R.string.mission_locked_reason, "«Descubre qué es programar y qué es un algoritmo»"))
         assertEquals(0, rule.onAllNodes(hasText(text(R.string.mission_open_activity, "Instrucciones y orden: la ejecución secuencial"))).fetchSemanticsNodes().size)
+    }
+
+    @Test
+    fun conLasPistasDesactivadasNoApareceElBotonYSeIndicaQueSePractica() {
+        setApp(FakeSettingsRepository(LearningPreferences(hintsEnabled = false)))
+        click(text(R.string.home_continue_button))
+        click(text(R.string.lesson_start_exercises))
+        assertShown(text(R.string.lesson_exercise_progress, 1, 5))
+        assertShown(text(R.string.lesson_practicing, "Reconocer que un ordenador sigue instrucciones exactas y no adivina lo que queremos."))
+        assertEquals(0, rule.onAllNodes(hasText(text(R.string.lesson_show_hint, 1, 1))).fetchSemanticsNodes().size)
+    }
+
+    @Test
+    fun inicioRecomiendaRetomarYRepasarSegunLosResultadosGuardados() {
+        runBlocking {
+            // Lección 1 empezada; lección 2 completa con dos ejercicios que costaron.
+            progress.recordAttempt(ExerciseAttempt("java.m01.l01.e01", correct = true, hintsUsed = 0))
+            (1..6).forEach { i ->
+                if (i <= 2) progress.recordAttempt(ExerciseAttempt("java.m01.l02.e0$i", correct = false, hintsUsed = 0))
+                progress.recordAttempt(ExerciseAttempt("java.m01.l02.e0$i", correct = true, hintsUsed = 0))
+            }
+        }
+        setApp()
+        assertShown(text(R.string.home_recommendations_title))
+        assertShown(text(R.string.recommend_resume, "¿Qué es programar?", 1, 5))
+        assertShown(text(R.string.recommend_review, "Algoritmos: los pasos para resolver un problema", 2))
+        click(text(R.string.recommend_review_button))
+        assertShown(text(R.string.lesson_start_exercises))
+        rule.waitForIdle()
+        // Mostrar o seguir una recomendación no concede nada por sí mismo: todo el XP
+        // registrado corresponde a aciertos guardados y a la lección 2 completada.
+        val solved = progress.attempts.filter { it.correct }.map { it.exerciseId }.toSet()
+        val allowed = solved.map { XpSource(XpSourceType.EXERCISE, it) }.toSet() + XpSource(XpSourceType.LESSON, "java.m01.l02")
+        assertTrue(progress.ledgerEntries.all { it.source in allowed })
     }
 }

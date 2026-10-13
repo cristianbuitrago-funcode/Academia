@@ -59,10 +59,12 @@ fun LessonRoute(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val rewardNotice by viewModel.rewardNotice.collectAsStateWithLifecycle()
     val sessionXp by viewModel.sessionXp.collectAsStateWithLifecycle()
+    val hintsEnabled by viewModel.hintsEnabled.collectAsStateWithLifecycle()
     LessonScreen(
         state = state,
         rewardNotice = rewardNotice,
         sessionXp = sessionXp,
+        hintsEnabled = hintsEnabled,
         onStart = viewModel::startExercises,
         onDraftChange = viewModel::updateDraft,
         onCheck = viewModel::check,
@@ -78,6 +80,7 @@ fun LessonScreen(
     state: LessonUiState,
     rewardNotice: RewardNotice?,
     sessionXp: Int,
+    hintsEnabled: Boolean = true,
     onStart: () -> Unit,
     onDraftChange: (Answer) -> Unit,
     onCheck: () -> Unit,
@@ -100,7 +103,7 @@ fun LessonScreen(
                 LessonHeader(state.lesson)
                 Message(stringResource(R.string.challenge_locked, state.lessonsRemaining), onExit)
             }
-            is LessonUiState.Exercising -> ExerciseStep(state, onDraftChange, onCheck, onHint, onRetry, onNext)
+            is LessonUiState.Exercising -> ExerciseStep(state, hintsEnabled, onDraftChange, onCheck, onHint, onRetry, onNext)
             is LessonUiState.Finished -> Summary(state.lesson, state.summary, sessionXp, onRestart = onStart, onExit = onExit)
         }
         if (state is LessonUiState.Exercising || state is LessonUiState.Finished) {
@@ -176,6 +179,7 @@ private fun Intro(lesson: Lesson, sections: List<Section>, onStart: () -> Unit) 
 @Composable
 private fun ExerciseStep(
     state: LessonUiState.Exercising,
+    hintsEnabled: Boolean,
     onDraftChange: (Answer) -> Unit,
     onCheck: () -> Unit,
     onHint: () -> Unit,
@@ -199,6 +203,10 @@ private fun ExerciseStep(
         style = MaterialTheme.typography.labelLarge,
     )
     Text(stringResource(R.string.lesson_difficulty, exercise.difficulty), style = MaterialTheme.typography.labelMedium)
+    // Qué se está practicando: los objetivos de la lección a los que pertenece el ejercicio.
+    session.lesson.objectives.filter { it.id in exercise.objectiveIds }.forEach {
+        Text(stringResource(R.string.lesson_practicing, it.text), style = MaterialTheme.typography.bodyMedium)
+    }
     Heading(exercise.prompt)
 
     // Tras una respuesta comprobada (correcta o incorrecta) los controles quedan bloqueados
@@ -231,7 +239,7 @@ private fun ExerciseStep(
         }
         else -> {
             Button(onClick = onCheck, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.lesson_check)) }
-            if (progress.hintsRevealed < exercise.hints.size) {
+            if (hintsEnabled && progress.hintsRevealed < exercise.hints.size) {
                 TextButton(onClick = onHint) {
                     Text(stringResource(R.string.lesson_show_hint, progress.hintsRevealed + 1, exercise.hints.size))
                 }

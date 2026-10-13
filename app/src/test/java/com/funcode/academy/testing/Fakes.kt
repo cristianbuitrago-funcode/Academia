@@ -11,11 +11,15 @@ import com.funcode.academy.domain.lesson.toSummary
 import com.funcode.academy.domain.mission.MissionDefinition
 import com.funcode.academy.domain.model.Audience
 import com.funcode.academy.domain.progress.ExerciseAttempt
+import com.funcode.academy.domain.progress.ExerciseHistory
 import com.funcode.academy.domain.progress.ProgressRepository
 import com.funcode.academy.domain.progress.XpAward
 import com.funcode.academy.domain.progress.XpAwardResult
 import com.funcode.academy.domain.progress.XpEntry
+import com.funcode.academy.domain.settings.LearningPreferences
 import com.funcode.academy.domain.settings.SettingsRepository
+import com.funcode.academy.domain.settings.TextScale
+import com.funcode.academy.domain.settings.ThemeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -48,6 +52,7 @@ class FakeProgressRepository : ProgressRepository {
 
     override suspend fun recordAttempt(attempt: ExerciseAttempt) {
         attempts += attempt
+        attemptsFlow.value = attempts.toList()
         if (attempt.correct) solved.update { it + attempt.exerciseId }
     }
 
@@ -72,13 +77,27 @@ class FakeProgressRepository : ProgressRepository {
     }
 
     override fun observeUnlockedAchievements(): Flow<Map<String, Long>> = achievements
+
+    private val attemptsFlow = MutableStateFlow(emptyList<ExerciseAttempt>())
+
+    override fun observeExerciseHistories(): Flow<Map<String, ExerciseHistory>> =
+        attemptsFlow.map { ExerciseHistory.fromAttempts(it) }
 }
 
-class FakeSettingsRepository(initial: Audience? = null) : SettingsRepository {
+class FakeSettingsRepository(initial: LearningPreferences = LearningPreferences()) : SettingsRepository {
+    constructor(initial: Audience?) : this(LearningPreferences(audience = initial))
+
     private val state = MutableStateFlow(initial)
-    override val audience: Flow<Audience?> = state
-    override suspend fun setAudience(audience: Audience) {
-        state.value = audience
+    override val preferences: Flow<LearningPreferences> = state
+    override val audience: Flow<Audience?> = state.map { it.audience }
+    val current: LearningPreferences get() = state.value
+
+    override suspend fun setAudience(audience: Audience) = state.update { it.copy(audience = audience) }
+    override suspend fun setThemeMode(mode: ThemeMode) = state.update { it.copy(themeMode = mode) }
+    override suspend fun setTextScale(scale: TextScale) = state.update { it.copy(textScale = scale) }
+    override suspend fun setHintsEnabled(enabled: Boolean) = state.update { it.copy(hintsEnabled = enabled) }
+    override suspend fun resetPreferences() {
+        state.value = LearningPreferences()
     }
 }
 

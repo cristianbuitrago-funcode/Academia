@@ -4,7 +4,7 @@
   "moduleId": "java.m01",
   "languageId": "java",
   "locale": "es",
-  "version": 1,
+  "version": 2,
   "reviewStatus": "DRAFT",
   "title": "¿Qué es programar?",
   "description": "Descubre qué es un programa, para qué sirve programar y por qué las instrucciones deben ser exactas.",
@@ -69,6 +69,162 @@
       {
         "type": "callout",
         "text": "Cada paso es concreto: dice cuántos pasos avanzar y cuántos grados girar. Así el robot no tiene que adivinar nada."
+      }
+    ],
+    "kids": [
+      {
+        "type": "text",
+        "text": "Un programa es una lista de órdenes para un ordenador. Programar es escribir esa lista."
+      },
+      {
+        "type": "text",
+        "text": "Muchas cosas que usas tienen programas: los videojuegos, la tele o esta app. Alguien escribió todas sus órdenes."
+      },
+      {
+        "type": "text",
+        "text": "El ordenador es muy rápido, pero no puede adivinar lo que quieres. Hace justo lo que dicen las órdenes. Si falta una orden, sale mal."
+      },
+      {
+        "type": "text",
+        "text": "Las órdenes se escriben en un idioma especial, un lenguaje de programación. Aquí vas a aprender uno que se llama Java."
+      },
+      {
+        "type": "text",
+        "text": "Mira estas órdenes para un robot que dibuja un cuadrado. Léelas una a una, en orden:"
+      },
+      {
+        "type": "code",
+        "code": "1. Bajar el lápiz\n2. Avanzar 10 pasos\n3. Girar 90 grados a la derecha\n4. Avanzar 10 pasos\n5. Girar 90 grados a la derecha\n6. Avanzar 10 pasos\n7. Girar 90 grados a la derecha\n8. Avanzar 10 pasos\n9. Subir el lápiz",
+        "lineComments": [
+          {
+            "line": 1,
+            "comment": "El lápiz toca el papel: ¡ya puede pintar!"
+          },
+          {
+            "line": 2,
+            "comment": "Primer lado."
+          },
+          {
+            "line": 3,
+            "comment": "Gira para empezar el lado siguiente."
+          },
+          {
+            "line": 8,
+            "comment": "Último lado."
+          },
+          {
+            "line": 9,
+            "comment": "Levanta el lápiz para no seguir pintando."
+          }
+        ]
+      },
+      {
+        "type": "callout",
+        "text": "Cada orden es clara: cuántos pasos dar y cuánto girar. ¡Así el robot no se equivoca!"
+      }
+    ],
+    "teens": [
+      {
+        "type": "text",
+        "text": "Un programa es un conjunto de instrucciones que le dice a un ordenador qué hacer, paso a paso. Programar es diseñar y escribir esas instrucciones."
+      },
+      {
+        "type": "text",
+        "text": "Todo lo que usas en el móvil funciona así: tus juegos, las redes sociales, la música en streaming o esta app. Detrás hay personas que escribieron cada instrucción."
+      },
+      {
+        "type": "text",
+        "text": "El ordenador ejecuta millones de instrucciones por segundo, pero no interpreta intenciones: hace exactamente lo que está escrito. Si falta un paso o algo es ambiguo, el resultado falla."
+      },
+      {
+        "type": "text",
+        "text": "Esas instrucciones se escriben en un lenguaje de programación, con reglas muy precisas. En esta ruta vas a aprender Java, que se usa en apps Android, videojuegos como Minecraft y muchos servidores."
+      },
+      {
+        "type": "text",
+        "text": "Reto rápido: sigue mentalmente estas instrucciones para un robot que dibuja un cuadrado."
+      },
+      {
+        "type": "code",
+        "code": "1. Bajar el lápiz\n2. Avanzar 10 pasos\n3. Girar 90 grados a la derecha\n4. Avanzar 10 pasos\n5. Girar 90 grados a la derecha\n6. Avanzar 10 pasos\n7. Girar 90 grados a la derecha\n8. Avanzar 10 pasos\n9. Subir el lápiz",
+        "lineComments": [
+          {
+            "line": 1,
+            "comment": "El robot solo dibuja si el lápiz toca el papel."
+          },
+          {
+            "line": 2,
+            "comment": "Primer lado del cuadrado."
+          },
+          {
+            "line": 3,
+            "comment": "Cada giro de 90 grados prepara el lado siguiente."
+          },
+          {
+            "line": 8,
+            "comment": "Cuarto y último lado."
+          },
+          {
+            "line": 9,
+            "comment": "Sin este paso, el robot seguiría pintando al moverse después."
+          }
+        ]
+      },
+      {
+        "type": "callout",
+        "text": "Cada instrucción es concreta: cuántos pasos avanzar y cuántos grados girar. Sin ambigüedades, el robot no tiene que adivinar nada."
+      }
+    ],
+    "adults": [
+      {
+        "type": "text",
+        "text": "Un programa es un conjunto de instrucciones que indica a un ordenador qué operaciones realizar y en qué orden. Programar consiste en diseñar, escribir y revisar esas instrucciones."
+      },
+      {
+        "type": "text",
+        "text": "Los programas están presentes en la vida cotidiana y profesional: la banca en línea, las hojas de cálculo, los sistemas de reservas o esta misma aplicación. Cada uno es el resultado de instrucciones escritas por personas."
+      },
+      {
+        "type": "text",
+        "text": "Un ordenador ejecuta instrucciones con gran rapidez, pero no interpreta intenciones: hace exactamente lo indicado. Una instrucción ambigua o un paso omitido producen un resultado incorrecto."
+      },
+      {
+        "type": "text",
+        "text": "Las instrucciones se expresan en un lenguaje de programación, con una sintaxis precisa que las personas pueden escribir y el ordenador puede procesar. Esta ruta utiliza Java, un lenguaje muy extendido en aplicaciones empresariales, Android y sistemas de servidor."
+      },
+      {
+        "type": "text",
+        "text": "Ejemplo: instrucciones para un robot que dibuja un cuadrado sobre un papel."
+      },
+      {
+        "type": "code",
+        "code": "1. Bajar el lápiz\n2. Avanzar 10 pasos\n3. Girar 90 grados a la derecha\n4. Avanzar 10 pasos\n5. Girar 90 grados a la derecha\n6. Avanzar 10 pasos\n7. Girar 90 grados a la derecha\n8. Avanzar 10 pasos\n9. Subir el lápiz",
+        "lineComments": [
+          {
+            "line": 1,
+            "comment": "El robot solo dibuja si el lápiz toca el papel."
+          },
+          {
+            "line": 2,
+            "comment": "Primer lado del cuadrado."
+          },
+          {
+            "line": 3,
+            "comment": "Cada giro de 90 grados prepara el lado siguiente."
+          },
+          {
+            "line": 8,
+            "comment": "Cuarto y último lado."
+          },
+          {
+            "line": 9,
+            "comment": "Sin este paso, el robot seguiría pintando al moverse después."
+          }
+        ]
+      },
+      {
+        "type": "callout",
+        "text": "Cada instrucción es concreta y verificable: indica la distancia y el ángulo exactos. Esa precisión es la base de cualquier programa."
       }
     ]
   },

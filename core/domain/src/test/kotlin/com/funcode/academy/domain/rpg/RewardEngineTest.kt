@@ -10,6 +10,7 @@ import com.funcode.academy.domain.lesson.ModuleLoadResult
 import com.funcode.academy.domain.lesson.toSummary
 import com.funcode.academy.domain.mission.MissionStatus
 import com.funcode.academy.domain.progress.ExerciseAttempt
+import com.funcode.academy.domain.progress.ExerciseHistory
 import com.funcode.academy.domain.progress.ProgressRepository
 import com.funcode.academy.domain.progress.XpAward
 import com.funcode.academy.domain.progress.XpAwardResult
@@ -67,6 +68,8 @@ class RewardEngineTest {
             return true
         }
         override fun observeUnlockedAchievements(): Flow<Map<String, Long>> = achievements
+        override fun observeExerciseHistories(): Flow<Map<String, ExerciseHistory>> =
+            MutableStateFlow(ExerciseHistory.fromAttempts(attempts))
     }
 
     private val progress = MemoryProgress()

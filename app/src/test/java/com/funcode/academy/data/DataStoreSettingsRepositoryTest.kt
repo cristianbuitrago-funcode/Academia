@@ -5,6 +5,9 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.PreferencesSerializer
 import com.funcode.academy.data.settings.DataStoreSettingsRepository
 import com.funcode.academy.domain.model.Audience
+import com.funcode.academy.domain.settings.LearningPreferences
+import com.funcode.academy.domain.settings.TextScale
+import com.funcode.academy.domain.settings.ThemeMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -72,8 +75,39 @@ class DataStoreSettingsRepositoryTest {
         assertEquals(Audience.TEENS, withRepository { it.audience.first() })
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun laRutaInfantilNoSePuedeElegirEnElMvp() {
+    @Test
+    fun laPresentacionInfantilSePuedeElegirDesdeLaFase7() {
         withRepository { it.setAudience(Audience.KIDS) }
+        assertEquals(Audience.KIDS, withRepository { it.audience.first() })
+    }
+
+    @Test
+    fun preferenciasPorDefecto() {
+        assertEquals(LearningPreferences(), withRepository { it.preferences.first() })
+    }
+
+    @Test
+    fun cadaPreferenciaSeConservaAlReabrir() {
+        withRepository {
+            it.setThemeMode(ThemeMode.DARK)
+            it.setTextScale(TextScale.EXTRA_LARGE)
+            it.setHintsEnabled(false)
+            it.setAudience(Audience.TEENS)
+        }
+        assertEquals(
+            LearningPreferences(Audience.TEENS, ThemeMode.DARK, TextScale.EXTRA_LARGE, hintsEnabled = false),
+            withRepository { it.preferences.first() },
+        )
+    }
+
+    @Test
+    fun restablecerVuelveALosValoresPorDefecto() {
+        withRepository {
+            it.setThemeMode(ThemeMode.LIGHT)
+            it.setHintsEnabled(false)
+            it.setAudience(Audience.KIDS)
+        }
+        withRepository { it.resetPreferences() }
+        assertEquals(LearningPreferences(), withRepository { it.preferences.first() })
     }
 }
