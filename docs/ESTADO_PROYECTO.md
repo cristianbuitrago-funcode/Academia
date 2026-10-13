@@ -20,7 +20,7 @@ _Última actualización: 2026-10-13_
 | 3. Motor de lecciones y ejercicios | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 3 — Detalle». El contenido sigue en borrador. |
 | 4. Primer módulo de Java y evaluación | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 4 — Detalle». El contenido sigue en borrador. |
 | 5. RPG básico: XP, niveles y logros | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 5 — Detalle». |
-| 6. Retos y misiones | **Implementado — CI en curso; pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 6 — Detalle». El reto está en borrador. |
+| 6. Retos y misiones | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 6 — Detalle». El reto está en borrador. |
 | 7–9 | Planificado — sin autorizar | — |
 
 ## Decisiones
@@ -324,8 +324,8 @@ Se recalculan desde los resultados guardados cada vez que cambian. No se guardan
 | `ChallengeProgress`: bloqueo, pasos resueltos, siguiente actividad | ✔ | ✔ | `ModuleProgressTest` |
 | XP y logro del reto; misiones | ✔ | ✔ | `RewardCalculatorTest`, `RewardEngineTest` (módulo completo: 960 XP), `AchievementTest` |
 | Contenido del reto compilado con `javac` | ✔ | ✔ | `JavaContentCompilationTest`, `ModuleContentTest` |
-| App: tarjeta del reto en el módulo, bloqueo al abrir, modo reto, aviso «¡Reto superado!», continuar en Inicio | ✔ | CI | `LessonViewModelTest`, `LessonFlowTest`, `AssetContentRepositoryTest` |
-| Perfil: misiones con barra y «Retos superados» | ✔ | CI | `ProfileStateTest`, `NavigationTest`, `LessonFlowTest` |
+| App: tarjeta del reto en el módulo, bloqueo al abrir, modo reto, aviso «¡Reto superado!», continuar en Inicio | ✔ | ✔ CI | `LessonViewModelTest`, `LessonFlowTest`, `AssetContentRepositoryTest` |
+| Perfil: misiones con barra y «Retos superados» | ✔ | ✔ CI | `ProfileStateTest`, `NavigationTest`, `LessonFlowTest` |
 | Verificación en Android Studio / dispositivo | — | **Pendiente** (responsable) | `docs/CONFIGURACION_ENTORNO.md` §8 |
 
 - **Base de datos:** sin cambio de esquema ni migración. Los pasos del reto se guardan como intentos en `exercise_attempt`, y su XP en `xp_ledger` con el tipo `CHALLENGE`, que ya existía.
@@ -467,6 +467,7 @@ Se recalculan desde los resultados guardados cada vez que cambian. No se guardan
 | 2026-10-13 | CI 38435568555 (commit `730a23b`) | Linux + Windows | **Verde: 143/143 pruebas** (97 dominio, 46 app); APK generado; esquema de Room sin cambios; lint: 0 errores, 2 avisos (`OldTargetApi` conocido y `PluralsCandidate` en el texto del resultado, corregido después reformulando el texto) |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 5 | **127/127 superadas** |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 6, incluida la compilación del reto con `javac` | **144/144 superadas** |
+| 2026-10-13 | CI 38441919559 (commit `ae93235`) | Linux + Windows | **Verde: 208/208 pruebas** (144 dominio, 64 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38438737589 (commit `91b7049`) | Linux + Windows | **Verde: 188/188 pruebas** (127 dominio, 61 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38436000222 (commit `ed66018`) | Linux + Windows | **Verde: 143/143 pruebas**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-12 | CI 38319271182 | Linux + Windows | **Verde en ambos** tras usar `OkioStorage` en la prueba de DataStore (la app sigue usando `FileStorage`, correcto en Android). |
