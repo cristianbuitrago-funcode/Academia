@@ -99,7 +99,7 @@
     <string name="mission_reward_pending">XP de bonificación al completarla: %1$d (una sola vez)</string>
     <string name="mission_reward_obtained">XP de bonificación obtenido: %1$d</string>
     <string name="mission_completed_title">¡Misión completada!</string>
-    <string name="mission_completed_summary">Has cumplido las %1$d tareas con resultados comprobados.</string>
+    <string name="mission_completed_summary">Tareas cumplidas con resultados comprobados: %1$d</string>
     <string name="mission_practice_note">Puedes repetir sus actividades para practicar; la bonificación no se vuelve a sumar.</string>
     <string name="home_missions_title">Misiones</string>
     <string name="home_missions_progress">Misiones completadas: %1$d de %2$d</string>

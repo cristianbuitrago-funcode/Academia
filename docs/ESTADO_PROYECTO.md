@@ -512,6 +512,7 @@ Las lecciones son, en este orden:
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 5 | **127/127 superadas** |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 6, incluida la compilación del reto con `javac` | **144/144 superadas** |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con misiones de contenido y proyecto guiado | **164/164 superadas** |
+| 2026-10-13 | CI 38449467297 (commit `6fe2eb6`) | Linux + Windows | **Verde: 234/234 pruebas** (164 dominio, 70 app); APK generado; esquema de Room sin cambios; lint: 0 errores, 2 avisos (`OldTargetApi` conocido y `PluralsCandidate` en un texto de misión, corregido después reformulando el texto) |
 | 2026-10-13 | CI 38441919559 (commit `ae93235`) | Linux + Windows | **Verde: 208/208 pruebas** (144 dominio, 64 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38438737589 (commit `91b7049`) | Linux + Windows | **Verde: 188/188 pruebas** (127 dominio, 61 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38436000222 (commit `ed66018`) | Linux + Windows | **Verde: 143/143 pruebas**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
