@@ -21,6 +21,7 @@ Una lección o un módulo que no cumpla las reglas **no se muestra**: la app ens
 | `reviewStatus`, `title`, `description` | Sí | Como en la lección. |
 | `lessons` | Sí | Ids de las lecciones **en el orden recomendado**. Deben existir, tener `moduleId` igual al id del módulo y `kind` = `lesson`. |
 | `assessment` | No | Id de la evaluación del módulo (`kind` = `assessment`). |
+| `challenge` | No | Id del reto guiado del módulo (`kind` = `challenge`). Se abre al completar todas las lecciones y da 50 XP al resolver todos sus pasos. |
 
 ## Campos de la lección
 
@@ -35,7 +36,7 @@ Una lección o un módulo que no cumpla las reglas **no se muestra**: la app ens
 | `objectives` | Sí | Lista de `{id, text}`. Cada objetivo debe practicarse en al menos un ejercicio. |
 | `presentations` | Sí | Mapa de variante → secciones. `default` es obligatoria; `kids`, `teens` y `adults` son opcionales y solo cambian la presentación, nunca los objetivos ni los ejercicios. |
 | `exercises` | Sí | Lista ordenada (de menor a mayor dificultad). |
-| `kind` | No | `lesson` (por defecto) o `assessment` (evaluación del módulo). |
+| `kind` | No | `lesson` (por defecto), `assessment` (evaluación del módulo) o `challenge` (reto guiado: pasos con pistas y reintentos, sin bloque `assessment`). |
 | `assessment` | Solo en evaluaciones | `{exerciseIds, passThreshold?}`. `exerciseIds` debe incluir **todos** los ejercicios. `passThreshold` (fracción en (0, 1] de respuestas correctas al primer intento) es opcional; el valor aprobado (P6) es **0.8**. Sin él, la evaluación no se puede aprobar ni da XP. |
 
 **Evaluaciones:** una sola respuesta por pregunta y sin pistas (el parser rechaza `hints` en una evaluación). Una pregunta sin responder cuenta como fallo.

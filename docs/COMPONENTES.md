@@ -1,4 +1,4 @@
-# Funcode Academy: componentes del proyecto (fases 2 a 5)
+# Funcode Academy: componentes del proyecto (fases 2 a 6)
 
 Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase.
 
@@ -31,13 +31,14 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `lesson/CodeText.kt` | Normaliza texto: *tokens* de Java para los huecos y salidas de programa sin espacios finales. |
 | `lesson/LessonParser.kt`, `lesson/json/` | Lee el JSON del contenido y lo valida por completo; devuelve todos los errores en lugar de fallar. |
 | `lesson/LessonSession.kt` | Motor de la sesión (ejercicio actual, pistas, intentos, resumen) y contrato `ContentRepository`. En una evaluación: una respuesta por pregunta, sin pistas y resultado `AssessmentScore`. |
-| `lesson/Module.kt` | Módulo del curso (`CourseModule`) y `ModuleAssembler`, que lo arma a partir de su definición y comprueba sus lecciones. |
+| `lesson/Module.kt` | Módulo del curso (`CourseModule`: lecciones, evaluación y reto) y `ModuleAssembler`, que lo arma a partir de su definición y comprueba sus referencias. |
 | `rpg/RewardRules.kt` | Valores de XP aprobados (P6): por ejercicio según la dificultad, penalización por pistas, lección y evaluación. |
 | `rpg/LevelCurve.kt` | Curva de niveles (100 × n) y progreso hacia el siguiente nivel, calculados desde el XP total. |
 | `rpg/Achievement.kt` | Logros con id estable y condición de desbloqueo sobre `LearningState`. |
 | `rpg/RewardCalculator.kt` | Cálculo puro de las recompensas que corresponden a los resultados verificados. |
+| `rpg/Mission.kt` | Misiones de objetivos (id estable y meta); su avance se calcula en `RewardCalculator.missions`. |
 | `rpg/RewardEngine.kt` | Único punto que concede XP y logros: recalcula desde lo guardado y registra lo que falta (idempotente). |
-| `progress/ModuleProgress.kt` | Progreso de un módulo **derivado** de los ejercicios resueltos y del mejor resultado: lecciones completadas y siguiente actividad. |
+| `progress/ModuleProgress.kt` | Progreso de un módulo **derivado** de los ejercicios resueltos y del mejor resultado: lecciones completadas, estado del reto (bloqueo y pasos) y siguiente actividad. |
 
 ## `:app` (Android)
 
@@ -57,8 +58,8 @@ Qué hace cada pieza y por qué existe. Este documento se ampliará en cada fase
 | `data/local/ModuleProgressDao.kt` | Guarda el mejor resultado de la evaluación de cada módulo en `module_progress` (transacción de lectura y escritura). |
 | `ui/progress/LearningProgress.kt` | Combina módulos, ejercicios resueltos y resultados en el progreso de cada módulo. |
 | `ui/rpg/*` | Tarjeta de nivel con barra de progreso, aviso de recompensas y textos de los logros. |
-| `ui/screens/profile/*` | Perfil: nivel, XP, resumen de recompensas por tipo y logros con su fecha. |
-| `ui/screens/module/*` | Mapa (lista de módulos) y pantalla de módulo (lecciones en orden y evaluación). |
+| `ui/screens/profile/*` | Perfil: nivel, XP, resumen de recompensas por tipo, misiones y logros con su fecha. |
+| `ui/screens/module/*` | Mapa (lista de módulos) y pantalla de módulo (lecciones en orden, evaluación y reto, cerrado o abierto). |
 | `assets/content/es/java/` | Contenido educativo en JSON (índice, módulos y una lección por archivo). Formato: `docs/contenido/GUIA_AUTORES.md`. |
 | `ui/screens/lesson/LessonViewModel.kt` | Carga la lección, mantiene la sesión del dominio y registra intentos. |
 | `ui/screens/lesson/LessonScreen.kt` | Introducción (objetivos, teoría, ejemplo), ejercicio, retroalimentación y resumen (con el resultado si es una evaluación). |

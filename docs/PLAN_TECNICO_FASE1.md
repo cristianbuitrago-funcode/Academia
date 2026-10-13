@@ -418,3 +418,4 @@ Los criterios 17–18 dependen de una verificación del responsable; hasta enton
 | 2026-10-13 | P6 aprobado: XP 10 + 5 × (dificultad − 1), −25 % por pista (mínimo 50 %), lección +20, evaluación aprobada +100; curva 100 × n; umbral 80 % | Decisión del responsable sobre la propuesta presentada antes de programar la Fase 5. |
 | 2026-10-13 | Recompensas recalculadas desde los resultados verificados (`RewardEngine`) en lugar de sumarse en cada pantalla | Un solo sistema, idempotente: reintentos, reinicios y fallos no duplican ni pierden recompensas. |
 | 2026-10-13 | Monedas fuera de la Fase 5 | Decisión del responsable: sin tienda no tienen uso; queda una propuesta documentada. |
+| 2026-10-13 | Fase 6: reto guiado por módulo (`kind: challenge`), abierto al completar las lecciones; 50 XP una vez; misiones de objetivos sin reloj ni XP | Decisiones del responsable antes de programar; los retos usan los 7 tipos de ejercicio (sin ejecución de Java, D2). |

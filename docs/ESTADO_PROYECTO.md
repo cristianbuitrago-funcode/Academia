@@ -19,8 +19,9 @@ _Última actualización: 2026-10-13_
 | 2. Esqueleto y CI | **Aprobado** (2026-10-13, según el responsable: verificado manualmente en Android Studio) | El *pull request* #1 sigue abierto: `main` aún no contiene la Fase 2. Los detalles de la verificación manual (resolución del fallo de Room y del emulador en su equipo) no constan en este registro. |
 | 3. Motor de lecciones y ejercicios | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 3 — Detalle». El contenido sigue en borrador. |
 | 4. Primer módulo de Java y evaluación | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 4 — Detalle». El contenido sigue en borrador. |
-| 5. RPG básico: XP, niveles y logros | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 5 — Detalle». |
-| 6–9 | Planificado — sin autorizar | — |
+| 5. RPG básico: XP, niveles y logros | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 5 — Detalle». |
+| 6. Retos y misiones | **Implementado — CI en curso; pendiente de verificación en Android Studio y de aprobación** | Ver «Fase 6 — Detalle». El reto está en borrador. |
+| 7–9 | Planificado — sin autorizar | — |
 
 ## Decisiones
 
@@ -31,6 +32,7 @@ _Última actualización: 2026-10-13_
 | P3 Robolectric | Aprobado con condiciones. Incorporado en la Fase 2 (justificación abajo) |
 | P4 Permiso para subir *workflows* | Resuelto: el *push* de `.github/workflows/ci.yml` funcionó |
 | P6 Valores de XP, curva de niveles y umbral | **Aprobado** (2026-10-13): propuesta A de XP con penalización por pistas, curva 100×n y umbral del 80 %. Ver «Fase 5 — Detalle». El umbral no bloquea lecciones ni módulos. |
+| Fase 6: alcance de retos y misiones | **Aprobado** (2026-10-13): reto guiado por módulo, abierto al completar las lecciones, 50 XP una vez; misiones de objetivos sin reloj ni XP. |
 | Monedas virtuales | **No implementadas** por decisión del responsable (2026-10-13); propuesta documentada en «Fase 5 — Detalle». |
 | P7 Versión de Java del contenido | **Pendiente.** Se usa Java 17 de forma provisional (`javac --release 17` en las pruebas). |
 | P8 Comprobación automática del Java del contenido | Implementada en la Fase 4 (`JavaContentCompilationTest`); pendiente de tu aprobación. |
@@ -259,6 +261,77 @@ Las lecciones son, en este orden:
 | Verificación manual en Android Studio | **Pendiente** (responsable) |
 | Aprobación del contenido | **Pendiente** (responsable) |
 
+## Fase 6 — Detalle
+
+### Revisión de entrada y alcance
+
+- Fase 5: aprobada por el responsable; CI 38438737589 en verde (188/188 pruebas).
+- El plan solo definía la Fase 6 como «Misiones, retos y proyectos — retos ligados a objetivos» (§13), con un campo opcional `challenge` en el módulo (§6.1).
+- Como no había especificación detallada, se consultaron cuatro decisiones antes de programar. Respuestas del responsable (2026-10-13), todas las opciones recomendadas:
+
+| Decisión | Valor aprobado |
+|---|---|
+| Qué es un reto | Un **reto guiado por módulo**: un mini-proyecto en varios pasos, ligado a los objetivos del módulo. Se construye con los 7 tipos de ejercicio existentes (no hay ejecución de Java, D2) y admite pistas y reintentos. |
+| Acceso | Se muestra desde el principio, pero **se abre al completar todas las lecciones** del módulo. Es el primer bloqueo de la app y no bloquea la evaluación. |
+| Recompensa | **50 XP una sola vez** al resolver todos los pasos; los pasos no dan XP aparte. Logro «Primer reto superado» (sin XP). |
+| Misiones | **Misiones de objetivos sin reloj**: lista fija derivada del progreso verificado, sin XP extra. |
+
+**Proyectos:** se interpretan como el propio reto guiado (un programa completo construido paso a paso). Proyectos abiertos con código libre necesitarían ejecución real de Java (Fase 8).
+
+### Reto del módulo 1 (`java.m01.reto`, DRAFT)
+
+- Título: «Reto: tu tarjeta de presentación en Java».
+- Siete pasos de dificultad 1 a 4, con 3 objetivos:
+  1. nombre del archivo;
+  2. ordenar el esqueleto;
+  3. completar huecos;
+  4. predecir la salida;
+  5. reordenar la salida;
+  6. encontrar el error;
+  7. compilar y ejecutar.
+- Solo usa lo enseñado en el módulo 1.
+- `JavaContentCompilationTest` compila con `javac --release 17` el ejemplo, los huecos completados y las líneas ordenadas, ejecuta la salida y comprueba que el error falla justo en la línea marcada.
+- **Pendiente de tu revisión.**
+
+### Reglas
+
+- **Bloqueo:** `ChallengeProgress.lessonsRemaining`, calculado con los ejercicios resueltos.
+  - El módulo muestra el reto cerrado con el número de lecciones que faltan y **sin botón**.
+  - Si se intenta abrir el reto de otra forma, la pantalla de lección comprueba lo mismo y muestra el aviso en lugar de los ejercicios.
+- **XP:** `RewardCalculator` concede `CHALLENGE` (50 XP) cuando todos los pasos tienen un acierto guardado **y** todas las lecciones están completadas.
+  - Se registra con la misma restricción `UNIQUE`, así que nunca se duplica.
+  - Los pasos no cuentan como ejercicios de lección.
+- **Siguiente actividad:** lección pendiente → evaluación sin hacer → reto sin superar → módulo terminado.
+
+### Misiones (sin XP ni reloj)
+
+| Id (estable) | Misión | Meta |
+|---|---|---|
+| `solve_5_no_hints` | Resuelve 5 ejercicios sin pedir pistas (lecciones y reto, según el primer acierto) | 5 |
+| `solve_20_exercises` | Resuelve 20 ejercicios distintos de las lecciones | 20 |
+| `complete_5_lessons` | Completa 5 lecciones | 5 |
+| `pass_assessment` | Aprueba la evaluación de un módulo | 1 |
+| `complete_challenge` | Supera el reto de un módulo | 1 |
+
+Se recalculan desde los resultados guardados cada vez que cambian. No se guardan, así que no pueden duplicarse ni desincronizarse.
+
+### Componentes
+
+| Componente | Implementado | Probado | Evidencia |
+|---|---|---|---|
+| `LessonKind.CHALLENGE` en el parser (sin bloque `assessment`) y en el módulo (`challenge`) | ✔ | ✔ | `LessonParserTest`, `ModuleAssemblerTest` (nueva) |
+| Sesión del reto con pistas y reintentos | ✔ | ✔ | `LessonSessionTest` |
+| `ChallengeProgress`: bloqueo, pasos resueltos, siguiente actividad | ✔ | ✔ | `ModuleProgressTest` |
+| XP y logro del reto; misiones | ✔ | ✔ | `RewardCalculatorTest`, `RewardEngineTest` (módulo completo: 960 XP), `AchievementTest` |
+| Contenido del reto compilado con `javac` | ✔ | ✔ | `JavaContentCompilationTest`, `ModuleContentTest` |
+| App: tarjeta del reto en el módulo, bloqueo al abrir, modo reto, aviso «¡Reto superado!», continuar en Inicio | ✔ | CI | `LessonViewModelTest`, `LessonFlowTest`, `AssetContentRepositoryTest` |
+| Perfil: misiones con barra y «Retos superados» | ✔ | CI | `ProfileStateTest`, `NavigationTest`, `LessonFlowTest` |
+| Verificación en Android Studio / dispositivo | — | **Pendiente** (responsable) | `docs/CONFIGURACION_ENTORNO.md` §8 |
+
+- **Base de datos:** sin cambio de esquema ni migración. Los pasos del reto se guardan como intentos en `exercise_attempt`, y su XP en `xp_ledger` con el tipo `CHALLENGE`, que ya existía.
+- **Totales:** el módulo 1 completo sin pistas suma 910 + 50 = **960 XP** y sigue en el nivel 4.
+- **No implementado:** campañas, retos diarios, rachas, proyectos con código libre, tienda, monedas, multijugador y cualquier ejecución de Java.
+
 ## Fase 5 — Detalle
 
 ### Revisión de entrada
@@ -393,6 +466,7 @@ Las lecciones son, en este orden:
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 4, incluida la compilación con `javac --release 17` del contenido | **97/97 superadas** |
 | 2026-10-13 | CI 38435568555 (commit `730a23b`) | Linux + Windows | **Verde: 143/143 pruebas** (97 dominio, 46 app); APK generado; esquema de Room sin cambios; lint: 0 errores, 2 avisos (`OldTargetApi` conocido y `PluralsCandidate` en el texto del resultado, corregido después reformulando el texto) |
 | 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 5 | **127/127 superadas** |
+| 2026-10-13 | Contenedor | `:core:domain:test` (modo solo dominio) con la Fase 6, incluida la compilación del reto con `javac` | **144/144 superadas** |
 | 2026-10-13 | CI 38438737589 (commit `91b7049`) | Linux + Windows | **Verde: 188/188 pruebas** (127 dominio, 61 app); lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-13 | CI 38436000222 (commit `ed66018`) | Linux + Windows | **Verde: 143/143 pruebas**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`); APK generado; esquema de Room sin cambios |
 | 2026-10-12 | CI 38319271182 | Linux + Windows | **Verde en ambos** tras usar `OkioStorage` en la prueba de DataStore (la app sigue usando `FileStorage`, correcto en Android). |
@@ -414,13 +488,13 @@ Las lecciones son, en este orden:
 
 ## Acciones pendientes del responsable
 
-1. Verificar la Fase 5 en Android Studio siguiendo `docs/CONFIGURACION_ENTORNO.md` §7.
-2. Revisar el contenido en borrador del módulo `java.m01` (7 lecciones y la evaluación) y aprobarlo o pedir cambios (D7).
-3. Decidir P7 (versión de Java), el conjunto inicial de logros, el avatar y la propuesta de monedas (ver «Fase 5 — Detalle»).
+1. Verificar la Fase 6 en Android Studio siguiendo `docs/CONFIGURACION_ENTORNO.md` §8.
+2. Revisar el contenido en borrador del módulo `java.m01` (7 lecciones, la evaluación y el reto) y aprobarlo o pedir cambios (D7).
+3. Decidir P7 (versión de Java), el conjunto de logros y misiones, el avatar y la propuesta de monedas (ver «Fase 5 — Detalle» y «Fase 6 — Detalle»).
 4. Responder las decisiones F3-D1 a F3-D5 que siguen abiertas.
-5. Revisar y fusionar el *pull request* #1 (contiene las fases 2 a 5).
+5. Revisar y fusionar el *pull request* #1 (contiene las fases 2 a 6).
 6. Borrar la rama `Main` duplicada y cambiar la rama por defecto a `main` (`docs/FLUJO_DE_TRABAJO.md`).
 
 ## Próximos pasos autorizados
 
-Ninguno. La Fase 6 espera autorización explícita.
+Ninguno. La Fase 7 espera autorización explícita.

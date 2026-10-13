@@ -172,3 +172,30 @@ Ninguna pantalla debe decir que se ejecuta código Java: solo se comprueban las 
 
 Anota cualquier fallo con su número.
 
+---
+
+## 8. Probar la Fase 6 (reto y misiones) en Android Studio
+
+1. Actualiza la rama: **Git → Pull** (rama `ccr-db27c4de-czvzgb`).
+2. Pruebas automáticas: `./gradlew :core:domain:test :app:testDebugUnitTest` (en Windows, `.\gradlew.bat …`).
+3. Para empezar desde cero: *Settings* del emulador → *Apps* → Funcode Academy → *Storage* → **Clear storage**.
+4. Ejecuta la app (▶) y comprueba:
+
+| # | Qué hacer | Resultado esperado |
+|---|---|---|
+| 1 | Mapa → **Abrir módulo** sin progreso | Tarjeta «Reto del módulo» con «Reto: tu tarjeta de presentación en Java» y «…Lecciones que faltan: 7». **No** hay botón para abrirlo. |
+| 2 | Perfil sin progreso | «Misiones (0 de 5)», cada una con «Progreso: 0 de N», y «Logros (0 de 6)». |
+| 3 | Completar la lección 1 sin pistas | En el módulo, «Lecciones que faltan: 6». En Perfil, la misión «Resuelve 5 ejercicios sin pedir pistas» queda completada. |
+| 4 | Completar las 7 lecciones | El reto muestra «Pasos resueltos: 0 de 7» y el botón **Empezar el reto**. |
+| 5 | Empezar el reto | Introducción con el programa comentado; «Paso 1 de 7». Se pueden pedir pistas y reintentar. |
+| 6 | Resolver los pasos 1–6 | No aparece aviso de XP en cada paso (los pasos no dan XP aparte). |
+| 7 | Resolver el paso 7 | «XP obtenido: +50», «¡Reto superado!» y «Logro desbloqueado: Primer reto superado». |
+| 8 | Repetir el reto | El XP total no cambia; «XP obtenido en esta sesión: 0». |
+| 9 | Volver al módulo | «Reto superado» y botón «Repetir el reto». |
+| 10 | Inicio con la evaluación hecha y el reto sin superar | «Siguiente paso: Reto: tu tarjeta…» y «Continuar» abre el reto. |
+| 11 | Perfil | «Retos superados: 1 (XP: 50)» y las misiones correspondientes completadas. |
+| 12 | Cerrar y reabrir la app | Todo se conserva. |
+| 13 | Repetir 1, 4 y 7 en el emulador con **API 26** | Igual, sin cierres. |
+
+Anota cualquier fallo con su número.
+
