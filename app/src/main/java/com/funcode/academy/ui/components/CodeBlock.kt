@@ -40,6 +40,8 @@ fun CodeBlock(code: String, modifier: Modifier = Modifier, showLineNumbers: Bool
     ) {
         lines.forEachIndexed { i, line ->
             val prefix = if (showLineNumbers) "${(i + 1).toString().padStart(width)}  " else ""
+            // stringResource solo puede llamarse aquí (contexto @Composable), no dentro de semantics { }.
+            val description = lineDescription(i + 1, line)
             Text(
                 text = prefix + line,
                 fontFamily = FontFamily.Monospace,
@@ -47,7 +49,7 @@ fun CodeBlock(code: String, modifier: Modifier = Modifier, showLineNumbers: Bool
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 softWrap = false,
                 // TalkBack lee «Línea 3: …» en lugar del número pegado al código y los espacios de alineación.
-                modifier = if (showLineNumbers) Modifier.semantics { contentDescription = lineDescription(i + 1, line) } else Modifier,
+                modifier = if (showLineNumbers) Modifier.semantics { contentDescription = description } else Modifier,
             )
         }
     }
