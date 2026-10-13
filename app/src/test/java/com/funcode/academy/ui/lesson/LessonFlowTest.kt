@@ -141,6 +141,7 @@ class LessonFlowTest {
         click(text(R.string.answer_true))
         click(text(R.string.lesson_check))
         assertShown(text(R.string.feedback_correct_title))
+        assertShown(text(R.string.reward_xp_gained, 10))
         click(text(R.string.lesson_next))
         assertShown(text(R.string.lesson_exercise_progress, 2, 7))
         rule.waitForIdle()
@@ -159,6 +160,8 @@ class LessonFlowTest {
         click(text(R.string.answer_true))
         click(text(R.string.lesson_check))
         assertShown(text(R.string.feedback_correct_title))
+        // Una pista: 10 XP − 25 % = 7 XP.
+        assertShown(text(R.string.reward_xp_gained, 7))
         rule.waitForIdle()
         assertEquals(listOf(false, true), progress.attempts.map { it.correct })
     }
@@ -169,5 +172,18 @@ class LessonFlowTest {
         click(text(R.string.lesson_check))
         assertShown(text(R.string.incomplete_nothing_selected))
         assertEquals(emptyList<Boolean>(), progress.attempts.map { it.correct })
+    }
+
+    @Test
+    fun elPerfilMuestraElXpYLosLogrosConseguidos() {
+        openDemoLessonFirstExercise()
+        click(text(R.string.answer_true))
+        click(text(R.string.lesson_check))
+        assertShown(text(R.string.reward_xp_gained, 10))
+        waitForText(text(R.string.nav_profile))
+        node(hasText(text(R.string.nav_profile)) and hasClickAction()).performClick()
+        assertShown(text(R.string.home_total_xp, 10))
+        assertShown(text(R.string.profile_rewards_exercises, 1, 10))
+        assertShown(text(R.string.profile_achievements_title, 0, 5))
     }
 }

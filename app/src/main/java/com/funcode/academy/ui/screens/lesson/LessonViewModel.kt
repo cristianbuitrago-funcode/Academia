@@ -17,6 +17,10 @@ import com.funcode.academy.domain.lesson.Section
 import com.funcode.academy.domain.lesson.SessionSummary
 import com.funcode.academy.domain.progress.ExerciseAttempt
 import com.funcode.academy.domain.progress.ProgressRepository
+import com.funcode.academy.domain.progress.XpSourceType
+import com.funcode.academy.domain.rpg.Achievement
+import com.funcode.academy.domain.rpg.RewardEngine
+import com.funcode.academy.domain.rpg.RewardOutcome
 import com.funcode.academy.domain.settings.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,6 +51,34 @@ sealed interface LessonUiState {
     data class Finished(val lesson: Lesson, val summary: SessionSummary) : LessonUiState
 }
 
+/** Aviso de recompensas obtenidas tras una respuesta comprobada o al terminar una evaluación. */
+data class RewardNotice(
+    val xpGained: Int,
+    val lessonCompleted: Boolean,
+    val assessmentPassed: Boolean,
+    /** Nuevo nivel alcanzado, o `null` si no se ha subido de nivel. */
+    val newLevel: Int?,
+    val achievements: List<Achievement>,
+    /** El ejercicio ya se había recompensado antes: practicar no da XP. */
+    val alreadyRewarded: Boolean,
+) {
+    companion object {
+        fun from(outcome: RewardOutcome, exerciseId: String?): RewardNotice? {
+            val types = outcome.granted.map { it.source.type }
+            val notice = RewardNotice(
+                xpGained = outcome.xpGained,
+                lessonCompleted = XpSourceType.LESSON in types,
+                assessmentPassed = XpSourceType.ASSESSMENT in types,
+                newLevel = outcome.levelAfter.takeIf { outcome.leveledUp },
+                achievements = outcome.newAchievements,
+                alreadyRewarded = exerciseId != null &&
+                    outcome.granted.none { it.source.type == XpSourceType.EXERCISE && it.source.id == exerciseId },
+            )
+            return notice.takeIf { it.xpGained > 0 || it.alreadyRewarded || it.newLevel != null || it.achievements.isNotEmpty() }
+        }
+    }
+}
+
 /**
  * Coordina una lección: carga el contenido, mantiene la sesión del dominio
  * ([LessonSession]) y registra los intentos comprobados. No valida respuestas por
@@ -57,10 +89,21 @@ class LessonViewModel(
     private val contentRepository: ContentRepository,
     private val progressRepository: ProgressRepository,
     private val settingsRepository: SettingsRepository,
+    private val rewardEngine: RewardEngine,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<LessonUiState>(LessonUiState.Loading)
     val uiState: StateFlow<LessonUiState> = _uiState.asStateFlow()
+
+    private val _rewardNotice = MutableStateFlow<RewardNotice?>(null)
+
+    /** Última recompensa obtenida (se oculta al pasar al siguiente ejercicio). */
+    val rewardNotice: StateFlow<RewardNotice?> = _rewardNotice.asStateFlow()
+
+    private val _sessionXp = MutableStateFlow(0)
+
+    /** XP conseguido en esta sesión de ejercicios. */
+    val sessionXp: StateFlow<Int> = _sessionXp.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -84,6 +127,8 @@ class LessonViewModel(
         }
         val session = LessonSession(lesson)
         _uiState.value = LessonUiState.Exercising(session, initialDraft(session.currentExercise), feedback = null)
+        _rewardNotice.value = null
+        _sessionXp.value = 0
     }
 
     /** Cambia la respuesta en preparación; no se puede tocar una pregunta ya cerrada. */
@@ -105,7 +150,10 @@ class LessonViewModel(
             )
             viewModelScope.launch {
                 // Un fallo al guardar no debe interrumpir la lección; el intento ya está en la sesión.
-                runCatching { progressRepository.recordAttempt(attempt) }
+                val saved = runCatching { progressRepository.recordAttempt(attempt) }.isSuccess
+                // Las recompensas se calculan a partir de lo guardado; en una evaluación,
+                // solo al terminarla.
+                if (saved && attempt.correct && state.session.allowsRetries) syncRewards(exercise.id)
             }
         }
     }
@@ -119,6 +167,7 @@ class LessonViewModel(
         val session = state.session.next()
         if (!session.finished) {
             _uiState.value = LessonUiState.Exercising(session, initialDraft(session.currentExercise), feedback = null)
+            _rewardNotice.value = null
             return
         }
         val summary = session.summary()
@@ -127,8 +176,21 @@ class LessonViewModel(
         // repositorio conserva solo el mejor, así que repetirla nunca lo duplica.
         val score = summary.assessmentScore
         if (session.lesson.kind == LessonKind.ASSESSMENT && score != null) {
-            viewModelScope.launch { runCatching { progressRepository.recordAssessmentResult(session.lesson.moduleId, score) } }
+            viewModelScope.launch {
+                val saved = runCatching { progressRepository.recordAssessmentResult(session.lesson.moduleId, score) }.isSuccess
+                if (saved) syncRewards(exerciseId = null)
+            }
         }
+    }
+
+    /**
+     * Pide al motor que conceda lo que corresponda según lo guardado. Si falla, no se
+     * pierde nada: la siguiente sincronización (p. ej. al abrir Inicio) lo concede.
+     */
+    private suspend fun syncRewards(exerciseId: String?) {
+        val outcome = runCatching { rewardEngine.sync() }.getOrNull() ?: return
+        _sessionXp.update { it + outcome.xpGained }
+        RewardNotice.from(outcome, exerciseId)?.let { _rewardNotice.value = it }
     }
 
     /** Resuelta, o ya respondida en una evaluación (una sola respuesta por pregunta). */
@@ -144,8 +206,9 @@ class LessonViewModel(
             contentRepository: ContentRepository,
             progressRepository: ProgressRepository,
             settingsRepository: SettingsRepository,
+            rewardEngine: RewardEngine,
         ) = viewModelFactory {
-            initializer { LessonViewModel(lessonId, contentRepository, progressRepository, settingsRepository) }
+            initializer { LessonViewModel(lessonId, contentRepository, progressRepository, settingsRepository, rewardEngine) }
         }
 
         /** Respuesta vacía inicial de cada tipo de ejercicio. */

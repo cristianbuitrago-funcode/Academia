@@ -47,11 +47,11 @@ class AssetContentRepositoryTest {
     }
 
     @Test
-    fun cargaLaEvaluacionSinUmbralAprobado() = runTest {
+    fun cargaLaEvaluacionConElUmbralAprobado() = runTest {
         val lesson = (repository.loadLesson("java.m01.eval") as LessonLoadResult.Loaded).lesson
         assertEquals(LessonKind.ASSESSMENT, lesson.kind)
-        // P6 (umbral del 80 %) no está aprobado: el contenido no declara umbral.
-        assertEquals(null, lesson.assessment?.passThreshold)
+        // Umbral aprobado por el responsable (P6): 80 %.
+        assertEquals(0.8, lesson.assessment?.passThreshold)
     }
 
     @Test

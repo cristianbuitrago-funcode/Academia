@@ -11,6 +11,7 @@ import com.funcode.academy.data.progress.RoomProgressRepository
 import com.funcode.academy.domain.lesson.AssessmentScore
 import com.funcode.academy.domain.progress.ExerciseAttempt
 import com.funcode.academy.domain.progress.XpAward
+import com.funcode.academy.domain.progress.XpEntry
 import com.funcode.academy.domain.progress.XpAwardResult
 import com.funcode.academy.domain.progress.XpSource
 import com.funcode.academy.domain.progress.XpSourceType
@@ -18,6 +19,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -46,7 +49,7 @@ class RoomProgressRepositoryTest {
     }
 
     private fun repositoryFor(db: FuncodeDatabase) =
-        RoomProgressRepository(db.xpLedgerDao(), db.exerciseAttemptDao(), db.moduleProgressDao(), clock = { 1_000L })
+        RoomProgressRepository(db.xpLedgerDao(), db.exerciseAttemptDao(), db.moduleProgressDao(), db.achievementDao(), clock = { 1_000L })
 
     @Test
     fun sinActividadesElXpTotalEsCero() = runTest {
@@ -134,6 +137,7 @@ class RoomProgressRepositoryTest {
 
     @Test
     fun elProgresoSeRecuperaAlCerrarYReabrirLaBaseDeDatos() = runTest {
+        // Incluye XP y logros (Fase 5).
         val context = ApplicationProvider.getApplicationContext<Context>()
         val name = "reabrir-${System.nanoTime()}.db"
         fun open() = Room.databaseBuilder(context, FuncodeDatabase::class.java, name).allowMainThreadQueries().build()
@@ -142,6 +146,8 @@ class RoomProgressRepositoryTest {
         val before = repositoryFor(first)
         before.recordAttempt(ExerciseAttempt("java.m01.l01.e01", correct = true, hintsUsed = 0))
         before.recordAssessmentResult("java.m01", AssessmentScore(correct = 7, total = 10))
+        before.award(XpAward(exercise, 10))
+        before.unlockAchievement("first_lesson")
         first.close()
 
         val second = open()
@@ -149,9 +155,40 @@ class RoomProgressRepositoryTest {
             val after = repositoryFor(second)
             assertEquals(setOf("java.m01.l01.e01"), after.observeSolvedExerciseIds().first())
             assertEquals(mapOf("java.m01" to 0.7), after.observeBestAssessmentScores().first())
+            assertEquals(10, after.observeTotalXp().first())
+            assertEquals(XpAwardResult.AlreadyGranted, after.award(XpAward(exercise, 10)))
+            assertEquals(setOf("first_lesson"), after.observeUnlockedAchievements().first().keys)
         } finally {
             second.close()
             context.deleteDatabase(name)
         }
+    }
+
+    @Test
+    fun elPrimerAciertoDeCadaEjercicioConservaSusPistas() = runTest {
+        repository.recordAttempt(ExerciseAttempt("a", correct = false, hintsUsed = 0))
+        repository.recordAttempt(ExerciseAttempt("a", correct = true, hintsUsed = 2))
+        repository.recordAttempt(ExerciseAttempt("a", correct = true, hintsUsed = 0))
+        repository.recordAttempt(ExerciseAttempt("b", correct = true, hintsUsed = 1))
+        repository.recordAttempt(ExerciseAttempt("c", correct = false, hintsUsed = 0))
+
+        assertEquals(mapOf("a" to 2, "b" to 1), repository.firstCorrectAttempts())
+    }
+
+    @Test
+    fun losMovimientosDeXpSeLeenConSuOrigen() = runTest {
+        repository.award(XpAward(exercise, 10))
+        repository.award(XpAward(XpSource(XpSourceType.LESSON, "java.m01.l01"), 20))
+
+        val entries = repository.observeXpEntries().first()
+        assertEquals(setOf(XpEntry(exercise, 10, 1_000L), XpEntry(XpSource(XpSourceType.LESSON, "java.m01.l01"), 20, 1_000L)), entries.toSet())
+        assertEquals(entries.sumOf { it.amount }, repository.observeTotalXp().first())
+    }
+
+    @Test
+    fun unLogroSoloSeGuardaUnaVez() = runTest {
+        assertTrue(repository.unlockAchievement("first_lesson"))
+        assertFalse(repository.unlockAchievement("first_lesson"))
+        assertEquals(mapOf("first_lesson" to 1_000L), repository.observeUnlockedAchievements().first())
     }
 }

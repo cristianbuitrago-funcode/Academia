@@ -2,7 +2,6 @@ package com.funcode.academy.domain.lesson
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -46,7 +45,8 @@ class ModuleContentTest {
         assertTrue(evaluation.exercises.map { it.content::class }.toSet().size >= 6)
         evaluation.objectives.forEach { o -> assertTrue(o.id, evaluation.exercises.any { o.id in it.objectiveIds }) }
         assertNotNull(evaluation.assessment)
-        assertNull(evaluation.assessment!!.passThreshold)
+        // Umbral aprobado por el responsable (P6): 80 %.
+        assertEquals(0.8, evaluation.assessment!!.passThreshold!!, 0.0)
     }
 
     @Test fun `el modulo usa los siete tipos de ejercicio`() {

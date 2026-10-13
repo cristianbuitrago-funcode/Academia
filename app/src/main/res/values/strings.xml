@@ -12,13 +12,43 @@
     <string name="home_title">Te damos la bienvenida a Funcode Academy</string>
     <string name="home_intro">Aprende a programar en Java desde cero, paso a paso.</string>
     <string name="home_total_xp">XP total: %1$d</string>
-    <string name="home_xp_explanation">Ganarás XP al resolver ejercicios y aprobar evaluaciones.</string>
+    <string name="home_xp_explanation">Ganas XP la primera vez que resuelves un ejercicio, completas una lección o apruebas una evaluación. Repetirlos sirve para practicar, pero no suma más.</string>
 
     <!-- Pantallas pendientes -->
-    <string name="coming_soon">Disponible en una próxima versión</string>
     <string name="map_title">Mapa de aprendizaje</string>
     <string name="profile_title">Tu perfil</string>
-    <string name="profile_pending_description">Aquí verás tu avatar, tu nivel y tus logros.</string>
+    <string name="profile_rewards_title">Recompensas obtenidas</string>
+    <string name="profile_no_rewards">Todavía no has conseguido XP. Resuelve ejercicios para empezar.</string>
+    <string name="profile_rewards_exercises">Ejercicios resueltos: %1$d (XP: %2$d)</string>
+    <string name="profile_rewards_lessons">Lecciones completadas: %1$d (XP: %2$d)</string>
+    <string name="profile_rewards_assessments">Evaluaciones aprobadas: %1$d (XP: %2$d)</string>
+    <string name="profile_achievements_title">Logros (%1$d de %2$d)</string>
+
+    <!-- Niveles y recompensas -->
+    <string name="level_title">Nivel %1$d</string>
+    <string name="level_progress_description">Progreso hacia el nivel %1$d: %2$d de %3$d</string>
+    <string name="level_remaining">XP que faltan para el nivel %2$d: %1$d</string>
+    <string name="reward_xp_gained">XP obtenido: +%1$d</string>
+    <string name="reward_already_rewarded">Este ejercicio ya te dio XP antes: repetirlo sirve para practicar, pero no suma más.</string>
+    <string name="reward_lesson_completed">¡Lección completada!</string>
+    <string name="reward_assessment_passed">¡Evaluación aprobada!</string>
+    <string name="reward_level_up">¡Has subido al nivel %1$d!</string>
+    <string name="reward_achievement">Logro desbloqueado: %1$s</string>
+    <string name="summary_session_xp">XP obtenido en esta sesión: %1$d</string>
+
+    <!-- Logros -->
+    <string name="achievement_unlocked_on">Conseguido el %1$s</string>
+    <string name="achievement_locked">Pendiente</string>
+    <string name="achievement_first_lesson_title">Primeros pasos</string>
+    <string name="achievement_first_lesson_description">Completa todos los ejercicios de una lección.</string>
+    <string name="achievement_three_lessons_title">Buen ritmo</string>
+    <string name="achievement_three_lessons_description">Completa tres lecciones distintas.</string>
+    <string name="achievement_first_assessment_title">Evaluación superada</string>
+    <string name="achievement_first_assessment_description">Aprueba la evaluación de un módulo.</string>
+    <string name="achievement_first_module_title">Módulo dominado</string>
+    <string name="achievement_first_module_description">Completa todas las lecciones de un módulo y aprueba su evaluación.</string>
+    <string name="achievement_level_2_title">Subida de nivel</string>
+    <string name="achievement_level_2_description">Alcanza el nivel 2.</string>
 
     <!-- Ajustes -->
     <string name="settings_title">Configuración</string>
@@ -116,8 +146,8 @@
     <string name="summary_exercise_unsolved">Ejercicio %1$d: sin resolver</string>
     <string name="summary_assessment_score">Respuestas correctas: %1$d de %2$d (%3$d %%)</string>
     <string name="summary_assessment_saved">Si es tu mejor resultado, queda guardado en este dispositivo.</string>
-    <string name="summary_assessment_passed">Evaluación de la lección: aprobada.</string>
-    <string name="summary_assessment_failed">Evaluación de la lección: no aprobada todavía.</string>
+    <string name="summary_assessment_passed">Evaluación aprobada.</string>
+    <string name="summary_assessment_failed">Evaluación no aprobada todavía: para aprobar hace falta un %1$d %% de respuestas correctas.</string>
     <string name="summary_note">Los resultados se han comprobado con las reglas de cada ejercicio; no se ha ejecutado ningún código.</string>
     <string name="summary_repeat">Repetir los ejercicios</string>
 </resources>

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 // Esquema inicial del progreso (plan técnico §6.3). Los enumerados se guardan
 // como texto (su nombre) para que la base de datos sea legible y estable.
-// En la Fase 2 solo xp_ledger tiene DAO; el resto de tablas se usarán en fases posteriores.
+// profile, exercise_progress y lesson_progress siguen sin uso (F3-D2).
 
 @Entity(tableName = "profile")
 data class ProfileEntity(

@@ -13,23 +13,38 @@ import com.funcode.academy.domain.progress.ExerciseAttempt
 import com.funcode.academy.domain.progress.ProgressRepository
 import com.funcode.academy.domain.progress.XpAward
 import com.funcode.academy.domain.progress.XpAwardResult
+import com.funcode.academy.domain.progress.XpEntry
 import com.funcode.academy.domain.settings.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
-/** Repositorios en memoria para probar la interfaz sin base de datos. */
-class FakeProgressRepository(initialXp: Int = 0) : ProgressRepository {
-    private val total = MutableStateFlow(initialXp)
+/**
+ * Repositorios en memoria para probar la interfaz sin base de datos. El registro de XP
+ * y los logros tienen las mismas garantías que Room: una sola entrada por actividad.
+ */
+class FakeProgressRepository : ProgressRepository {
+    private val ledger = MutableStateFlow(emptyList<XpEntry>())
     private val solved = MutableStateFlow(emptySet<String>())
     private val bestScores = MutableStateFlow(emptyMap<String, Double>())
+    private val achievements = MutableStateFlow(emptyMap<String, Long>())
     val attempts = mutableListOf<ExerciseAttempt>()
 
     /** Cada resultado de evaluación recibido, en orden (para comprobar que no se duplica). */
     val assessmentResults = mutableListOf<Pair<String, AssessmentScore>>()
 
-    override fun observeTotalXp(): Flow<Int> = total
-    override suspend fun award(award: XpAward): XpAwardResult = error("No se usa en las pruebas de interfaz")
+    val ledgerEntries: List<XpEntry> get() = ledger.value
+    val unlockedAchievements: Set<String> get() = achievements.value.keys
+
+    override fun observeTotalXp(): Flow<Int> = ledger.map { l -> l.sumOf { it.amount } }
+
+    override suspend fun award(award: XpAward): XpAwardResult {
+        if (ledger.value.any { it.source == award.source }) return XpAwardResult.AlreadyGranted
+        ledger.update { listOf(XpEntry(award.source, award.amount, timestamp = 0)) + it }
+        return XpAwardResult.Granted(award.amount)
+    }
+
     override suspend fun recordAttempt(attempt: ExerciseAttempt) {
         attempts += attempt
         if (attempt.correct) solved.update { it + attempt.exerciseId }
@@ -43,6 +58,19 @@ class FakeProgressRepository(initialXp: Int = 0) : ProgressRepository {
     }
 
     override fun observeBestAssessmentScores(): Flow<Map<String, Double>> = bestScores
+
+    override suspend fun firstCorrectAttempts(): Map<String, Int> =
+        attempts.filter { it.correct }.groupBy { it.exerciseId }.mapValues { it.value.first().hintsUsed }
+
+    override fun observeXpEntries(): Flow<List<XpEntry>> = ledger
+
+    override suspend fun unlockAchievement(achievementId: String): Boolean {
+        if (achievementId in achievements.value) return false
+        achievements.update { it + (achievementId to 0L) }
+        return true
+    }
+
+    override fun observeUnlockedAchievements(): Flow<Map<String, Long>> = achievements
 }
 
 class FakeSettingsRepository(initial: Audience? = null) : SettingsRepository {

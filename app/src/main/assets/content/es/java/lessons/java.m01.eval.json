@@ -4,7 +4,7 @@
   "moduleId": "java.m01",
   "languageId": "java",
   "locale": "es",
-  "version": 1,
+  "version": 2,
   "reviewStatus": "DRAFT",
   "kind": "assessment",
   "title": "Evaluación del módulo 1",
@@ -268,6 +268,7 @@
       "java.m01.eval.q08",
       "java.m01.eval.q09",
       "java.m01.eval.q10"
-    ]
+    ],
+    "passThreshold": 0.8
   }
 }

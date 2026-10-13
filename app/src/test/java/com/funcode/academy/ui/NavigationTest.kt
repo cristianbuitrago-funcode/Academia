@@ -41,7 +41,7 @@ class NavigationTest {
         rule.setContent {
             FuncodeTheme {
                 FuncodeAppUi(
-                    progressRepository = FakeProgressRepository(initialXp = 0),
+                    progressRepository = FakeProgressRepository(),
                     settingsRepository = settings,
                     contentRepository = FakeContentRepository(),
                 )
@@ -53,6 +53,7 @@ class NavigationTest {
     fun arrancaEnInicioYMuestraElXpReal() {
         setApp()
         rule.onNodeWithText(text(R.string.home_title)).assertIsDisplayed()
+        rule.onNodeWithText(text(R.string.level_title, 1)).assertIsDisplayed()
         rule.onNodeWithText(text(R.string.home_total_xp, 0)).assertIsDisplayed()
         rule.onNode(hasText(text(R.string.nav_home)) and hasClickAction()).assertIsSelected()
     }
@@ -75,10 +76,14 @@ class NavigationTest {
     }
 
     @Test
-    fun lasPantallasPendientesLoIndicanSinDatosFicticios() {
+    fun elPerfilSinActividadMuestraElEstadoInicialSinDatosFicticios() {
         setApp()
         clickTab(R.string.nav_profile)
-        rule.onNodeWithText(text(R.string.coming_soon)).assertIsDisplayed()
+        rule.onNodeWithText(text(R.string.level_title, 1)).assertIsDisplayed()
+        rule.onNodeWithText(text(R.string.home_total_xp, 0)).assertIsDisplayed()
+        rule.onNodeWithText(text(R.string.profile_no_rewards)).assertIsDisplayed()
+        rule.onNodeWithText(text(R.string.profile_achievements_title, 0, 5)).assertExists()
+        assertEquals(5, rule.onAllNodes(hasText(text(R.string.achievement_locked))).fetchSemanticsNodes().size)
     }
 
     @Test

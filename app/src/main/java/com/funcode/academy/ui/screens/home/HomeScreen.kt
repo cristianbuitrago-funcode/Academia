@@ -26,25 +26,29 @@ import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.progress.ModuleProgress
 import com.funcode.academy.domain.progress.NextActivity
 import com.funcode.academy.domain.progress.ProgressRepository
+import com.funcode.academy.domain.rpg.LevelProgress
+import com.funcode.academy.domain.rpg.RewardEngine
+import com.funcode.academy.ui.rpg.LevelProgressCard
 
 /** Conecta la pantalla de Inicio con su ViewModel. */
 @Composable
 fun HomeRoute(
     progressRepository: ProgressRepository,
     contentRepository: ContentRepository,
+    rewardEngine: RewardEngine,
     onOpenLesson: (String) -> Unit,
     onOpenModule: (String) -> Unit,
 ) {
-    val viewModel: HomeViewModel = viewModel(factory = HomeViewModel.factory(progressRepository, contentRepository))
-    val totalXp by viewModel.totalXp.collectAsStateWithLifecycle()
+    val viewModel: HomeViewModel = viewModel(factory = HomeViewModel.factory(progressRepository, contentRepository, rewardEngine))
+    val level by viewModel.level.collectAsStateWithLifecycle()
     val modules by viewModel.modules.collectAsStateWithLifecycle()
-    HomeScreen(totalXp = totalXp, modules = modules, onOpenLesson = onOpenLesson, onOpenModule = onOpenModule)
+    HomeScreen(level = level, modules = modules, onOpenLesson = onOpenLesson, onOpenModule = onOpenModule)
 }
 
 /** Pantalla de Inicio. Recibe el estado ya calculado, por eso es fácil de probar. */
 @Composable
 fun HomeScreen(
-    totalXp: Int?,
+    level: LevelProgress?,
     modules: List<ModuleProgress>?,
     onOpenLesson: (String) -> Unit,
     onOpenModule: (String) -> Unit,
@@ -60,9 +64,7 @@ fun HomeScreen(
             modifier = Modifier.semantics { heading() },
         )
         Text(text = stringResource(R.string.home_intro), style = MaterialTheme.typography.bodyLarge)
-        if (totalXp != null) {
-            Text(text = stringResource(R.string.home_total_xp, totalXp), style = MaterialTheme.typography.titleMedium)
-        }
+        level?.let { LevelProgressCard(it) }
         Text(text = stringResource(R.string.home_xp_explanation), style = MaterialTheme.typography.bodyMedium)
 
         Text(

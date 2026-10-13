@@ -3,8 +3,11 @@ package com.funcode.academy.ui.lesson
 import com.funcode.academy.domain.lesson.Answer
 import com.funcode.academy.domain.lesson.AnswerResult
 import com.funcode.academy.domain.lesson.AssessmentScore
+import com.funcode.academy.domain.progress.XpSource
+import com.funcode.academy.domain.progress.XpSourceType
+import com.funcode.academy.domain.rpg.Achievement
+import com.funcode.academy.domain.rpg.RewardEngine
 import com.funcode.academy.testing.DemoContent
-import com.funcode.academy.testing.FakeContentRepository
 import com.funcode.academy.testing.FakeProgressRepository
 import com.funcode.academy.testing.FakeSettingsRepository
 import com.funcode.academy.ui.screens.lesson.LessonUiState
@@ -34,8 +37,20 @@ class LessonViewModelTest {
 
     private val assessment = DemoContent.assessment()
 
+    private val content = DemoContent.repository()
+    private val engine = RewardEngine(content, progress)
+
     private fun viewModel(id: String = lesson.id) =
-        LessonViewModel(id, FakeContentRepository(listOf(lesson, assessment)), progress, FakeSettingsRepository())
+        LessonViewModel(id, content, progress, FakeSettingsRepository(), engine)
+
+    private fun solveAll(vm: LessonViewModel) {
+        vm.startExercises()
+        lesson.exercises.forEach { exercise ->
+            vm.updateDraft(DemoContent.correctAnswerFor(exercise.content))
+            vm.check()
+            vm.next()
+        }
+    }
 
     /** Hace la evaluación respondiendo bien a las [correctCount] primeras preguntas y mal al resto. */
     private fun takeAssessment(vm: LessonViewModel, correctCount: Int) {
@@ -138,8 +153,8 @@ class LessonViewModelTest {
         val summary = (vm.uiState.value as LessonUiState.Finished).summary
         assertEquals(AssessmentScore(correct = 7, total = 10), summary.assessmentScore)
         assertEquals(70, summary.assessmentScore?.percent)
-        // Sin umbral aprobado (P6) no se decide si se aprueba.
-        assertEquals(null, summary.assessmentPassed)
+        // Umbral del 80 % (P6): 7 de 10 no aprueba.
+        assertEquals(false, summary.assessmentPassed)
         assertEquals(listOf("java.m01" to AssessmentScore(7, 10)), progress.assessmentResults)
 
         vm.next() // pulsar de nuevo en el resumen no vuelve a guardar
@@ -186,5 +201,87 @@ class LessonViewModelTest {
         repeat(lesson.exercises.size) { vm.next() }
         assertEquals(null, (vm.uiState.value as LessonUiState.Finished).summary.assessmentScore)
         assertTrue(progress.assessmentResults.isEmpty())
+    }
+
+    @Test
+    fun unAciertoConcedeElXpDelEjercicioYLoAvisa() {
+        val vm = viewModel()
+        vm.startExercises() // e01, dificultad 1
+        vm.updateDraft(DemoContent.correctAnswerFor(lesson.exercises.first().content))
+        vm.check()
+        val notice = vm.rewardNotice.value!!
+        assertEquals(10, notice.xpGained)
+        assertEquals(false, notice.alreadyRewarded)
+        assertEquals(listOf(XpSource(XpSourceType.EXERCISE, "java.m01.l05.e01")), progress.ledgerEntries.map { it.source })
+    }
+
+    @Test
+    fun unFalloNoConcedeXp() {
+        val vm = viewModel()
+        vm.startExercises()
+        vm.updateDraft(Answer.TrueFalse(false))
+        vm.check()
+        assertEquals(null, vm.rewardNotice.value)
+        assertTrue(progress.ledgerEntries.isEmpty())
+    }
+
+    @Test
+    fun lasPistasReducenElXpDelPrimerAcierto() {
+        val vm = viewModel()
+        vm.startExercises()
+        vm.revealHint()
+        vm.updateDraft(DemoContent.correctAnswerFor(lesson.exercises.first().content))
+        vm.check()
+        assertEquals(7, vm.rewardNotice.value?.xpGained)
+    }
+
+    @Test
+    fun completarLaLeccionDaBonificacionSubeDeNivelYDesbloqueaLogros() {
+        val vm = viewModel()
+        solveAll(vm)
+        // 10+10+15+15+20+20+25 = 115 por ejercicios + 20 por la lección = 135 → nivel 2
+        assertEquals(135, vm.sessionXp.value)
+        val notice = vm.rewardNotice.value!!
+        assertTrue(notice.lessonCompleted)
+        assertEquals(2, notice.newLevel)
+        assertEquals(setOf(Achievement.FIRST_LESSON, Achievement.LEVEL_2), notice.achievements.toSet())
+        assertEquals(setOf("first_lesson", "level_2"), progress.unlockedAchievements)
+    }
+
+    @Test
+    fun repetirLaLeccionNoDaMasXpNiDuplicaLogros() {
+        solveAll(viewModel())
+        val entries = progress.ledgerEntries.size
+
+        val again = viewModel()
+        again.startExercises()
+        again.updateDraft(DemoContent.correctAnswerFor(lesson.exercises.first().content))
+        again.check()
+        assertEquals(true, again.rewardNotice.value?.alreadyRewarded)
+        assertEquals(0, again.rewardNotice.value?.xpGained)
+        solveAll(again)
+        assertEquals(0, again.sessionXp.value)
+        assertEquals(entries, progress.ledgerEntries.size)
+        assertEquals(2, progress.unlockedAchievements.size)
+    }
+
+    @Test
+    fun aprobarLaEvaluacionDaSuXpUnaSolaVez() {
+        takeAssessment(viewModel(assessment.id), correctCount = 8)
+        val summary = (viewModel(assessment.id).also { takeAssessment(it, correctCount = 10) }.uiState.value as LessonUiState.Finished).summary
+        assertEquals(true, summary.assessmentPassed)
+        val assessmentAwards = progress.ledgerEntries.filter { it.source.type == XpSourceType.ASSESSMENT }
+        assertEquals(listOf(100), assessmentAwards.map { it.amount })
+        // Las preguntas de la evaluación no conceden XP por separado.
+        assertTrue(progress.ledgerEntries.none { it.source.type == XpSourceType.EXERCISE })
+        assertTrue("first_assessment_passed" in progress.unlockedAchievements)
+    }
+
+    @Test
+    fun suspenderLaEvaluacionNoDaXp() {
+        val vm = viewModel(assessment.id)
+        takeAssessment(vm, correctCount = 7)
+        assertEquals(null, vm.rewardNotice.value)
+        assertTrue(progress.ledgerEntries.isEmpty())
     }
 }

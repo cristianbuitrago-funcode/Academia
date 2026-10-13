@@ -34,3 +34,6 @@ sealed interface XpAwardResult {
     /** La actividad ya había concedido XP; no se suma nada. */
     data object AlreadyGranted : XpAwardResult
 }
+
+/** Movimiento guardado en el registro de XP. */
+data class XpEntry(val source: XpSource, val amount: Int, val timestamp: Long)

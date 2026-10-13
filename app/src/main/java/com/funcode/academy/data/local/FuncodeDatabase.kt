@@ -28,6 +28,8 @@ abstract class FuncodeDatabase : RoomDatabase() {
 
     abstract fun moduleProgressDao(): ModuleProgressDao
 
+    abstract fun achievementDao(): AchievementDao
+
     companion object {
         const val NAME = "funcode.db"
     }

@@ -19,4 +19,8 @@ interface XpLedgerDao {
     /** Suma de todo el XP registrado; emite un valor nuevo cada vez que cambia la tabla. */
     @Query("SELECT COALESCE(SUM(amount), 0) FROM xp_ledger")
     fun observeTotalXp(): Flow<Int>
+
+    /** Todos los movimientos, del más reciente al más antiguo. */
+    @Query("SELECT * FROM xp_ledger ORDER BY timestamp DESC, id DESC")
+    fun observeAll(): Flow<List<XpLedgerEntity>>
 }

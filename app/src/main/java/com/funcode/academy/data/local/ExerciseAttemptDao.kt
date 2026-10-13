@@ -18,4 +18,16 @@ interface ExerciseAttemptDao {
     /** Ejercicios con al menos un intento correcto. */
     @Query("SELECT DISTINCT exerciseId FROM exercise_attempt WHERE correct = 1")
     fun observeSolvedExerciseIds(): Flow<List<String>>
+
+    /**
+     * Primer intento correcto de cada ejercicio (el de menor id, que es el más antiguo).
+     * Sus pistas deciden el XP del ejercicio.
+     */
+    @Query(
+        "SELECT exerciseId, hintsUsed FROM exercise_attempt WHERE id IN " +
+            "(SELECT MIN(id) FROM exercise_attempt WHERE correct = 1 GROUP BY exerciseId)",
+    )
+    suspend fun firstCorrectAttempts(): List<FirstCorrectAttempt>
 }
+
+data class FirstCorrectAttempt(val exerciseId: String, val hintsUsed: Int)

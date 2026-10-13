@@ -36,9 +36,12 @@ import com.funcode.academy.domain.lesson.ReviewStatus
 import com.funcode.academy.domain.lesson.Section
 import com.funcode.academy.domain.lesson.SessionSummary
 import com.funcode.academy.domain.progress.ProgressRepository
+import com.funcode.academy.domain.rpg.RewardEngine
 import com.funcode.academy.domain.settings.SettingsRepository
 import com.funcode.academy.ui.components.CodeBlock
 import com.funcode.academy.ui.components.DraftBanner
+import com.funcode.academy.ui.rpg.RewardNoticeCard
+import kotlin.math.roundToInt
 
 @Composable
 fun LessonRoute(
@@ -46,15 +49,20 @@ fun LessonRoute(
     contentRepository: ContentRepository,
     progressRepository: ProgressRepository,
     settingsRepository: SettingsRepository,
+    rewardEngine: RewardEngine,
     onExit: () -> Unit,
 ) {
     val viewModel: LessonViewModel = viewModel(
         key = "lesson-$lessonId",
-        factory = LessonViewModel.factory(lessonId, contentRepository, progressRepository, settingsRepository),
+        factory = LessonViewModel.factory(lessonId, contentRepository, progressRepository, settingsRepository, rewardEngine),
     )
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val rewardNotice by viewModel.rewardNotice.collectAsStateWithLifecycle()
+    val sessionXp by viewModel.sessionXp.collectAsStateWithLifecycle()
     LessonScreen(
         state = state,
+        rewardNotice = rewardNotice,
+        sessionXp = sessionXp,
         onStart = viewModel::startExercises,
         onDraftChange = viewModel::updateDraft,
         onCheck = viewModel::check,
@@ -68,6 +76,8 @@ fun LessonRoute(
 @Composable
 fun LessonScreen(
     state: LessonUiState,
+    rewardNotice: RewardNotice?,
+    sessionXp: Int,
     onStart: () -> Unit,
     onDraftChange: (Answer) -> Unit,
     onCheck: () -> Unit,
@@ -87,7 +97,10 @@ fun LessonScreen(
             LessonUiState.InvalidContent -> Message(stringResource(R.string.lesson_invalid), onExit)
             is LessonUiState.Intro -> Intro(state.lesson, state.sections, onStart)
             is LessonUiState.Exercising -> ExerciseStep(state, onDraftChange, onCheck, onHint, onRetry, onNext)
-            is LessonUiState.Finished -> Summary(state.lesson, state.summary, onRestart = onStart, onExit = onExit)
+            is LessonUiState.Finished -> Summary(state.lesson, state.summary, sessionXp, onRestart = onStart, onExit = onExit)
+        }
+        if (state is LessonUiState.Exercising || state is LessonUiState.Finished) {
+            rewardNotice?.let { RewardNoticeCard(it) }
         }
     }
 }
@@ -252,7 +265,7 @@ private fun IncompleteReason.message(): Int = when (this) {
 }
 
 @Composable
-private fun Summary(lesson: Lesson, summary: SessionSummary, onRestart: () -> Unit, onExit: () -> Unit) {
+private fun Summary(lesson: Lesson, summary: SessionSummary, sessionXp: Int, onRestart: () -> Unit, onExit: () -> Unit) {
     LessonHeader(lesson)
     Heading(stringResource(R.string.summary_title))
     Text(stringResource(R.string.summary_total, summary.total), style = MaterialTheme.typography.bodyLarge)
@@ -260,6 +273,7 @@ private fun Summary(lesson: Lesson, summary: SessionSummary, onRestart: () -> Un
     Text(stringResource(R.string.summary_retries, summary.solved - summary.solvedFirstTry), style = MaterialTheme.typography.bodyLarge)
     Text(stringResource(R.string.summary_unsolved, summary.unsolved), style = MaterialTheme.typography.bodyLarge)
     Text(stringResource(R.string.summary_hints, summary.hintsUsed), style = MaterialTheme.typography.bodyLarge)
+    Text(stringResource(R.string.summary_session_xp, sessionXp), style = MaterialTheme.typography.titleMedium)
     summary.outcomes.forEachIndexed { i, outcome ->
         Text(
             if (outcome.solved) stringResource(R.string.summary_exercise_solved, i + 1, outcome.attempts)
@@ -274,9 +288,11 @@ private fun Summary(lesson: Lesson, summary: SessionSummary, onRestart: () -> Un
         )
         Text(stringResource(R.string.summary_assessment_saved), style = MaterialTheme.typography.bodyMedium)
     }
+    val threshold = lesson.assessment?.passThreshold
     summary.assessmentPassed?.let { passed ->
         Text(
-            stringResource(if (passed) R.string.summary_assessment_passed else R.string.summary_assessment_failed),
+            if (passed || threshold == null) stringResource(R.string.summary_assessment_passed)
+            else stringResource(R.string.summary_assessment_failed, (threshold * 100).roundToInt()),
             style = MaterialTheme.typography.titleMedium,
         )
     }

@@ -1,5 +1,7 @@
 package com.funcode.academy.data.progress
 
+import com.funcode.academy.data.local.AchievementDao
+import com.funcode.academy.data.local.AchievementUnlockedEntity
 import com.funcode.academy.data.local.ExerciseAttemptDao
 import com.funcode.academy.data.local.ExerciseAttemptEntity
 import com.funcode.academy.data.local.ModuleProgressDao
@@ -10,6 +12,9 @@ import com.funcode.academy.domain.progress.ExerciseAttempt
 import com.funcode.academy.domain.progress.ProgressRepository
 import com.funcode.academy.domain.progress.XpAward
 import com.funcode.academy.domain.progress.XpAwardResult
+import com.funcode.academy.domain.progress.XpEntry
+import com.funcode.academy.domain.progress.XpSource
+import com.funcode.academy.domain.progress.XpSourceType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -18,6 +23,7 @@ class RoomProgressRepository(
     private val xpLedgerDao: XpLedgerDao,
     private val exerciseAttemptDao: ExerciseAttemptDao,
     private val moduleProgressDao: ModuleProgressDao,
+    private val achievementDao: AchievementDao,
     private val clock: () -> Long = System::currentTimeMillis,
 ) : ProgressRepository {
 
@@ -56,4 +62,21 @@ class RoomProgressRepository(
         moduleProgressDao.observeAll().map { rows ->
             rows.mapNotNull { row -> row.bestAssessmentScore?.let { row.moduleId to it } }.toMap()
         }
+
+    override suspend fun firstCorrectAttempts(): Map<String, Int> =
+        exerciseAttemptDao.firstCorrectAttempts().associate { it.exerciseId to it.hintsUsed }
+
+    override fun observeXpEntries(): Flow<List<XpEntry>> = xpLedgerDao.observeAll().map { rows ->
+        rows.mapNotNull { row ->
+            // Un tipo desconocido (p. ej. de una versión futura) se ignora en lugar de cerrar la app.
+            val type = XpSourceType.entries.firstOrNull { it.name == row.sourceType } ?: return@mapNotNull null
+            XpEntry(XpSource(type, row.sourceId), row.amount, row.timestamp)
+        }
+    }
+
+    override suspend fun unlockAchievement(achievementId: String): Boolean =
+        achievementDao.insert(AchievementUnlockedEntity(achievementId, unlockedAt = clock())) != -1L
+
+    override fun observeUnlockedAchievements(): Flow<Map<String, Long>> =
+        achievementDao.observeAll().map { rows -> rows.associate { it.achievementId to it.unlockedAt } }
 }

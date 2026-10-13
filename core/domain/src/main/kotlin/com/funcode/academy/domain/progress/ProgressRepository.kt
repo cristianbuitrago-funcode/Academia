@@ -28,4 +28,16 @@ interface ProgressRepository {
 
     /** Mejor resultado (0–1) de la evaluación de cada módulo que se haya realizado. */
     fun observeBestAssessmentScores(): Flow<Map<String, Double>>
+
+    /** Ejercicios resueltos → pistas usadas en su **primer** intento correcto. */
+    suspend fun firstCorrectAttempts(): Map<String, Int>
+
+    /** Movimientos del registro de XP, del más reciente al más antiguo. */
+    fun observeXpEntries(): Flow<List<XpEntry>>
+
+    /** Guarda un logro. Devuelve `false` si ya estaba desbloqueado (nunca se duplica). */
+    suspend fun unlockAchievement(achievementId: String): Boolean
+
+    /** Logros desbloqueados: id → momento del desbloqueo (milisegundos). */
+    fun observeUnlockedAchievements(): Flow<Map<String, Long>>
 }

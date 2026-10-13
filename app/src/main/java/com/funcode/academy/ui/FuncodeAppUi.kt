@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -21,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.progress.ProgressRepository
+import com.funcode.academy.domain.rpg.RewardEngine
 import com.funcode.academy.domain.settings.SettingsRepository
 import com.funcode.academy.ui.navigation.HomeRoute
 import com.funcode.academy.ui.navigation.LessonDestination
@@ -33,7 +35,7 @@ import com.funcode.academy.ui.screens.home.HomeRoute as HomeScreenRoute
 import com.funcode.academy.ui.screens.lesson.LessonRoute as LessonScreenRoute
 import com.funcode.academy.ui.screens.module.ModuleListRoute
 import com.funcode.academy.ui.screens.module.ModuleRoute
-import com.funcode.academy.ui.screens.profile.ProfileScreen
+import com.funcode.academy.ui.screens.profile.ProfileRoute as ProfileScreenRoute
 import com.funcode.academy.ui.screens.settings.SettingsRoute as SettingsScreenRoute
 
 /** Estructura principal: barra de navegación inferior y contenido de la pantalla activa. */
@@ -43,6 +45,8 @@ fun FuncodeAppUi(
     settingsRepository: SettingsRepository,
     contentRepository: ContentRepository,
 ) {
+    // Único motor de recompensas de la app (las llamadas simultáneas se ordenan dentro).
+    val rewardEngine = remember(contentRepository, progressRepository) { RewardEngine(contentRepository, progressRepository) }
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
@@ -79,6 +83,7 @@ fun FuncodeAppUi(
                 HomeScreenRoute(
                     progressRepository = progressRepository,
                     contentRepository = contentRepository,
+                    rewardEngine = rewardEngine,
                     onOpenLesson = { lessonId -> navController.navigate(LessonDestination(lessonId)) },
                     onOpenModule = { moduleId -> navController.navigate(ModuleDestination(moduleId)) },
                 )
@@ -97,7 +102,7 @@ fun FuncodeAppUi(
                     onExit = { navController.popBackStack() },
                 )
             }
-            composable<ProfileRoute> { ProfileScreen() }
+            composable<ProfileRoute> { ProfileScreenRoute(progressRepository) }
             composable<SettingsRoute> { SettingsScreenRoute(settingsRepository) }
             composable<LessonDestination> { entry ->
                 LessonScreenRoute(
@@ -105,6 +110,7 @@ fun FuncodeAppUi(
                     contentRepository = contentRepository,
                     progressRepository = progressRepository,
                     settingsRepository = settingsRepository,
+                    rewardEngine = rewardEngine,
                     onExit = { navController.popBackStack() },
                 )
             }
