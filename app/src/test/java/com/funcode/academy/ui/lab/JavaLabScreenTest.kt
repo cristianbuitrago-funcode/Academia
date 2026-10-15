@@ -54,6 +54,12 @@ class JavaLabScreenTest {
         rule.onNode(hasText(value, substring = true)).performScrollTo().assertIsDisplayed()
     }
 
+    /** Línea de la salida real (bloque de código con desplazamiento horizontal): basta con que exista exacta. */
+    private fun assertOutputLine(line: String) {
+        rule.waitUntil(5_000) { rule.onAllNodes(hasText(line)).fetchSemanticsNodes().isNotEmpty() }
+        rule.onNode(hasText(line)).assertExists()
+    }
+
     private fun assertNotShown(value: String) =
         assertEquals(0, rule.onAllNodes(hasText(value, substring = true)).fetchSemanticsNodes().size)
 
@@ -63,7 +69,7 @@ class JavaLabScreenTest {
         open(runner)
         runIt()
         assertShown(text(R.string.lab_status_completed))
-        assertShown("7 + 5 = 12")
+        assertOutputLine("7 + 5 = 12")
         assertShown(text(R.string.lab_check_ok))
         assertEquals(JavaLabViewModel.TEMPLATE, runner.requests.single().source)
     }
@@ -83,7 +89,7 @@ class JavaLabScreenTest {
         open(ScriptedRunner(RunResult.RuntimeError("ArithmeticException", "divide by zero", 4, "antes\n")))
         runIt()
         assertShown(text(R.string.lab_status_runtime_error, "ArithmeticException", "4"))
-        assertShown("antes")
+        assertOutputLine("antes")
     }
 
     @Test

@@ -118,7 +118,7 @@ class IsolatedJavaRunner(context: Context) : CodeRunner {
             withContext(NonCancellable) {
                 if (connected.isCompleted) {
                     try {
-                        Messenger(connected.getCompleted()).send(Message.obtain(null, RunnerProtocol.MSG_CANCEL))
+                        Messenger(connected.await()).send(Message.obtain(null, RunnerProtocol.MSG_CANCEL))
                     } catch (_: RemoteException) {
                         // Ya había terminado.
                     }
