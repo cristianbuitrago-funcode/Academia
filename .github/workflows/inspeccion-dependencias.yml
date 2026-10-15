@@ -37,7 +37,10 @@ jobs:
             ls -l r8.jar; sha256sum r8.jar
             unzip -l r8.jar | tail -1
             unzip -l r8.jar | grep -iE "LICENSE|NOTICE" | head -20
-            unzip -p r8.jar LICENSE 2>/dev/null | head -60 || true
+            echo "#### Bibliotecas incluidas en r8.jar y sus licencias (LICENSE del propio JAR)"
+            unzip -p r8.jar LICENSE 2>/dev/null | grep -E "^- artifact:|^  license:" | paste - - | sed 's/  license:/ =>/' || true
+            echo "#### Entradas con LGPL, GPL o CDDL"
+            unzip -p r8.jar LICENSE 2>/dev/null | grep -n -B3 -A3 -iE "lgpl|gpl|cddl|lesser" || echo "(ninguna)"
             unzip -p r8.jar META-INF/MANIFEST.MF | head -20
           done
       - name: ECJ en Maven Central
