@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.funcode.academy.R
 import com.funcode.academy.domain.lesson.Answer
 import com.funcode.academy.domain.lesson.ExerciseContent
+import com.funcode.academy.domain.lesson.LessonParser
 import com.funcode.academy.ui.components.CodeBlock
 
 /**
@@ -119,7 +120,7 @@ private fun TrueFalseInput(content: ExerciseContent.TrueFalse, draft: Answer.Tru
 @Composable
 private fun FillInBlanksInput(content: ExerciseContent.FillInBlanks, draft: Answer.Blanks, enabled: Boolean, onDraftChange: (Answer) -> Unit) {
     // Los marcadores {{n}} se muestran como [n+1], el número del hueco.
-    val shown = Regex("""\{\{(\d+)}}""").replace(content.template) { "[${it.groupValues[1].toInt() + 1}]" }
+    val shown = LessonParser.BLANK_MARKER.replace(content.template) { "[${it.groupValues[1].toInt() + 1}]" }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         CodeBlock(shown)
         draft.values.forEachIndexed { i, value ->
