@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
                 progressRepository = container.progressRepository,
                 settingsRepository = container.settingsRepository,
                 contentRepository = container.contentRepository,
+                codeRunner = container.codeRunner,
             )
         }
     }

@@ -8,6 +8,9 @@ set -u
 PKG=com.funcode.academy
 status=0
 
+echo "## Dispositivo"
+echo "Android $(adb shell getprop ro.build.version.release | tr -d '\r') (API $(adb shell getprop ro.build.version.sdk | tr -d '\r')), modelo $(adb shell getprop ro.product.model | tr -d '\r'), ABI $(adb shell getprop ro.product.cpu.abi | tr -d '\r'), CPU $(adb shell nproc | tr -d '\r') núcleos, $(adb shell grep MemTotal /proc/meminfo | tr -d '\r'), heapgrowthlimit $(adb shell getprop dalvik.vm.heapgrowthlimit | tr -d '\r')"
+
 adb logcat -c
 adb install -r app/build/outputs/apk/debug/app-debug.apk || status=1
 adb shell am start -W -n "$PKG/.MainActivity" || status=1
@@ -38,6 +41,9 @@ if tests == 0 or bad:
 PY
 
 adb logcat -d > emulator-logcat.txt || true
+echo "## Medidas y observaciones del prototipo (Fase 8)"
+grep "FuncodeMedidas" emulator-logcat.txt || echo "(sin medidas)"
+grep -E "FuncodeRunner" emulator-logcat.txt | head -40 || true
 if grep -q "FATAL EXCEPTION" emulator-logcat.txt; then
   echo "::error::El logcat contiene un cierre inesperado:"
   grep -A40 "FATAL EXCEPTION" emulator-logcat.txt

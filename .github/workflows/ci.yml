@@ -39,6 +39,9 @@ jobs:
       - name: Pruebas de :core:domain
         run: ./gradlew :core:domain:test
 
+      - name: Pruebas de :core:javarunner (prototipo Fase 8, JVM)
+        run: ./gradlew :core:javarunner:test
+
       - name: Pruebas JVM de :app (Robolectric)
         run: ./gradlew :app:testDebugUnitTest
 
@@ -65,7 +68,7 @@ jobs:
           import glob, json, xml.etree.ElementTree as ET
           print("### Pruebas")
           total = {"tests": 0, "failures": 0, "errors": 0, "skipped": 0}
-          for f in sorted(glob.glob("core/domain/build/test-results/test/*.xml") + glob.glob("app/build/test-results/testDebugUnitTest/*.xml")):
+          for f in sorted(glob.glob("core/domain/build/test-results/test/*.xml") + glob.glob("core/javarunner/build/test-results/test/*.xml") + glob.glob("app/build/test-results/testDebugUnitTest/*.xml")):
               s = ET.parse(f).getroot()
               counts = {k: int(s.get(k, 0)) for k in total}
               for k in total:
@@ -156,6 +159,48 @@ jobs:
             app/build/test-results/
           if-no-files-found: ignore
 
+  apk-size:
+    # Fase 8 (F8-D4): incremento del APK release frente a la versión base sin el
+    # prototipo (commit d867bd5). APK release sin firmar y sin reducir (minify desactivado).
+    name: Tamaño del APK release
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Descargar el código (con historial)
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Instalar JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Compilar el APK release actual
+        run: ./gradlew :app:assembleRelease
+
+      - name: Compilar el APK release base (sin el prototipo)
+        run: |
+          git worktree add ../base d867bd5
+          cd ../base && ./gradlew :app:assembleRelease
+
+      - name: Comparar tamaños
+        run: |
+          actual=$(stat -c %s app/build/outputs/apk/release/app-release-unsigned.apk)
+          base=$(stat -c %s ../base/app/build/outputs/apk/release/app-release-unsigned.apk)
+          diff=$((actual - base))
+          {
+            echo "### Tamaño del APK release (sin firmar, sin minify)"
+            echo "- Base (d867bd5): $base bytes ($(echo "scale=2; $base/1048576" | bc) MB)"
+            echo "- Actual: $actual bytes ($(echo "scale=2; $actual/1048576" | bc) MB)"
+            echo "- Incremento: $diff bytes ($(echo "scale=2; $diff/1048576" | bc) MB); umbral F8-D4: 25 MB"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+          unzip -l app/build/outputs/apk/release/app-release-unsigned.apk | grep -E "classes[0-9]*\.dex|funcode-stubs/index" || true
+
   windows:
     # Windows es el sistema de desarrollo del responsable: las pruebas JVM
     # (incluido Robolectric con SQLite nativo) deben pasar también aquí.
@@ -190,7 +235,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Pruebas de :core:domain y de :app
-        run: ./gradlew.bat :core:domain:test :app:testDebugUnitTest --rerun-tasks
+        run: ./gradlew.bat :core:domain:test :core:javarunner:test :app:testDebugUnitTest --rerun-tasks
 
       - name: Publicar informes de pruebas
         if: always()

@@ -41,7 +41,7 @@ import com.funcode.academy.domain.settings.TextScale
 import com.funcode.academy.domain.settings.ThemeMode
 
 @Composable
-fun SettingsRoute(settingsRepository: SettingsRepository) {
+fun SettingsRoute(settingsRepository: SettingsRepository, onOpenJavaLab: (() -> Unit)? = null) {
     val viewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.factory(settingsRepository))
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     SettingsScreen(
@@ -51,6 +51,7 @@ fun SettingsRoute(settingsRepository: SettingsRepository) {
         onTextScaleSelected = viewModel::onTextScaleSelected,
         onHintsChanged = viewModel::onHintsChanged,
         onResetPreferences = viewModel::onResetPreferences,
+        onOpenJavaLab = onOpenJavaLab,
     )
 }
 
@@ -62,6 +63,7 @@ fun SettingsScreen(
     onTextScaleSelected: (TextScale) -> Unit,
     onHintsChanged: (Boolean) -> Unit,
     onResetPreferences: () -> Unit,
+    onOpenJavaLab: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     var confirmReset by rememberSaveable { mutableStateOf(false) }
@@ -118,6 +120,11 @@ fun SettingsScreen(
 
         Section(R.string.settings_reset_title, R.string.settings_reset_description)
         OutlinedButton(onClick = { confirmReset = true }) { Text(stringResource(R.string.settings_reset_button)) }
+
+        if (onOpenJavaLab != null) {
+            Section(R.string.lab_settings_title, R.string.lab_settings_description)
+            OutlinedButton(onClick = onOpenJavaLab) { Text(stringResource(R.string.lab_open)) }
+        }
     }
     if (confirmReset) {
         AlertDialog(

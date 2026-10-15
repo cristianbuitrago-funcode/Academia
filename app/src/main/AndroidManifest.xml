@@ -20,5 +20,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- PROTOTIPO Fase 8: compila y ejecuta programas de estudiantes en un proceso
+             aislado (UID propio, sin permisos, sin acceso a los datos de la app).
+             No exportado: solo esta app puede usarlo. -->
+        <service
+            android:name=".runner.JavaRunnerService"
+            android:exported="false"
+            android:isolatedProcess="true"
+            android:process=":javarunner" />
     </application>
 </manifest>

@@ -23,6 +23,9 @@ import kotlinx.serialization.Serializable
 /** Detalle de una misión (Fase 6). */
 @Serializable data class MissionDestination(val missionId: String)
 
+/** Laboratorio de Java (PROTOTIPO Fase 8, solo en compilaciones de depuración). */
+@Serializable data object JavaLabDestination
+
 /** Destinos de la barra de navegación inferior. */
 enum class TopLevelDestination(
     val route: Any,

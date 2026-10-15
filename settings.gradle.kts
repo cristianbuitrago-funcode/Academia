@@ -24,6 +24,7 @@ dependencyResolutionManagement {
 rootProject.name = "FuncodeAcademy"
 
 include(":core:domain")
+include(":core:javarunner")
 
 // En máquinas sin Android SDK se puede compilar y probar solo el dominio:
 //   ./gradlew -Pfuncode.domainOnly=true :core:domain:test

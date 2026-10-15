@@ -243,4 +243,35 @@
     <string name="summary_assessment_failed">Evaluación no aprobada todavía: para aprobar hace falta un %1$d %% de respuestas correctas.</string>
     <string name="summary_note">Los resultados se han comprobado con las reglas de cada ejercicio; no se ha ejecutado ningún código.</string>
     <string name="summary_repeat">Repetir los ejercicios</string>
+
+    <!-- Laboratorio de Java: PROTOTIPO de la Fase 8, solo en compilaciones de depuración. -->
+    <string name="lab_settings_title">Laboratorio de Java (prototipo)</string>
+    <string name="lab_settings_description">Solo en versiones de prueba. Compila y ejecuta Java en un proceso aislado del teléfono. No da XP ni guarda tu código.</string>
+    <string name="lab_open">Abrir el laboratorio</string>
+    <string name="lab_title">Laboratorio de Java</string>
+    <string name="lab_prototype_note">Prototipo en evaluación: el código se compila con un compilador Java real y se ejecuta en tu teléfono, en un proceso aparte, con límites (3 s, 10 000 caracteres de código y de salida). Solo se pueden usar algunas clases básicas (System.out, String, Math…). No da XP, no guarda tu código y no se envía a ningún sitio.</string>
+    <string name="lab_task_title">Ejercicio de prueba</string>
+    <string name="lab_task">Escribe un programa que muestre «Hola, Funcode» y, en otra línea, «7 + 5 = 12».</string>
+    <string name="lab_editor_label">Main.java</string>
+    <string name="lab_chars">Caracteres usados: %1$d (máximo: %2$d)</string>
+    <string name="lab_run">Compilar y ejecutar</string>
+    <string name="lab_cancel">Detener</string>
+    <string name="lab_reset">Restaurar plantilla</string>
+    <string name="lab_running">Compilando y ejecutando en un proceso aislado…</string>
+    <string name="lab_status_completed">Compilado y ejecutado en este dispositivo: el programa terminó.</string>
+    <string name="lab_status_runtime_error">Compilado y ejecutado, pero el programa falló: %1$s (línea %2$s).</string>
+    <string name="lab_status_compile_error">No compila: el programa no se ha ejecutado. Revisa estos errores del compilador:</string>
+    <string name="lab_status_time_limit">Tiempo agotado: el programa superó los 3 segundos y se detuvo.</string>
+    <string name="lab_status_output_limit">Salida demasiado larga: se superaron los 10 000 caracteres y se detuvo.</string>
+    <string name="lab_status_memory_limit">El programa agotó la memoria o su proceso terminó de forma inesperada.</string>
+    <string name="lab_status_empty">No hay código que compilar.</string>
+    <string name="lab_status_too_large">El código supera los 10 000 caracteres: no se ha compilado.</string>
+    <string name="lab_status_cancelled">Ejecución detenida.</string>
+    <string name="lab_status_unavailable">No se pudo compilar ni ejecutar (problema del ejecutor, no de tu código): %1$s</string>
+    <string name="lab_diagnostic_line">Línea %1$d: %2$s</string>
+    <string name="lab_output_title">Salida real del programa</string>
+    <string name="lab_output_empty">(El programa no escribió nada.)</string>
+    <string name="lab_check_ok">La salida coincide con la esperada.</string>
+    <string name="lab_check_differs">La salida no coincide con la esperada.</string>
+    <string name="lab_timing">Tiempo total (milisegundos): %1$d</string>
 </resources>

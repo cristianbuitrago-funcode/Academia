@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.progress.ProgressRepository
+import com.funcode.academy.domain.runner.CodeRunner
 import com.funcode.academy.domain.settings.LearningPreferences
 import com.funcode.academy.domain.settings.SettingsRepository
 import com.funcode.academy.ui.theme.FuncodeTheme
@@ -18,11 +19,12 @@ fun FuncodeRoot(
     progressRepository: ProgressRepository,
     settingsRepository: SettingsRepository,
     contentRepository: ContentRepository,
+    codeRunner: CodeRunner? = null,
 ) {
     val preferences by settingsRepository.preferences.collectAsStateWithLifecycle(initialValue = LearningPreferences())
     FuncodeTheme(darkTheme = preferences.themeMode.isDark(isSystemInDarkTheme())) {
         ProvideTextScale(preferences.textScale) {
-            FuncodeAppUi(progressRepository, settingsRepository, contentRepository)
+            FuncodeAppUi(progressRepository, settingsRepository, contentRepository, codeRunner)
         }
     }
 }

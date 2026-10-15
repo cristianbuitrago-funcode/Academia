@@ -1,5 +1,6 @@
 package com.funcode.academy.ui
 
+import android.content.pm.ApplicationInfo
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,11 +34,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.progress.ProgressRepository
+import com.funcode.academy.domain.runner.CodeRunner
 import com.funcode.academy.domain.rpg.RewardEngine
 import com.funcode.academy.domain.settings.SettingsRepository
 import com.funcode.academy.ui.components.FuturisticBackground
 import com.funcode.academy.ui.components.neonBrush
 import com.funcode.academy.ui.navigation.HomeRoute
+import com.funcode.academy.ui.navigation.JavaLabDestination
 import com.funcode.academy.ui.navigation.LessonDestination
 import com.funcode.academy.ui.navigation.MapRoute
 import com.funcode.academy.ui.navigation.MissionDestination
@@ -46,6 +50,7 @@ import com.funcode.academy.ui.navigation.ProfileRoute
 import com.funcode.academy.ui.navigation.SettingsRoute
 import com.funcode.academy.ui.navigation.TopLevelDestination
 import com.funcode.academy.ui.screens.home.HomeRoute as HomeScreenRoute
+import com.funcode.academy.ui.screens.lab.JavaLabRoute
 import com.funcode.academy.ui.screens.lesson.LessonRoute as LessonScreenRoute
 import com.funcode.academy.ui.screens.mission.MissionRoute
 import com.funcode.academy.ui.screens.mission.MissionsRoute
@@ -60,6 +65,7 @@ fun FuncodeAppUi(
     progressRepository: ProgressRepository,
     settingsRepository: SettingsRepository,
     contentRepository: ContentRepository,
+    codeRunner: CodeRunner? = null,
 ) {
     // Único motor de recompensas de la app (las llamadas simultáneas se ordenan dentro).
     val rewardEngine = remember(contentRepository, progressRepository) { RewardEngine(contentRepository, progressRepository) }
@@ -155,7 +161,21 @@ fun FuncodeAppUi(
                     )
                 }
                 composable<ProfileRoute> { ProfileScreenRoute(progressRepository) }
-                composable<SettingsRoute> { SettingsScreenRoute(settingsRepository) }
+                composable<SettingsRoute> {
+                    // El laboratorio de Java (prototipo Fase 8) solo se ofrece en compilaciones de depuración.
+                    val debuggable = (LocalContext.current.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+                    SettingsScreenRoute(
+                        settingsRepository = settingsRepository,
+                        onOpenJavaLab = if (codeRunner != null && debuggable) {
+                            { navController.navigate(JavaLabDestination) }
+                        } else {
+                            null
+                        },
+                    )
+                }
+                if (codeRunner != null) {
+                    composable<JavaLabDestination> { JavaLabRoute(codeRunner) }
+                }
                 composable<LessonDestination> { entry ->
                     LessonScreenRoute(
                         lessonId = entry.toRoute<LessonDestination>().lessonId,

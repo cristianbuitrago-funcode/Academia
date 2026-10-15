@@ -30,7 +30,7 @@ jobs:
         run: |
           set -u
           G=https://dl.google.com/dl/android/maven2
-          for V in $(curl -sf "$G/com/android/tools/build/builder/9.4.0/builder-9.4.0.pom" | grep -A1 "<artifactId>r8</artifactId>" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" | head -1); do
+          for V in 9.4.28; do
             echo "### r8 $V"
             curl -sf "$G/com/android/tools/r8/$V/r8-$V.pom" | sed -n '/<licenses>/,/<\/licenses>/p;/<dependencies>/,/<\/dependencies>/p'
             curl -sf -o r8.jar "$G/com/android/tools/r8/$V/r8-$V.jar"

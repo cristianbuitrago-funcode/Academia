@@ -51,6 +51,17 @@ android {
     lint {
         abortOnError = true
         warningsAsErrors = false
+        // ECJ (prototipo Fase 8) contiene clases que usan javax.tools / javax.lang.model,
+        // que Android no tiene. El prototipo solo usa el compilador por lotes; que esas
+        // clases no se cargan lo comprueban las pruebas instrumentadas en el emulador.
+        disable += "InvalidPackage"
+    }
+
+    packaging {
+        resources {
+            // Aviso de licencia de ECJ (EPL-2.0); se conserva una copia.
+            pickFirsts += "about.html"
+        }
     }
 }
 
@@ -95,6 +106,11 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.datastore.preferences)
+
+    // PROTOTIPO Fase 8 (ejecución real de Java, en evaluación): compilador ECJ con la
+    // biblioteca permitida y D8 para convertir a DEX en el dispositivo.
+    implementation(project(":core:javarunner"))
+    implementation(libs.android.r8)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

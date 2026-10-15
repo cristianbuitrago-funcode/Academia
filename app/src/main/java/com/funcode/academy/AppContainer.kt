@@ -9,7 +9,9 @@ import com.funcode.academy.data.settings.DataStoreSettingsRepository
 import com.funcode.academy.data.settings.settingsDataStore
 import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.progress.ProgressRepository
+import com.funcode.academy.domain.runner.CodeRunner
 import com.funcode.academy.domain.settings.SettingsRepository
+import com.funcode.academy.runner.IsolatedJavaRunner
 
 /**
  * Inyección de dependencias manual: crea las implementaciones concretas
@@ -40,4 +42,7 @@ class AppContainer(context: Context) {
     val contentRepository: ContentRepository by lazy {
         AssetContentRepository(appContext.assets)
     }
+
+    /** PROTOTIPO Fase 8: ejecución de Java en un proceso aislado (solo laboratorio de depuración). */
+    val codeRunner: CodeRunner by lazy { IsolatedJavaRunner(appContext) }
 }
