@@ -18,13 +18,13 @@ kotlin {
     }
 }
 
-val stubCompiler: Configuration by configurations.creating
+val stubCompiler: Configuration = configurations.create("stubCompiler")
 
 dependencies {
     api(project(":core:domain"))
     // Eclipse Compiler for Java (EPL-2.0). Ver docs/LICENCIAS_TERCEROS.md.
     implementation(libs.eclipse.ecj)
-    stubCompiler(libs.eclipse.ecj)
+    add(stubCompiler.name, libs.eclipse.ecj)
 
     testImplementation(libs.junit)
 }
@@ -38,7 +38,7 @@ val stubClasses = layout.buildDirectory.dir("stubs/classes")
 val emptyBootClasspath = layout.buildDirectory.dir("stubs/empty-bootclasspath")
 val stubResources = layout.buildDirectory.dir("generated/stub-resources")
 
-val compileStubs by tasks.registering(JavaExec::class) {
+val compileStubs = tasks.register<JavaExec>("compileStubs") {
     description = "Compila la biblioteca de clases permitidas con ECJ."
     classpath = stubCompiler
     mainClass.set("org.eclipse.jdt.internal.compiler.batch.Main")
@@ -60,7 +60,7 @@ val compileStubs by tasks.registering(JavaExec::class) {
     )
 }
 
-val packageStubs by tasks.registering {
+val packageStubs = tasks.register("packageStubs") {
     description = "Empaqueta la biblioteca de clases permitidas como recursos."
     dependsOn(compileStubs)
     inputs.dir(stubClasses)

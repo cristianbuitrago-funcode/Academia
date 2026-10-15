@@ -99,13 +99,14 @@ class IsolatedJavaRunner(context: Context) : CodeRunner {
                 return RunResult.Unavailable(RETRY)
             }
             val deadline = request.limits.compileTimeoutMs + request.limits.timeoutMs + CLIENT_MARGIN_MS
-            val outcome = withTimeoutOrNull(deadline) {
-                select {
+            val outcome: RunResult = withTimeoutOrNull(deadline) {
+                select<RunResult> {
                     result.onAwait { it }
                     disconnected.onAwait {
                         // El proceso termina justo después de responder: se espera un poco por si
                         // la respuesta todavía está en camino. Si no llega, el proceso murió.
-                        withTimeoutOrNull(REPLY_GRACE_MS) { result.await() } ?: RunResult.LimitExceeded(Limit.MEMORY, "")
+                        val late: RunResult? = withTimeoutOrNull(REPLY_GRACE_MS) { result.await() }
+                        late ?: RunResult.LimitExceeded(Limit.MEMORY, "")
                     }
                 }
             } ?: RunResult.Unavailable("El proceso de ejecución no respondió a tiempo.")
