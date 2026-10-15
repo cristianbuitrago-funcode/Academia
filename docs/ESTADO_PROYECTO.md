@@ -22,7 +22,7 @@ _Última actualización: 2026-10-15_
 | 5. RPG básico: XP, niveles y logros | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 5 — Detalle». |
 | 6. Misiones, retos y proyectos | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 6 — Detalle». Misiones y proyecto en borrador. |
 | 7. Personalización, accesibilidad y adaptación | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio (con TalkBack) y de aprobación** | Ver «Fase 7 — Detalle». Variantes de la lección 1 en borrador. |
-| Corrección: cierre al abrir | **Implementado; reproducido y verificado en emulador de CI** — pendiente de confirmación en tu teléfono | Ver «Corrección del cierre al abrir y fase visual — Detalle». |
+| Corrección: cierre al abrir | **Implementado y probado** (emuladores API 26 y 34 en CI) — pendiente de confirmación en tu teléfono | Ver «Corrección del cierre al abrir y fase visual — Detalle». |
 | Fase visual «Academia futurista» (pedida por el responsable el 2026-10-15; no estaba en el plan original) | **Implementado y probado en CI** — pendiente de tu revisión visual y aprobación | Paleta de neón. Ver el detalle. |
 | 8–9 | Planificado — sin autorizar | — |
 
@@ -656,6 +656,10 @@ En cada ejercicio se muestra **qué objetivo se practica**.
 
 | Fecha | Dónde | Prueba | Resultado |
 |---|---|---|---|
+| 2026-10-15 | CI 38678905732 (commit `99b74cd`) | Linux + Windows + emulador API 26 y 34 | **Verde: 263/263 pruebas JVM**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`). En ambos emuladores la app sigue abierta 20 s después de abrirse y `LaunchSmokeTest` pasa (API 34: 1 ejecutada, 0 fallos). |
+| 2026-10-15 | CI 38678434103 (commit `839056f`) | Linux + Windows + emulador | Verde, pero la prueba instrumentada **no llegó a ejecutarse** (fallo de instalación por firma, no detectado por Gradle). Corregido en `99b74cd`. |
+| 2026-10-15 | CI 38677916047 (commit `d9bfa54`, sin la corrección) | Emulador API 26 y 34 | **Fallo esperado**: reproduce el cierre (`PatternSyntaxException` en `LessonParser.kt:43`). |
+| 2026-10-15 | Contenedor | `:core:domain:test` con `RegexPortabilityTest` | 176/176 superadas; la prueba nueva falla si se vuelve a poner la expresión antigua (comprobado). |
 | 2026-10-10 | Contenedor | Inspección del entorno | JDK 21 y Gradle 8.14.3; sin Android SDK; `dl.google.com` y `downloads.gradle.org` bloqueados; Maven Central con límite de peticiones (429). |
 | 2026-10-10 | Contenedor | `:core:domain:test` (modo solo dominio, Gradle 8.14.3 local, réplica `repo1.maven.org` mediante *init script* fuera del repositorio) | **7/7 superadas** |
 | 2026-10-10 | CI #1–#2 | Compilación completa | **Fallo** de configuración: el plugin de Kotlin no veía las clases de AGP (`NoClassDefFoundError: BaseVariant`). Corregido declarando los plugins en la raíz. |
