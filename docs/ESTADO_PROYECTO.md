@@ -24,7 +24,7 @@ _Última actualización: 2026-10-15_
 | 7. Personalización, accesibilidad y adaptación | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio (con TalkBack) y de aprobación** | Ver «Fase 7 — Detalle». Variantes de la lección 1 en borrador. |
 | Corrección: cierre al abrir | **Implementado y probado** (emuladores API 26 y 34 en CI) — pendiente de confirmación en tu teléfono | Ver «Corrección del cierre al abrir y fase visual — Detalle». |
 | Fase visual «Academia futurista» (pedida por el responsable el 2026-10-15; no estaba en el plan original) | **Implementado y probado en CI** — pendiente de tu revisión visual y aprobación | Paleta de neón. Ver el detalle. |
-| 8. Ejecución real de Java | **Autorizada (2026-10-15) — investigación hecha; propuesta pendiente de aprobación.** Sin código del ejecutor. | Ver `docs/FASE8_EJECUCION_JAVA.md` (alternativas, recomendación, decisiones F8-D1 a F8-D8). |
+| 8. Ejecución real de Java | **Prototipo de verificación implementado y probado en emuladores de CI** (CI 38686836314, todo en verde). **No integrado en lecciones ni declarado seguro. Pendiente de tus decisiones F8-P1 a F8-P4**, sobre todo Android 8–12, donde el compilador no arranca. | Ver `docs/FASE8_EJECUCION_JAVA.md` §8–§10 y `docs/LICENCIAS_TERCEROS.md`. |
 | 9 | Planificado — sin autorizar | — |
 
 ## Decisiones
@@ -658,6 +658,9 @@ En cada ejercicio se muestra **qué objetivo se practica**.
 
 | Fecha | Dónde | Prueba | Resultado |
 |---|---|---|---|
+| 2026-10-15 | CI 38686836314 (commit `32d029a`) | Linux, Windows, emuladores API 26 y 34, tamaño del APK | **Todo en verde.** JVM: dominio 182, `:core:javarunner` 19, app (Robolectric) 97. Emulador API 34: 15 superadas + 1 omitida (la prueba solo para API < 33). Emulador API 26: 3 superadas + 13 omitidas (el ejecutor necesita API 33). APK *release* +8,45 MB. |
+| 2026-10-15 | CI 38683464193 … 38686325724 | Emuladores | Fallos reales encontrados y corregidos o documentados: ECJ 3.46 no funciona en Android (`Runtime.version`); ECJ 3.28 necesita API 33 (`readAllBytes`); los errores de la VM bloqueados por la lista permitida; `\r\n` en Windows. Ver `FASE8_EJECUCION_JAVA.md` §9.5. |
+| 2026-10-15 | Contenedor | `:core:domain:test`, `:core:javarunner:test` | 182/182 y 19/19 |
 | 2026-10-15 | CI 38678905732 (commit `99b74cd`) | Linux + Windows + emulador API 26 y 34 | **Verde: 263/263 pruebas JVM**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`). En ambos emuladores la app sigue abierta 20 s después de abrirse y `LaunchSmokeTest` pasa (API 34: 1 ejecutada, 0 fallos). |
 | 2026-10-15 | CI 38678434103 (commit `839056f`) | Linux + Windows + emulador | Verde, pero la prueba instrumentada **no llegó a ejecutarse** (fallo de instalación por firma, no detectado por Gradle). Corregido en `99b74cd`. |
 | 2026-10-15 | CI 38677916047 (commit `d9bfa54`, sin la corrección) | Emulador API 26 y 34 | **Fallo esperado**: reproduce el cierre (`PatternSyntaxException` en `LessonParser.kt:43`). |
@@ -724,6 +727,13 @@ El prototipo de la Fase 8 se desarrolla en la misma rama. Si lo prefieres, se pu
 
 ## Acciones pendientes del responsable
 
+0. **Fase 8:**
+   - Decidir F8-P1: Android 8–12, donde el compilador no arranca.
+   - Decidir F8-P2: licencias de R8.
+   - Decidir F8-P3: el tiempo de la primera ejecución, que llegó a 5,9 s.
+   - Decidir F8-P4: la política de Google Play.
+   - Probar el «Laboratorio de Java» en un teléfono con Android 13 o superior. Está en Ajustes, solo en el APK de depuración. Ver `docs/FASE8_EJECUCION_JAVA.md` §11.
+
 1. Instalar el nuevo APK en tu teléfono y confirmar que ya no se cierra; revisar el nuevo aspecto y decir si el tema oscuro de neón debe ser el predeterminado.
 2. Verificar la Fase 7 en Android Studio y con TalkBack siguiendo `docs/CONFIGURACION_ENTORNO.md` §9.
 3. Revisar el contenido en borrador del módulo `java.m01` (7 lecciones, las variantes de la lección 1, la evaluación, el proyecto guiado y las 7 misiones) y aprobarlo o pedir cambios (D7).
@@ -733,4 +743,7 @@ El prototipo de la Fase 8 se desarrolla en la misma rama. Si lo prefieres, se pu
 
 ## Próximos pasos autorizados
 
-Fase 8: solo inspección, investigación y propuesta (hechas). La implementación del ejecutor espera tu decisión sobre F8-D1 a F8-D8 (`docs/FASE8_EJECUCION_JAVA.md` §7).
+Ninguno más.
+- El prototipo de verificación de la Fase 8 está terminado.
+- No está autorizada la integración definitiva, la publicación ni la fase siguiente.
+- Pendiente: tus decisiones F8-P1 a F8-P4 (`docs/FASE8_EJECUCION_JAVA.md` §10).

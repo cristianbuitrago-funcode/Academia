@@ -330,6 +330,26 @@ Cada capa se probó **por separado** en API 34. Las pruebas de las capas 2 y 3 u
 | F8-P3 | Tiempo de la primera ejecución (5,9 s una vez) | Aceptar, o medir en un teléfono real / compilación *release* antes de decidir |
 | F8-P4 | Política de Google Play | Verificar en la página oficial |
 
+## 11. Cómo reproducir
+
+**Pruebas automáticas:**
+- Sin Android: `./gradlew :core:domain:test :core:javarunner:test`
+- Robolectric: `./gradlew :app:testDebugUnitTest`
+- Emulador o teléfono conectado (Android 13+ para las pruebas del ejecutor): `./gradlew :app:connectedDebugAndroidTest`. Las medidas salen en logcat con la etiqueta `FuncodeMedidas`.
+
+**Verificación manual en Android Studio** (pendiente, no hecha por Claude):
+1. Instalar el APK de **depuración** en un teléfono o emulador con Android 13 o superior.
+2. Ajustes → «Laboratorio de Java (prototipo)» → «Abrir el laboratorio».
+3. Pulsar «Compilar y ejecutar» con la plantilla. Debe verse la salida real y «La salida coincide con la esperada».
+4. Probar:
+   - quitar un `;` → errores con línea;
+   - `int x = 5 / 0;` → error de ejecución;
+   - `while (true) {}` → tiempo agotado, o «Detener»;
+   - `new java.io.File("x")` → no compila.
+5. En Android 8–12 el laboratorio muestra «No se pudo compilar ni ejecutar (problema del ejecutor…)». Es la limitación F8-P1.
+
+El **APK publicado (release)** también incluye el ejecutor (por eso crece 8,45 MB), pero **no** muestra el laboratorio.
+
 ## Fuentes consultadas
 
 - `<service>` en el manifiesto de Android (`android:isolatedProcess`): https://developer.android.com/guide/topics/manifest/service-element
