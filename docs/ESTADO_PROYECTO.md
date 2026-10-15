@@ -658,7 +658,7 @@ En cada ejercicio se muestra **qué objetivo se practica**.
 
 | Fecha | Dónde | Prueba | Resultado |
 |---|---|---|---|
-| 2026-10-15 | CI 38686836314 (commit `32d029a`) | Linux, Windows, emuladores API 26 y 34, tamaño del APK | **Todo en verde.** JVM: dominio 182, `:core:javarunner` 19, app (Robolectric) 97. Emulador API 34: 15 superadas + 1 omitida (la prueba solo para API < 33). Emulador API 26: 3 superadas + 13 omitidas (el ejecutor necesita API 33). APK *release* +8,45 MB. |
+| 2026-10-15 | CI 38686836314 (commit `32d029a`) | Linux, Windows, emuladores API 26 y 34, tamaño del APK | **Todo en verde.** JVM: dominio 182, `:core:javarunner` 19, app (Robolectric) 92. Emulador API 34: 15 superadas + 1 omitida (la prueba solo para API < 33). Emulador API 26: 3 superadas + 13 omitidas (el ejecutor necesita API 33). APK *release* +8,45 MB. |
 | 2026-10-15 | CI 38683464193 … 38686325724 | Emuladores | Fallos reales encontrados y corregidos o documentados: ECJ 3.46 no funciona en Android (`Runtime.version`); ECJ 3.28 necesita API 33 (`readAllBytes`); los errores de la VM bloqueados por la lista permitida; `\r\n` en Windows. Ver `FASE8_EJECUCION_JAVA.md` §9.5. |
 | 2026-10-15 | Contenedor | `:core:domain:test`, `:core:javarunner:test` | 182/182 y 19/19 |
 | 2026-10-15 | CI 38678905732 (commit `99b74cd`) | Linux + Windows + emulador API 26 y 34 | **Verde: 263/263 pruebas JVM**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`). En ambos emuladores la app sigue abierta 20 s después de abrirse y `LaunchSmokeTest` pasa (API 34: 1 ejecutada, 0 fallos). |
