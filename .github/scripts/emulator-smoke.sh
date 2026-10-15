@@ -32,18 +32,23 @@ python3 - <<'PY' || status=1
 import glob, sys, xml.etree.ElementTree as ET
 # En este job no se ejecutan pruebas JVM: todos los TEST-*.xml son del emulador.
 files = [f for f in glob.glob("app/build/**/TEST-*.xml", recursive=True) if "UnitTest" not in f]
-tests = sum(int(ET.parse(f).getroot().get("tests", 0)) for f in files)
-bad = sum(int(ET.parse(f).getroot().get(k, 0)) for f in files for k in ("failures", "errors"))
-skipped = sum(int(ET.parse(f).getroot().get("skipped", 0)) for f in files)
-print(f"Pruebas instrumentadas: {tests} ejecutadas, {bad} con fallo o error, {skipped} omitidas ({len(files)} informes)")
+total = failed = skipped = 0
 for f in files:
     for case in ET.parse(f).getroot().iter("testcase"):
-        for kind in ("failure", "error", "skipped"):
-            node = case.find(kind)
-            if node is not None:
-                text = (node.get("message") or node.text or "").strip().splitlines()
-                print(f"  [{kind}] {case.get('classname')}.{case.get('name')}: {text[0][:300] if text else ''}")
-if tests == 0 or bad:
+        total += 1
+        problem = case.find("failure") if case.find("failure") is not None else case.find("error")
+        text = ((problem.get("message") or problem.text or "") if problem is not None else "").strip()
+        name = f"{case.get('classname')}.{case.get('name')}"
+        # El motor de pruebas de AGP informa las suposiciones no cumplidas (assumeTrue) como
+        # <failure> con AssumptionViolatedException: son pruebas OMITIDAS, no fallos.
+        if case.find("skipped") is not None or "AssumptionViolatedException" in text:
+            skipped += 1
+            print(f"  [omitida] {name}")
+        elif problem is not None:
+            failed += 1
+            print(f"  [FALLO] {name}: {text.splitlines()[0][:300] if text else ''}")
+print(f"Pruebas instrumentadas: {total} en total, {total - failed - skipped} superadas, {failed} con fallo, {skipped} omitidas ({len(files)} informes)")
+if total - skipped == 0 or failed:
     print("::error::Las pruebas instrumentadas no se ejecutaron o fallaron.")
     sys.exit(1)
 PY
