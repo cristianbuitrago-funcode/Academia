@@ -53,7 +53,7 @@ jobs:
         run: |
           set -eu
           M=https://repo1.maven.org/maven2/org/eclipse/jdt/ecj
-          V=3.46.100
+          V=3.28.0
           curl -sf "$M/$V/ecj-$V.pom" | sed -n '/<licenses>/,/<\/licenses>/p'
           curl -sf -o ecj.jar "$M/$V/ecj-$V.jar"
           ls -l ecj.jar; sha256sum ecj.jar

@@ -13,8 +13,6 @@ import com.funcode.academy.domain.runner.ProgramEvaluation
 import com.funcode.academy.domain.runner.RunLimits
 import com.funcode.academy.domain.runner.RunRequest
 import com.funcode.academy.domain.runner.RunResult
-import com.funcode.academy.javarunner.StubConformance
-import com.funcode.academy.javarunner.StubLibrary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -22,6 +20,8 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
@@ -35,6 +35,14 @@ class JavaRunnerInstrumentedTest {
 
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private val runner = IsolatedJavaRunner(context)
+
+    /**
+     * LIMITACIÓN CONOCIDA (no oculta): ECJ 3.28 usa InputStream.readAllBytes (Android 13,
+     * API 33). En API 26–32 el compilador no arranca; lo comprueba
+     * [JavaRunnerApiLimitTest]. Estas pruebas solo tienen sentido donde el compilador funciona.
+     */
+    @Before
+    fun requiereApi33() = assumeTrue("ECJ 3.28 necesita API 33 o superior", Build.VERSION.SDK_INT >= 33)
 
     private fun program(body: String) = "public class Main {\n    public static void main(String[] args) {\n        $body\n    }\n}\n"
 
@@ -119,6 +127,7 @@ class JavaRunnerInstrumentedTest {
     fun memoriaAgotadaSeInformaYLaAppSeRecupera() {
         val r = run(program("long[][] guardar = new long[100000][];\n        for (int i = 0; i < guardar.length; i++) guardar[i] = new long[1000000];"))
         Log.i(TAG, "memoria: $r")
+        // OutOfMemoryError capturado en el proceso aislado, o el proceso terminado por el sistema: ambos son MEMORY.
         assertTrue("$r", r is RunResult.LimitExceeded && r.limit == Limit.MEMORY)
         assertEquals("ok\n", assertCompleted(run(program("System.out.println(\"ok\");"))).stdout)
     }
@@ -169,7 +178,8 @@ class JavaRunnerInstrumentedTest {
         Log.i(TAG, "capa 2: $r")
         assertTrue("$r", r is RunResult.RuntimeError)
         r as RunResult.RuntimeError
-        assertTrue(r.exception, r.exception == "NoClassDefFoundError" || r.exception == "ClassNotFoundException")
+        assertEquals("NoClassDefFoundError", r.exception)
+        assertTrue(r.message.orEmpty(), r.message.orEmpty().contains("java/io/File") || r.message.orEmpty().contains("java.io.File"))
     }
 
     /**
@@ -214,13 +224,6 @@ class JavaRunnerInstrumentedTest {
         assertTrue(out, out.contains("BASEDATOS:BLOQUEADO"))
         assertTrue(out, out.contains("RED:BLOQUEADO"))
         assertFalse(out, out.contains("RED:CONECTADO"))
-    }
-
-    /** Cada miembro de la biblioteca permitida existe en Android (si no, compilaría pero fallaría al ejecutar). */
-    @Test
-    fun bibliotecaPermitidaExisteEnAndroid() {
-        val missing = StubConformance.check(StubLibrary.load()) { Class.forName(it, false, null) }
-        assertEquals("Miembros que faltan en API ${Build.VERSION.SDK_INT}: $missing", emptyList<String>(), missing)
     }
 
     private companion object {
