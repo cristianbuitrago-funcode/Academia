@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Color provisional del icono (P10: identidad visual pendiente). -->
-    <color name="ic_launcher_background">#3F51B5</color>
+    <!-- Azul marino de la identidad «Academia futurista» (igual que Neon.Navy en Compose). -->
+    <color name="funcode_navy">#050A18</color>
+    <color name="ic_launcher_background">#050A18</color>
 </resources>

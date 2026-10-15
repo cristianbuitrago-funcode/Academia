@@ -2,7 +2,7 @@ package com.funcode.academy.domain.settings
 
 import com.funcode.academy.domain.model.Audience
 
-/** Tema de la app. [SYSTEM] sigue el modo claro u oscuro del sistema. */
+/** Tema de la app. [SYSTEM] sigue el modo claro u oscuro del sistema; por defecto, [DARK] (neón). */
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
 /**
@@ -19,7 +19,7 @@ enum class TextScale(val factor: Float) {
 data class LearningPreferences(
     /** Variante de presentación elegida voluntariamente; `null` = presentación común. */
     val audience: Audience? = null,
-    val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val themeMode: ThemeMode = ThemeMode.DARK,
     val textScale: TextScale = TextScale.NORMAL,
     /** Mostrar el botón de pistas en lecciones y proyectos (no cambia el XP ni la corrección). */
     val hintsEnabled: Boolean = true,

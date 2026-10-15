@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -22,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.funcode.academy.R
+import com.funcode.academy.ui.components.NeonCard
 import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.lesson.ReviewStatus
 import com.funcode.academy.domain.progress.ChallengeProgress
@@ -65,7 +65,7 @@ fun ModuleListScreen(
 @Composable
 fun ModuleCard(progress: ModuleProgress, onOpenModule: (String) -> Unit) {
     val module = progress.module
-    Card(modifier = Modifier.fillMaxWidth()) {
+    NeonCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(module.title, style = MaterialTheme.typography.titleMedium)
             Text(module.description, style = MaterialTheme.typography.bodyMedium)
@@ -126,7 +126,7 @@ private fun ModuleContent(progress: ModuleProgress, onOpenLesson: (String) -> Un
     progress.lessons.forEachIndexed { i, lesson -> LessonRow(i + 1, lesson, onOpenLesson) }
     module.assessment?.let { assessment ->
         Heading(stringResource(R.string.module_assessment_title))
-        Card(modifier = Modifier.fillMaxWidth()) {
+        NeonCard(modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(assessment.title, style = MaterialTheme.typography.titleMedium)
                 Text(assessment.description, style = MaterialTheme.typography.bodyMedium)
@@ -147,7 +147,7 @@ private fun ModuleContent(progress: ModuleProgress, onOpenLesson: (String) -> Un
 @Composable
 private fun ChallengeCard(challenge: ChallengeProgress, onOpenLesson: (String) -> Unit) {
     Heading(stringResource(R.string.module_challenge_title))
-    Card(modifier = Modifier.fillMaxWidth()) {
+    NeonCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(challenge.challenge.title, style = MaterialTheme.typography.titleMedium)
             Text(challenge.challenge.description, style = MaterialTheme.typography.bodyMedium)
@@ -172,7 +172,7 @@ private fun ChallengeCard(challenge: ChallengeProgress, onOpenLesson: (String) -
 @Composable
 private fun LessonRow(number: Int, progress: LessonProgress, onOpenLesson: (String) -> Unit) {
     // La tarjeta entera es el botón: TalkBack lee el título y el estado juntos.
-    Card(onClick = { onOpenLesson(progress.lesson.id) }, modifier = Modifier.fillMaxWidth()) {
+    NeonCard(onClick = { onOpenLesson(progress.lesson.id) }, modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(stringResource(R.string.module_lesson_title, number, progress.lesson.title), style = MaterialTheme.typography.titleSmall)
             Text(

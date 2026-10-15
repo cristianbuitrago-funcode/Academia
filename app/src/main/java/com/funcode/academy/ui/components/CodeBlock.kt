@@ -1,6 +1,7 @@
 package com.funcode.academy.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,8 +34,10 @@ fun CodeBlock(code: String, modifier: Modifier = Modifier, showLineNumbers: Bool
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clip(RoundedCornerShape(12.dp))
+            // Estilo «terminal»: fondo casi negro y código en verde neón.
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
             .horizontalScroll(rememberScrollState())
             .padding(12.dp),
     ) {
@@ -46,7 +49,7 @@ fun CodeBlock(code: String, modifier: Modifier = Modifier, showLineNumbers: Bool
                 text = prefix + line,
                 fontFamily = FontFamily.Monospace,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.secondary,
                 softWrap = false,
                 // TalkBack lee «Línea 3: …» en lugar del número pegado al código y los espacios de alineación.
                 modifier = if (showLineNumbers) Modifier.semantics { contentDescription = description } else Modifier,

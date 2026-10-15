@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,12 +15,13 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.funcode.academy.R
+import com.funcode.academy.ui.components.NeonCard
 import com.funcode.academy.ui.screens.lesson.RewardNotice
 
 /** Recompensas recién obtenidas. TalkBack las anuncia al aparecer. */
 @Composable
 fun RewardNoticeCard(notice: RewardNotice, modifier: Modifier = Modifier) {
-    Card(
+    NeonCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         modifier = modifier.fillMaxWidth().semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
     ) {

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Tema base de la ventana; los colores reales los define Compose (ui/theme). -->
-    <style name="Theme.FuncodeAcademy" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Tema base de la ventana; los colores reales los define Compose (ui/theme).
+         Fondo azul marino para que al abrir la app no aparezca un destello blanco. -->
+    <style name="Theme.FuncodeAcademy" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/funcode_navy</item>
+    </style>
 </resources>
