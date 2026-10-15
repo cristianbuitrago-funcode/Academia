@@ -1,0 +1,53 @@
+# Inspección reproducible de dependencias candidatas (Fase 8).
+# El contenedor de desarrollo no puede acceder a Google Maven (dl.google.com):
+# este workflow imprime versiones, licencias, tamaños y sumas SHA-256 desde CI.
+name: Inspección de dependencias
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/inspeccion-dependencias.yml
+
+permissions:
+  contents: read
+
+jobs:
+  inspeccionar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: R8/D8 en Google Maven
+        run: |
+          set -eu
+          G=https://dl.google.com/dl/android/maven2
+          echo "## Versión de R8 que usa AGP 9.4.0"
+          curl -sf "$G/com/android/tools/build/gradle/9.4.0/gradle-9.4.0.pom" | grep -B2 -A3 "<artifactId>r8</artifactId>" || echo "(no aparece en el POM de gradle)"
+          curl -sf "$G/com/android/tools/build/builder/9.4.0/builder-9.4.0.pom" | grep -B2 -A3 "<artifactId>r8</artifactId>" || echo "(no aparece en el POM de builder)"
+          echo "## Últimas versiones publicadas de com.android.tools:r8"
+          curl -sf "$G/com/android/tools/r8/maven-metadata.xml" | grep -oE "<(latest|release|version)>[^<]+" | tail -25
+      - name: Detalle de las versiones candidatas
+        run: |
+          set -u
+          G=https://dl.google.com/dl/android/maven2
+          for V in $(curl -sf "$G/com/android/tools/build/builder/9.4.0/builder-9.4.0.pom" | grep -A1 "<artifactId>r8</artifactId>" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" | head -1); do
+            echo "### r8 $V"
+            curl -sf "$G/com/android/tools/r8/$V/r8-$V.pom" | sed -n '/<licenses>/,/<\/licenses>/p;/<dependencies>/,/<\/dependencies>/p'
+            curl -sf -o r8.jar "$G/com/android/tools/r8/$V/r8-$V.jar"
+            ls -l r8.jar; sha256sum r8.jar
+            unzip -l r8.jar | tail -1
+            unzip -l r8.jar | grep -iE "LICENSE|NOTICE" | head -20
+            unzip -p r8.jar LICENSE 2>/dev/null | head -60 || true
+            unzip -p r8.jar META-INF/MANIFEST.MF | head -20
+          done
+      - name: ECJ en Maven Central
+        run: |
+          set -eu
+          M=https://repo1.maven.org/maven2/org/eclipse/jdt/ecj
+          V=3.46.100
+          curl -sf "$M/$V/ecj-$V.pom" | sed -n '/<licenses>/,/<\/licenses>/p'
+          curl -sf -o ecj.jar "$M/$V/ecj-$V.jar"
+          ls -l ecj.jar; sha256sum ecj.jar
+          curl -sf "$M/$V/ecj-$V.jar.sha1"; echo " (sha1 publicado)"; sha1sum ecj.jar
+          unzip -l ecj.jar | grep -iE "about|license|notice|epl" | head
+          unzip -p ecj.jar about.html 2>/dev/null | sed 's/<[^>]*>//g' | grep -v '^\s*$' | head -40 || true

@@ -38,8 +38,9 @@ _Última actualización: 2026-10-15_
 | P6 Valores de XP, curva de niveles y umbral | **Aprobado** (2026-10-13): propuesta A de XP con penalización por pistas, curva 100×n y umbral del 80 %. Ver «Fase 5 — Detalle». El umbral no bloquea lecciones ni módulos. |
 | Fase 6: retos, misiones y proyectos | **Aprobado** (2026-10-13): proyecto guiado por módulo (abierto al completar las lecciones, 50 XP una vez); misiones de contenido con requisitos declarados y 10 XP de bonificación una vez; pantalla Misiones desde Inicio y Mapa. Sustituye a la decisión anterior de misiones fijas sin XP. |
 | Monedas virtuales | **No implementadas** por decisión del responsable (2026-10-13); propuesta documentada en «Fase 5 — Detalle». |
-| P7 Versión de Java del contenido | **Pendiente.** Se usa Java 17 de forma provisional (`javac --release 17` en las pruebas). |
+| P7 Versión de Java del contenido | **Aprobado (2026-10-15, decisión F8-D5): Java 17** para los ejemplos y el prototipo de la Fase 8. Las pruebas ya usan `javac --release 17`. |
 | P8 Comprobación automática del Java del contenido | Implementada en la Fase 4 (`JavaContentCompilationTest`); pendiente de tu aprobación. |
+| F8-D1 a F8-D8 (Fase 8) | **Aprobadas con condiciones (2026-10-15):** alternativa A **solo como prototipo de verificación** (B como plan alternativo); ECJ y D8/R8 **en evaluación** (versiones y licencias por verificar); `:core:javarunner` y el servicio aislado solo para el prototipo; umbrales de §3 del estudio; Java 17; el intento se registra al terminar la ejecución, sin XP por ejecutar ni por errores de compilación; `Scanner` aplazado; servidor externo solo documentado. **No autorizado:** integrar en lecciones, declararlo seguro, publicar ni pasar de fase. |
 | P2, P5, P9, P10 | Pendiente (se deciden en su fase) |
 
 ---
@@ -707,6 +708,19 @@ En cada ejercicio se muestra **qué objetivo se practica**.
 - **Contenedor de Claude:** no puede compilar Android; solo puede probar `:core:domain` en modo solo dominio. El APK y las pruebas de `:app` se verifican en CI.
 - **Ramas `main` y `Main`:** existen ambas en GitHub (la segunda no la creó Claude). Generan conflictos en Windows/macOS. Ver `docs/FLUJO_DE_TRABAJO.md`.
 - **Pruebas en caché:** GitHub Actions reutiliza resultados de pruebas cuando el código no cambia ("FROM-CACHE"); el resumen muestra los recuentos de esos resultados.
+
+## Dependencias pendientes de integración (revisado el 2026-10-15, antes del prototipo de la Fase 8)
+
+| Pendiente | Estado real |
+|---|---|
+| Fusión en `main` | `main` está en `c6a4e73` (fases 2–7). La rama `ccr-db27c4de-czvzgb` lleva **6 commits sin fusionar**: corrección del cierre, CI con emulador, fase visual y estudio de la Fase 8. No hay *pull request* abierto. No se ha reescrito ni sobrescrito ninguna rama. |
+| Confirmación manual en tu teléfono | **Pendiente:** la corrección del cierre y el nuevo aspecto solo están verificados en emuladores de CI. |
+| Aprobación de la Fase 7 | **Pendiente** de aprobación explícita (se fusionó en `main` con el PR #1). |
+| Aprobación de la fase visual | **Pendiente**, incluido el tema oscuro como predeterminado. |
+| Versión de Java (P7) | **Resuelta:** Java 17 (F8-D5). |
+| Contenido en borrador del módulo 1 | **Pendiente** de tu revisión (D7). |
+
+El prototipo de la Fase 8 se desarrolla en la misma rama. Si lo prefieres, se puede separar en otra rama antes de fusionar.
 
 ## Acciones pendientes del responsable
 
