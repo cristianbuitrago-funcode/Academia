@@ -93,8 +93,9 @@ object ProgramExecutor {
             buffer.write(b)
         }
 
+        /** Saltos de línea normalizados a `\n`: `println` usa `\r\n` en Windows y `\n` en Android. */
         @Synchronized
-        fun text(): String = buffer.toByteArray().decodeToString()
+        fun text(): String = buffer.toByteArray().decodeToString().replace("\r\n", "\n")
     }
 }
 
