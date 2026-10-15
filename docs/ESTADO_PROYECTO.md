@@ -24,7 +24,8 @@ _Última actualización: 2026-10-15_
 | 7. Personalización, accesibilidad y adaptación | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio (con TalkBack) y de aprobación** | Ver «Fase 7 — Detalle». Variantes de la lección 1 en borrador. |
 | Corrección: cierre al abrir | **Implementado y probado** (emuladores API 26 y 34 en CI) — pendiente de confirmación en tu teléfono | Ver «Corrección del cierre al abrir y fase visual — Detalle». |
 | Fase visual «Academia futurista» (pedida por el responsable el 2026-10-15; no estaba en el plan original) | **Implementado y probado en CI** — pendiente de tu revisión visual y aprobación | Paleta de neón. Ver el detalle. |
-| 8–9 | Planificado — sin autorizar | — |
+| 8. Ejecución real de Java | **Autorizada (2026-10-15) — investigación hecha; propuesta pendiente de aprobación.** Sin código del ejecutor. | Ver `docs/FASE8_EJECUCION_JAVA.md` (alternativas, recomendación, decisiones F8-D1 a F8-D8). |
+| 9 | Planificado — sin autorizar | — |
 
 ## Decisiones
 
@@ -718,4 +719,4 @@ En cada ejercicio se muestra **qué objetivo se practica**.
 
 ## Próximos pasos autorizados
 
-Ninguno. La Fase 8 espera autorización explícita.
+Fase 8: solo inspección, investigación y propuesta (hechas). La implementación del ejecutor espera tu decisión sobre F8-D1 a F8-D8 (`docs/FASE8_EJECUCION_JAVA.md` §7).
