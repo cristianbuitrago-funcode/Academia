@@ -57,6 +57,18 @@ class JavaSourceCompilerTest {
     }
 
     @Test
+    fun `el bytecode generado no usa invokedynamic ni java_lang_invoke`() {
+        val compiled = JavaSourceCompiler(JvmTestRunner.stubs).compile(
+            program("String s = \"a\" + 1 + 2.5 + true + 'c'; System.out.println(s + s.length());"),
+        ) as JavaSourceCompiler.Outcome.Success
+        compiled.classes.values.forEach { bytes ->
+            val text = String(bytes, Charsets.ISO_8859_1)
+            assertTrue("Usa java/lang/invoke", !text.contains("java/lang/invoke"))
+            assertTrue("Usa StringConcatFactory", !text.contains("StringConcatFactory"))
+        }
+    }
+
+    @Test
     fun `construcciones de Java 17 compatibles`() {
         val source = """
             public class Main {

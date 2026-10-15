@@ -98,13 +98,13 @@ class JavaSourceCompiler(private val stubs: StubLibrary) {
             CompilerOptions.OPTION_Compliance to "17",
             CompilerOptions.OPTION_Source to "17",
             CompilerOptions.OPTION_TargetPlatform to "17",
-            // Concatenación con StringBuilder (clase permitida), no con invokedynamic.
-            CompilerOptions.OPTION_UseStringConcatFactory to CompilerOptions.DISABLED,
-            CompilerOptions.OPTION_Process_Annotations to CompilerOptions.DISABLED,
+            // ECJ 3.28 concatena cadenas con StringBuilder (clase permitida), sin invokedynamic;
+            // lo comprueba JavaSourceCompilerTest.
+            CompilerOptions.OPTION_Process_Annotations to "disabled",
             CompilerOptions.OPTION_LineNumberAttribute to CompilerOptions.GENERATE,
             CompilerOptions.OPTION_SourceFileAttribute to CompilerOptions.GENERATE,
             CompilerOptions.OPTION_LocalVariableAttribute to CompilerOptions.DO_NOT_GENERATE,
-            CompilerOptions.OPTION_ReportDeprecation to CompilerOptions.IGNORE,
+            CompilerOptions.OPTION_ReportDeprecation to "ignore",
         )
     }
 }
