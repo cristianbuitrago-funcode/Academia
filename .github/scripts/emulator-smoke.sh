@@ -20,7 +20,22 @@ else
 fi
 adb shell screencap -p /sdcard/inicio.png && adb pull /sdcard/inicio.png emulator-inicio.png || true
 
+# Gradle instala sus propios APK: se desinstala antes la copia instalada arriba
+# (si no, falla por firma distinta y Gradle no ejecuta ninguna prueba).
+adb uninstall "$PKG" || true
 ./gradlew :app:connectedDebugAndroidTest || status=1
+# Gradle puede terminar "BUILD SUCCESSFUL" sin ejecutar pruebas: se exige evidencia.
+python3 - <<'PY' || status=1
+import glob, sys, xml.etree.ElementTree as ET
+# En este job no se ejecutan pruebas JVM: todos los TEST-*.xml son del emulador.
+files = [f for f in glob.glob("app/build/**/TEST-*.xml", recursive=True) if "UnitTest" not in f]
+tests = sum(int(ET.parse(f).getroot().get("tests", 0)) for f in files)
+bad = sum(int(ET.parse(f).getroot().get(k, 0)) for f in files for k in ("failures", "errors"))
+print(f"Pruebas instrumentadas: {tests} ejecutadas, {bad} con fallo o error ({len(files)} informes)")
+if tests == 0 or bad:
+    print("::error::Las pruebas instrumentadas no se ejecutaron o fallaron.")
+    sys.exit(1)
+PY
 
 adb logcat -d > emulator-logcat.txt || true
 if grep -q "FATAL EXCEPTION" emulator-logcat.txt; then

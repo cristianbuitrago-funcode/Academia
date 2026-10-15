@@ -153,6 +153,7 @@ jobs:
             emulator-inicio.png
             app/build/reports/androidTests/
             app/build/outputs/androidTest-results/
+            app/build/test-results/
           if-no-files-found: ignore
 
   windows:
