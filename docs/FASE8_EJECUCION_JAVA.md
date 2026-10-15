@@ -1,6 +1,6 @@
 # Fase 8 — Ejecución real de Java: estudio de viabilidad y propuesta
 
-_Estado: **investigación y propuesta, pendiente de aprobación**. No hay código del ejecutor en la app._
+_Estado: **prototipo de verificación implementado y probado en emuladores de CI** (aprobado como prototipo con las condiciones F8-D1 a F8-D8). **No está integrado en las lecciones ni declarado seguro.** Ver §9 (resultados) y §10 (decisiones pendientes)._
 _Fecha: 2026-10-15._
 
 Cada afirmación lleva su nivel de evidencia:
@@ -229,6 +229,107 @@ Solo como alternativa futura y separada.
 
 ---
 
+## 8. Prototipo: qué se implementó
+
+Solo como prototipo de verificación. El ejecutor **no** aparece en las lecciones. Un «Laboratorio de Java» solo existe en compilaciones de depuración: Ajustes → «Laboratorio de Java (prototipo)».
+
+| Pieza | Archivo | Qué hace |
+|---|---|---|
+| Contrato | `core/domain/.../runner/CodeRunner.kt` | `CodeRunner`, `RunRequest`, `RunLimits` (3 s, 10 000 caracteres de código y de salida), `RunResult` (Rechazado, Error de compilación, Completado, Error de ejecución, Límite TIME/OUTPUT/MEMORY, Cancelado, No disponible). |
+| Evaluación | `core/domain/.../runner/ProgramEvaluation.kt` | Compara la salida real con las aceptadas (misma normalización que «predecir la salida»). Registra un intento **solo si la ejecución terminó**. Errores de compilación, límites y cancelación no registran intento (F8-D6). |
+| Compilador | `core/javarunner/.../JavaSourceCompiler.kt` | ECJ 3.28.0, nivel Java 17, contra la biblioteca permitida. Rechaza `package` y exige la clase `Main`. Concatena con `StringBuilder` (sin `invokedynamic`). |
+| Biblioteca permitida | `core/javarunner/src/stubs/java/**` (37 clases) | `Object`, `String`, `StringBuilder`, `Math`, tipos envoltorio, `System.out` (solo `out`), `PrintStream`, excepciones comunes. **Sin** `Class`, reflexión, hilos, archivos, red, procesos, `System.exit`/`getenv`/`getProperty`/`err`/`in`, colecciones ni `Scanner`. |
+| Ejecución | `core/javarunner/.../ProgramExecutor.kt` | Hilo propio con límite de tiempo; salida con límite (por caracteres, saltos de línea normalizados); `OutOfMemoryError` → límite de memoria; línea del error del programa. `AllowlistClassLoader`: en ejecución solo se cargan las clases permitidas y los errores que lanza la VM. |
+| DEX | `app/.../runner/D8Dexer.kt` | D8 9.4.28 en memoria (minApi 26, modo depuración para conservar líneas). |
+| Proceso aislado | `app/.../runner/JavaRunnerService.kt` + manifiesto | `isolatedProcess="true"`, `process=":javarunner"`, `exported="false"`, **sin permisos nuevos**. Un proceso por ejecución: responde y se termina (`killProcess`). Vigilante de tiempo propio. |
+| Cliente | `app/.../runner/IsolatedJavaRunner.kt` | Vincula el servicio, envía el código, espera con límite, detecta la muerte del proceso (memoria o fallo), cancela (mensaje + fin del proceso) y reintenta si el proceso anterior aún no ha terminado. |
+| Laboratorio (depuración) | `app/.../ui/screens/lab/` | Editor monoespaciado, «Compilar y ejecutar» / «Detener», estados honestos («No compila: el programa no se ha ejecutado», «Tiempo agotado», etc.), salida real, comparación con la salida esperada. **No registra intentos ni da XP.** El código solo vive en memoria. |
+
+## 9. Resultados (2026-10-15)
+
+### 9.1 Compilación real
+
+- `:core:javarunner` compila en el contenedor y en CI (Linux y Windows).
+- La app (con ECJ y R8) compila en CI. Lint: 0 errores; se desactivó `InvalidPackage` con justificación, porque ECJ referencia `javax.tools`, pero esas clases no se cargan (comprobado en el emulador).
+
+### 9.2 Ejecución real en emuladores de CI
+
+**Dispositivos:**
+- Android 14 (API 34): `sdk_gphone64_x86_64`, 2 núcleos, 2,5 GB, `heapgrowthlimit` 192 MB.
+- Android 8.0 (API 26): «Android SDK built for x86_64».
+
+Compilación de **depuración** (sin optimizar). Los emuladores de CI comparten máquina y sus tiempos varían.
+
+| Prueba (emulador API 34, CI 38686325724 y anteriores) | Resultado |
+|---|---|
+| Programa válido «Hola, Funcode / 7 + 5 = 12», 3 veces | **Salida real correcta** y coincide con la esperada |
+| Aritmética, `double`, cadenas, `Math`, `Integer.parseInt` | Salida real `2 / 2.5 / JAVA4 / 14` correcta |
+| Error de sintaxis | `CompilationFailed`, línea 3 |
+| Error de ejecución (división entre cero) | `RuntimeError` `ArithmeticException`, línea 4 |
+| API peligrosas (`File`, `Runtime.exec`, `Class.forName`, `Thread`, `Socket`, `System.exit`) | Las 6 dan error de compilación |
+| Bucle infinito (límite 3 s) | `LimitExceeded(TIME)` en 4,1–5,5 s desde la app (incluye compilar); latencia del hilo principal 0–1 ms; ejecución correcta inmediatamente después |
+| Memoria agotada | `LimitExceeded(MEMORY)`; ejecución correcta después (recuperación) |
+| Salida infinita | `LimitExceeded(OUTPUT)` con exactamente 10 000 caracteres |
+| Código vacío o de más de 10 000 caracteres | `Rejected`, sin abrir proceso |
+| Estado estático entre ejecuciones | No se conserva (`1` y `1`) |
+| Cancelar un bucle infinito | Detenido en 16–24 ms; la siguiente ejecución funciona |
+| Biblioteca permitida frente a las clases reales de Android | Todos los miembros existen (API 26 y API 34) |
+
+### 9.3 Restricciones de seguridad verificadas (y cómo)
+
+Cada capa se probó **por separado** en API 34. Las pruebas de las capas 2 y 3 usan una opción que **solo existe en compilaciones de depuración**: el servicio la ignora si la app no es *debuggable*.
+
+| Capa | Prueba | Resultado observado |
+|---|---|---|
+| 1. Compilación contra la lista permitida | API peligrosas | Error de compilación (JVM y emulador) |
+| 2. Cargador con lista permitida | Bytecode que usa `java.io.File` (compilado con una declaración falsa para esquivar la capa 1) | `NoClassDefFoundError: Failed resolution of: Ljava/io/File;`; el archivo no se toca |
+| 3. Proceso aislado (capas 1 y 2 **desactivadas** a propósito) | Leer un archivo privado de la app y su base de datos | `ENOENT`: los archivos de la app no son visibles desde el proceso aislado |
+| | Abrir una conexión de red | `SocketException: EACCES (Permission denied)` |
+| | Ejecutar un proceso (`exec("id")`) | `IOException: error=13, Permission denied` |
+| Recuperación | Bucle infinito, memoria agotada, cancelación | La app sigue respondiendo y la siguiente ejecución funciona |
+
+**Lo que NO está demostrado (no se declara un sandbox seguro):**
+- No se ha probado en teléfonos reales ni con fabricantes que modifiquen Android.
+- No hay auditoría de seguridad externa ni pruebas de fallos de ECJ/D8 con entradas maliciosas (*fuzzing*). Esos fallos ocurrirían dentro del proceso aislado.
+- Las capas 2 y 3 dependen de ART y del sistema. La lista permitida debe revisarse cada vez que se amplíe.
+- El consumo de CPU de un programa malicioso solo se limita por tiempo: el proceso se termina a los 3 s más el margen.
+
+### 9.4 Medidas frente a los umbrales de F8-D4
+
+| Umbral | Medida | ¿Se cumple? |
+|---|---|---|
+| APK *release* +25 MB como máximo | Base `d867bd5`: 9 892 282 bytes → con el prototipo: 18 754 706 bytes. **+8,45 MB** (sin firmar, sin *minify*) | **Sí** |
+| Menos de 5 s por ejecución normal en el emulador | Desde la app: la mayoría entre 0,9 y 2,6 s. En el proceso: 0,5–2,6 s (compilar 0,3–1,8 s, DEX 0,2–1,0 s, ejecutar 0–45 ms). **Excepción:** la primera ejecución en frío de una ejecución de CI tardó **5,9 s** | **No siempre**: superado una vez (primera ejecución en frío, emulador cargado) |
+| Límite de 3 s del programa | Aplicado: bucle infinito detenido; respuesta total 4,1–5,5 s (compilar + 3 s + margen) | Sí |
+| 10 000 caracteres de código y de salida | Aplicado y probado | Sí |
+
+### 9.5 Fallos encontrados durante el prototipo (y estado)
+
+1. **ECJ 3.46.100 no funciona en Android** (`Runtime.version()`, `NoClassDefFoundError`). Se cambió a 3.28.0. Un análisis de referencias muestra la llamada desde ECJ 3.40.
+2. **ECJ 3.28.0 no funciona en Android 8–12 (API 26–32)**: usa `InputStream.readAllBytes()` (API 33) al cargar sus tablas.
+   - La biblioteca oficial de *desugaring* no incluye ese método (tabla oficial «nio»: solo `transferTo`).
+   - Ninguna versión de ECJ con Java 17 lo evita: 3.25–3.26 no lo usan, pero no soportan Java 17.
+   - **Sin resolver; requiere tu decisión (§10).** En API 26 una prueba registra que el ejecutor responde «no disponible» sin cerrar la app.
+3. ART resolvía `OutOfMemoryError`/`NoClassDefFoundError` a través del cargador del programa y la lista permitida los bloqueaba. **Corregido:** se permiten en ejecución los errores que lanza la VM (no se pueden usar al compilar).
+4. En Windows, `println` escribe `\r\n`. **Corregido:** la salida se normaliza a `\n`.
+5. El motor de pruebas de AGP informa `assumeTrue` como fallo. **Corregido** en el recuento del CI: se listan como omitidas.
+
+### 9.6 Política de Google Play
+
+- La política «Device and Network Abuse» prohíbe **descargar** código ejecutable de fuentes distintas de Google Play. Hay una excepción para código que se ejecuta en una máquina virtual o un intérprete con acceso **indirecto** a las API de Android.
+- **No pude abrir la página oficial**: `support.google.com` y `play.google.com` no resuelven desde el contenedor. El texto se conoce por resultados de búsqueda.
+- Aquí el código lo genera el estudiante en el propio teléfono; no se descarga. Aun así, cargar DEX generado en ejecución es un caso límite.
+- **Riesgo PENDIENTE**: debe verificarse en la página oficial antes de publicar.
+
+## 10. Decisiones pendientes tras el prototipo
+
+| # | Decisión | Opciones |
+|---|---|---|
+| F8-P1 | **Android 8–12 (API 26–32)**: el compilador no arranca | (a) Ejecutor solo en Android 13+; en versiones anteriores, «no disponible» de forma honesta. (b) Modificar el binario de ECJ al compilar la app (sustituir `readAllBytes` por una función propia; la EPL lo permite publicando la modificación). (c) Bajar a ECJ 3.26 con **nivel Java 16** (cambia F8-D5). (d) Plan alternativo B (intérprete propio). |
+| F8-P2 | Licencias de R8 (LGPL-2.1, CDDL/GPL-CE declaradas en su `LICENSE`) | Revisión antes de cualquier distribución |
+| F8-P3 | Tiempo de la primera ejecución (5,9 s una vez) | Aceptar, o medir en un teléfono real / compilación *release* antes de decidir |
+| F8-P4 | Política de Google Play | Verificar en la página oficial |
+
 ## Fuentes consultadas
 
 - `<service>` en el manifiesto de Android (`android:isolatedProcess`): https://developer.android.com/guide/topics/manifest/service-element
@@ -238,6 +339,8 @@ Solo como alternativa futura y separada.
 - Restricción de solo lectura para código cargado dinámicamente en Android 14: https://blog.codia.ai/?p=51
 - ECJ en Maven Central (POM con la licencia EPL-2.0): https://repo1.maven.org/maven2/org/eclipse/jdt/ecj/3.46.100/
 - R8 (código fuente y README): https://r8.googlesource.com/r8/+/refs/heads/8.0 · licencia en un README de terceros: https://cnb.cool/aosp/monorepo/-/tree/main/external/angle/third_party/r8
+- Tabla oficial de API disponibles con *desugaring* (especificación nio): https://developer.android.com/studio/write/java11-nio-support-table
+- Política «Device and Network Abuse» (Google Play), conocida por resultados de búsqueda; no se pudo abrir: https://support.google.com/googleplay/android-developer/answer/9888379
 
 ## Anexo: experimento realizado [Medido]
 
