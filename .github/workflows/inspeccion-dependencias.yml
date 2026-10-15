@@ -41,6 +41,12 @@ jobs:
             unzip -p r8.jar LICENSE 2>/dev/null | grep -E "^- artifact:|^  license:" | paste - - | sed 's/  license:/ =>/' || true
             echo "#### Entradas con LGPL, GPL o CDDL"
             unzip -p r8.jar LICENSE 2>/dev/null | grep -n -B3 -A3 -iE "lgpl|gpl|cddl|lesser" || echo "(ninguna)"
+            echo "#### ¿Están dentro del JAR las clases de los componentes LGPL / CDDL-GPL?"
+            for p in trove gnu/trove jaxb com/sun/xml/bind javax/activation com/sun/activation txw2 com/sun/xml/txw2 com/sun/istack org/bouncycastle; do
+              echo "$p: $(unzip -l r8.jar | grep -ci "$p") entradas"
+            done
+            echo "#### Prefijos de paquetes de primer y segundo nivel en r8.jar"
+            unzip -Z1 r8.jar | grep '\.class$' | awk -F/ 'NF>2{print $1"/"$2"/"$3}' | sort | uniq -c | sort -rn | head -40
             unzip -p r8.jar META-INF/MANIFEST.MF | head -20
           done
       - name: ECJ en Maven Central
