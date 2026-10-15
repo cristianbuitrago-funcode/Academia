@@ -34,7 +34,15 @@ import glob, sys, xml.etree.ElementTree as ET
 files = [f for f in glob.glob("app/build/**/TEST-*.xml", recursive=True) if "UnitTest" not in f]
 tests = sum(int(ET.parse(f).getroot().get("tests", 0)) for f in files)
 bad = sum(int(ET.parse(f).getroot().get(k, 0)) for f in files for k in ("failures", "errors"))
-print(f"Pruebas instrumentadas: {tests} ejecutadas, {bad} con fallo o error ({len(files)} informes)")
+skipped = sum(int(ET.parse(f).getroot().get("skipped", 0)) for f in files)
+print(f"Pruebas instrumentadas: {tests} ejecutadas, {bad} con fallo o error, {skipped} omitidas ({len(files)} informes)")
+for f in files:
+    for case in ET.parse(f).getroot().iter("testcase"):
+        for kind in ("failure", "error", "skipped"):
+            node = case.find(kind)
+            if node is not None:
+                text = (node.get("message") or node.text or "").strip().splitlines()
+                print(f"  [{kind}] {case.get('classname')}.{case.get('name')}: {text[0][:300] if text else ''}")
 if tests == 0 or bad:
     print("::error::Las pruebas instrumentadas no se ejecutaron o fallaron.")
     sys.exit(1)
