@@ -1,6 +1,6 @@
 # Funcode Academy — Registro de estado del proyecto
 
-_Última actualización: 2026-10-15_
+_Última actualización: 2026-10-16 (auditoría de la Fase 9)_
 
 **Significado de los estados**
 - **Planificado:** descrito en un documento; no hay código.
@@ -16,7 +16,7 @@ _Última actualización: 2026-10-15_
 | Fase | Estado | Notas |
 |---|---|---|
 | 1. Planificación y arquitectura | **Aprobado** (2026-10-10) | D1–D8, P1 y P3 resueltas. |
-| 2. Esqueleto y CI | **Aprobado** (2026-10-13, según el responsable: verificado manualmente en Android Studio) | El *pull request* #1 sigue abierto: `main` aún no contiene la Fase 2. Los detalles de la verificación manual (resolución del fallo de Room y del emulador en su equipo) no constan en este registro. |
+| 2. Esqueleto y CI | **Aprobado** (2026-10-13, según el responsable: verificado manualmente en Android Studio) | **Corregido en la auditoría del 2026-10-16:** el *pull request* #1 se fusionó en `main` el 2026-10-13 (`c6a4e73`, fases 2 a 7). Los detalles de la verificación manual (resolución del fallo de Room y del emulador en su equipo) no constan en este registro. |
 | 3. Motor de lecciones y ejercicios | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 3 — Detalle». El contenido sigue en borrador. |
 | 4. Primer módulo de Java y evaluación | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 4 — Detalle». El contenido sigue en borrador. |
 | 5. RPG básico: XP, niveles y logros | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 5 — Detalle». |
@@ -25,7 +25,42 @@ _Última actualización: 2026-10-15_
 | Corrección: cierre al abrir | **Implementado y probado** (emuladores API 26 y 34 en CI) — pendiente de confirmación en tu teléfono | Ver «Corrección del cierre al abrir y fase visual — Detalle». |
 | Fase visual «Academia futurista» (pedida por el responsable el 2026-10-15; no estaba en el plan original) | **Implementado y probado en CI** — pendiente de tu revisión visual y aprobación | Paleta de neón. Ver el detalle. |
 | 8. Ejecución real de Java | **Prototipo de verificación implementado y probado en emuladores de CI** (CI 38686836314, todo en verde). **No integrado en lecciones ni declarado seguro. Pendiente de tus decisiones F8-P1 a F8-P4**, sobre todo Android 8–12, donde el compilador no arranca. | Ver `docs/FASE8_EJECUCION_JAVA.md` §8–§10 y `docs/LICENCIAS_TERCEROS.md`. |
-| 9 | Planificado — sin autorizar | — |
+| 9. Verificación del estado y plan de continuación (redefinida por el responsable el 2026-10-16; en el plan original, la «Fase 9+» era el contenido de los módulos 4–15) | **Auditoría hecha (2026-10-16); informe entregado. Sin cambios de código.** Espera tu autorización. | Ver «Auditoría de la Fase 9». |
+
+## Auditoría de la Fase 9 (2026-10-16)
+
+Solo información verificada en el repositorio, en GitHub y en las ejecuciones de CI.
+
+**Git:**
+- `main` está en `c6a4e73` (fases 2 a 7, PR #1 fusionado el 2026-10-13). **El APK de `main` todavía contiene el fallo que cierra la app al abrirla.**
+- La rama `ccr-db27c4de-czvzgb` va **21 commits por delante** de `main`, sin *pull request* abierto. Incluye la corrección del cierre, el CI con emulador, la fase visual y el prototipo de la Fase 8.
+- La rama `Main` duplicada sigue existiendo.
+- No hay cambios sin confirmar.
+
+**Código:**
+- Módulos `:core:domain`, `:core:javarunner` y `:app`.
+- Contenido: 1 módulo, 9 lecciones y 7 misiones. Las 17 piezas siguen en `reviewStatus: DRAFT`.
+- Room: versión 1, sin migraciones. La columna `avatarId` existe, pero no se usa.
+
+**Pruebas:**
+- **CI 38686836314** (commit `32d029a`): verde en Linux, Windows, emuladores API 26 y 34, y tamaño del APK. Desde ese commit solo cambió la documentación.
+- **Reproducido en el contenedor el 2026-10-16** (`--rerun-tasks`): `:core:domain` 182/182 y `:core:javarunner` 19/19.
+
+**Fase 8:**
+- **Existe:** ECJ 3.28.0 y R8/D8 9.4.28 incorporados como dependencias, `:core:javarunner`, y el servicio `JavaRunnerService` con `isolatedProcess="true"`, `exported="false"`, sin permisos nuevos.
+- **Se ejecuta en Android real (emulador), no solo en la JVM:** API 34 sí; API 26 no, porque ECJ necesita API 33.
+- **Se midieron:** APK +8,45 MB y tiempos de 0,5 a 5,9 s.
+- **Se probaron:** las 3 capas de seguridad.
+- **No se midió:** el uso de memoria y CPU, más allá de comprobar los límites.
+- **No verificado:** la licencia de R8 (LGPL/CDDL declaradas en su `LICENSE`) y la política de Google Play.
+- **Sin confirmar por el responsable:** las pruebas manuales en un teléfono.
+
+**Confirmaciones del responsable que siguen pendientes:**
+- el cierre corregido y el aspecto nuevo en su teléfono;
+- la aprobación de la Fase 7, de la fase visual y del contenido en borrador;
+- las decisiones F8-P1 a F8-P4.
+
+El PR #1 tiene marcada la casilla «Verificación de la Fase 7 en Android Studio y con TalkBack». No consta en la conversación quién la marcó ni con qué resultado, así que **no se registra como aprobación**.
 
 ## Decisiones
 
@@ -743,7 +778,8 @@ El prototipo de la Fase 8 se desarrolla en la misma rama. Si lo prefieres, se pu
 
 ## Próximos pasos autorizados
 
-Ninguno más.
+Ninguno. La Fase 9 (auditoría) entregó su informe; cualquier cambio de código espera tu autorización.
+Antes de la auditoría:
 - El prototipo de verificación de la Fase 8 está terminado.
 - No está autorizada la integración definitiva, la publicación ni la fase siguiente.
 - Pendiente: tus decisiones F8-P1 a F8-P4 (`docs/FASE8_EJECUCION_JAVA.md` §10).
