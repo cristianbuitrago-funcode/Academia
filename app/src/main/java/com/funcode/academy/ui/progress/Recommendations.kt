@@ -6,12 +6,14 @@ import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.lesson.LessonLoadResult
 import com.funcode.academy.domain.progress.ProgressRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 
 /**
  * Recomendaciones de estudio, recalculadas con cada intento o resultado guardado.
  * Reglas sencillas de [StudyAdvisor]; no hay inteligencia artificial.
+ * Si algo falla, simplemente no se muestran recomendaciones.
  */
 fun observeRecommendations(content: ContentRepository, progress: ProgressRepository): Flow<List<Recommendation>> {
     val modulesAndThresholds = flow {
@@ -24,5 +26,5 @@ fun observeRecommendations(content: ContentRepository, progress: ProgressReposit
     return combine(modulesAndThresholds, progress.observeExerciseHistories(), progress.observeBestAssessmentScores()) {
             (modules, thresholds), histories, scores ->
         StudyAdvisor.recommend(modules, histories, scores, thresholds)
-    }
+    }.catch { emit(emptyList()) }
 }

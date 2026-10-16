@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -26,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.funcode.academy.R
+import com.funcode.academy.ui.components.NeonCard
 import com.funcode.academy.domain.lesson.Answer
 import com.funcode.academy.domain.lesson.AnswerResult
 import com.funcode.academy.domain.lesson.ContentRepository
@@ -147,7 +147,7 @@ private fun Intro(lesson: Lesson, sections: List<Section>, onStart: () -> Unit) 
     sections.forEach { section ->
         when (section) {
             is Section.Text -> Text(section.text, style = MaterialTheme.typography.bodyLarge)
-            is Section.Callout -> Card(
+            is Section.Callout -> NeonCard(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                 modifier = Modifier.fillMaxWidth(),
             ) { Text(section.text, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(12.dp)) }
@@ -256,7 +256,7 @@ private fun Feedback(result: AnswerResult, explanation: String, incorrectFeedbac
         is AnswerResult.Incorrect -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
         is AnswerResult.Incomplete -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
     }
-    Card(
+    NeonCard(
         colors = CardDefaults.cardColors(containerColor = container, contentColor = content),
         // liveRegion: TalkBack lee la retroalimentación en cuanto aparece.
         modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },

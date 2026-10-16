@@ -27,3 +27,9 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
 }
+
+// Las pruebas leen archivos de :app (contenido y código fuente): se declaran como
+// entradas para que Gradle repita las pruebas cuando cambian.
+tasks.test {
+    inputs.dir(rootProject.file("app/src/main")).withPropertyName("appSources").withPathSensitivity(PathSensitivity.RELATIVE)
+}

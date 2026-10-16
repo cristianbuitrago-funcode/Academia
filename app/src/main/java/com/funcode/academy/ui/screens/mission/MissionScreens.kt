@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -19,13 +17,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.funcode.academy.R
+import com.funcode.academy.ui.components.NeonCard
+import com.funcode.academy.ui.components.NeonProgressBar
 import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.lesson.ReviewStatus
 import com.funcode.academy.domain.mission.MissionProgress
@@ -79,7 +78,7 @@ fun MissionsScreen(state: MissionsState?, onOpenMission: (String) -> Unit, modif
 private fun MissionCard(progress: MissionProgress, onOpenMission: (String) -> Unit) {
     val mission = progress.mission
     // La tarjeta entera es el botón: TalkBack lee tipo, título y estado juntos.
-    Card(
+    NeonCard(
         onClick = { onOpenMission(mission.id) },
         colors = if (progress.status == MissionStatus.COMPLETED) CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
         else CardDefaults.cardColors(),
@@ -124,7 +123,7 @@ fun MissionDetailScreen(
         Text(mission.objective, style = MaterialTheme.typography.bodyLarge)
 
         if (progress.status == MissionStatus.LOCKED) {
-            Card(
+            NeonCard(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -146,7 +145,7 @@ fun MissionDetailScreen(
             style = MaterialTheme.typography.bodyLarge,
         )
         if (progress.status == MissionStatus.COMPLETED) {
-            Card(
+            NeonCard(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -170,7 +169,7 @@ private fun TaskCard(task: TaskProgress, titles: Map<String, String>, locked: Bo
         is MissionTask.PassAssessment -> stringResource(R.string.mission_task_assessment, activity)
         is MissionTask.CompleteChallenge -> stringResource(R.string.mission_task_project, activity)
     }
-    Card(modifier = Modifier.fillMaxWidth()) {
+    NeonCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Column(Modifier.semantics(mergeDescendants = true) {}) {
                 Text(text, style = MaterialTheme.typography.bodyLarge)
@@ -181,10 +180,7 @@ private fun TaskCard(task: TaskProgress, titles: Map<String, String>, locked: Bo
                 )
             }
             // La barra es decorativa: el texto anterior ya da el avance exacto.
-            LinearProgressIndicator(
-                progress = { task.current.toFloat() / task.total },
-                modifier = Modifier.fillMaxWidth().clearAndSetSemantics {},
-            )
+            NeonProgressBar(task.current.toFloat() / task.total)
             // Con la misión bloqueada no se ofrece el botón: primero hay que cumplir los requisitos.
             if (!locked) {
                 Button(onClick = { onOpenActivity(task.activityId) }) {

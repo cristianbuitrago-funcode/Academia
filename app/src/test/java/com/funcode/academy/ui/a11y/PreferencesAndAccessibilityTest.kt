@@ -70,7 +70,9 @@ class PreferencesAndAccessibilityTest {
     fun temaTamanoYPistasSeGuardan() {
         val settings = FakeSettingsRepository()
         openSettings(settings)
-        option(R.string.theme_dark).performScrollTo().performClick()
+        // Oscuro es el predeterminado: se elige Claro para comprobar que el cambio se guarda.
+        option(R.string.theme_dark).performScrollTo().assertIsSelected()
+        option(R.string.theme_light).performScrollTo().performClick()
         option(R.string.text_scale_extra_large).performScrollTo().performClick()
         val hints = rule.onNode(hasText(text(R.string.settings_hints_label)) and hasClickAction())
         hints.performScrollTo()
@@ -78,8 +80,8 @@ class PreferencesAndAccessibilityTest {
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.ToggleableState, ToggleableState.On))
             .performClick()
         hints.assert(SemanticsMatcher.expectValue(SemanticsProperties.ToggleableState, ToggleableState.Off))
-        assertEquals(LearningPreferences(null, ThemeMode.DARK, TextScale.EXTRA_LARGE, hintsEnabled = false), settings.current)
-        option(R.string.theme_dark).assertIsSelected()
+        assertEquals(LearningPreferences(null, ThemeMode.LIGHT, TextScale.EXTRA_LARGE, hintsEnabled = false), settings.current)
+        option(R.string.theme_light).assertIsSelected()
     }
 
     @Test

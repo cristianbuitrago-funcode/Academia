@@ -37,7 +37,7 @@ class DataStoreSettingsRepository(
         .map { prefs ->
             LearningPreferences(
                 audience = prefs[AUDIENCE_KEY]?.let { name -> Audience.entries.firstOrNull { it.name == name } },
-                themeMode = prefs[THEME_KEY]?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } } ?: ThemeMode.SYSTEM,
+                themeMode = prefs[THEME_KEY]?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } } ?: LearningPreferences().themeMode,
                 textScale = prefs[TEXT_SCALE_KEY]?.let { name -> TextScale.entries.firstOrNull { it.name == name } } ?: TextScale.NORMAL,
                 hintsEnabled = prefs[HINTS_KEY] ?: true,
             )

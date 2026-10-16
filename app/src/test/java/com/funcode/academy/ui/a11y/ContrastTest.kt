@@ -33,6 +33,14 @@ class ContrastTest {
         "surfaceVariant" to (s.onSurfaceVariant to s.surfaceVariant),
         "background" to (s.onBackground to s.background),
         "error" to (s.onError to s.error),
+        // Tarjetas de neón (NeonCard) y textos de acento sobre el fondo.
+        "surfaceContainer" to (s.onSurface to s.surfaceContainer),
+        "surfaceContainerHighest" to (s.onSurface to s.surfaceContainerHighest),
+        "onSurfaceVariant/surfaceContainer" to (s.onSurfaceVariant to s.surfaceContainer),
+        "primary/background" to (s.primary to s.background),
+        "secondary/surfaceContainer" to (s.secondary to s.surfaceContainer),
+        // Bloques de código (CodeBlock): verde neón sobre fondo casi negro.
+        "code" to (s.secondary to s.surfaceContainerLowest),
     )
 
     @Test

@@ -1,6 +1,6 @@
 # Funcode Academy — Registro de estado del proyecto
 
-_Última actualización: 2026-10-13_
+_Última actualización: 2026-10-16_
 
 **Significado de los estados**
 - **Planificado:** descrito en un documento; no hay código.
@@ -22,7 +22,10 @@ _Última actualización: 2026-10-13_
 | 5. RPG básico: XP, niveles y logros | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 5 — Detalle». |
 | 6. Misiones, retos y proyectos | **Aprobado** (2026-10-13, por el responsable) | Ver «Fase 6 — Detalle». Misiones y proyecto en borrador. |
 | 7. Personalización, accesibilidad y adaptación | **Implementado y probado en CI (Linux y Windows) — pendiente de verificación en Android Studio (con TalkBack) y de aprobación** | Ver «Fase 7 — Detalle». Variantes de la lección 1 en borrador. |
-| 8–9 | Planificado — sin autorizar | — |
+| Corrección: cierre al abrir | **Implementado y probado** (emuladores API 26 y 34 en CI) — pendiente de confirmación en tu teléfono | Ver «Corrección del cierre al abrir y fase visual — Detalle». |
+| Fase visual «Academia futurista» (pedida por el responsable el 2026-10-15; no estaba en el plan original) | **Implementado y probado en CI** — pendiente de tu revisión visual y aprobación | Paleta de neón. Ver el detalle. |
+| 8. Ejecución real de Java | **Fuera de esta rama.** El estudio y el prototipo de verificación están en la rama `ccr-db27c4de-czvzgb`, sin integrar. Las decisiones F8-P1 a F8-P4 siguen pendientes. | Esta rama (`fase9-correccion-cierre`) no contiene código, dependencias ni documentos de la Fase 8. |
+| 9. Auditoría y plan de continuación | **Paso 1 autorizado (2026-10-16):** *pull request* a `main` con la corrección del cierre, la CI con emulador y la fase visual. Sin fusionar. | Ver «Corrección del cierre al abrir y fase visual — Detalle». |
 
 ## Decisiones
 
@@ -261,6 +264,48 @@ Las lecciones son, en este orden:
 | Sin migraciones innecesarias; sin completar dos veces; progreso tras reiniciar | ✔ Esquema v1 sin cambios; resultados derivados o del tipo «mejor de»; prueba de reapertura |
 | Verificación manual en Android Studio | **Pendiente** (responsable) |
 | Aprobación del contenido | **Pendiente** (responsable) |
+
+## Corrección del cierre al abrir y fase visual — Detalle
+
+### Cierre al abrir la app (corregido)
+
+- **Síntoma** (informado el 2026-10-15): la app se cerraba al abrirla en un teléfono real. Inicio mostraba el título y luego se cerraba.
+- **Causa, confirmada en un emulador** (CI 38677916047, API 26 y 34, commit `d9bfa54`, sin la corrección): `PatternSyntaxException` en `LessonParser.<clinit>` (`LessonParser.kt:43`).
+  - La expresión `\{\{(\d+)}}` tenía las llaves de cierre sin escapar.
+  - La JVM la acepta, pero el motor de Android (ICU) la rechaza. Por eso las 260 pruebas JVM/Robolectric pasaban.
+  - La misma expresión estaba en `ExerciseInputs.kt`.
+- **Corrección:**
+  - una sola expresión `LessonParser.BLANK_MARKER` con las llaves escapadas (`\{\{(\d+)\}\}`);
+  - Inicio y las recomendaciones ya no cierran la app si falla la lectura del contenido: muestran «contenido no disponible» o no muestran recomendaciones.
+- **Pruebas nuevas:**
+  - `RegexPortabilityTest` (dominio): revisa todas las expresiones regulares del código de producción. Se comprobó que falla con la expresión antigua.
+  - `LaunchSmokeTest` (instrumentada): abre Inicio y la primera lección en el emulador.
+  - Job de CI «Emulador Android (API 26 y 34)»: instala el APK, comprueba que sigue abierto a los 20 s, ejecuta la prueba instrumentada y publica logcat y una captura de Inicio (artefacto `emulador-api-NN`).
+
+### Fase visual «Academia interactiva futurista»
+
+Pedida por el responsable el 2026-10-15: «azul oscuro, neón y verde neón». No sustituye a la Fase 8 del plan, que sigue sin autorizar.
+
+- **Paleta** (`ui/theme/Theme.kt`):
+  - fondo azul marino `#050A18`;
+  - neón azul `#29B6FF`, neón verde `#39FF8E` y violeta `#E36BFF`;
+  - versión clara equivalente.
+  - `ContrastTest` comprueba 15 pares texto/fondo por tema, todos ≥ 4,5:1 (AA).
+- **Tema oscuro de neón por defecto** (`LearningPreferences.themeMode = DARK`). «Claro» y «Como el sistema» siguen disponibles en Ajustes. Esto cambia el comportamiento aprobado en la Fase 7 (antes el valor por defecto era «Como el sistema») y queda pendiente de tu confirmación.
+- **Componentes** (`ui/components/Neon.kt`):
+  - fondo con degradado, rejilla y halos;
+  - `NeonCard` con borde degradado azul→verde, que sustituye a las tarjetas de todas las pantallas;
+  - `SectionTitle` con barra de neón;
+  - `NeonProgressBar`, que TalkBack anuncia como barra de progreso;
+  - `NeonBadge` para el nivel.
+- **Inicio:** cabecera con un panel degradado y una etiqueta de estilo «terminal».
+- **Navegación:** barra inferior con línea de neón.
+- **Código:** bloques con fondo casi negro y texto verde neón.
+- **Títulos:** letra monoespaciada del sistema. No se descarga ni se incluye ninguna fuente externa.
+- **Icono:** símbolo `</>` en neón sobre azul marino. Ventana azul marino para evitar el destello blanco al abrir.
+- **Sin cambios** en textos de contenido, reglas, datos ni permisos.
+
+---
 
 ## Fase 7 — Detalle
 
@@ -612,6 +657,10 @@ En cada ejercicio se muestra **qué objetivo se practica**.
 
 | Fecha | Dónde | Prueba | Resultado |
 |---|---|---|---|
+| 2026-10-15 | CI 38678905732 (commit `99b74cd`) | Linux + Windows + emulador API 26 y 34 | **Verde: 263/263 pruebas JVM**; lint: 0 errores, 1 aviso conocido (`OldTargetApi`). En ambos emuladores la app sigue abierta 20 s después de abrirse y `LaunchSmokeTest` pasa (API 34: 1 ejecutada, 0 fallos). |
+| 2026-10-15 | CI 38678434103 (commit `839056f`) | Linux + Windows + emulador | Verde, pero la prueba instrumentada **no llegó a ejecutarse** (fallo de instalación por firma, no detectado por Gradle). Corregido en `99b74cd`. |
+| 2026-10-15 | CI 38677916047 (commit `d9bfa54`, sin la corrección) | Emulador API 26 y 34 | **Fallo esperado**: reproduce el cierre (`PatternSyntaxException` en `LessonParser.kt:43`). |
+| 2026-10-15 | Contenedor | `:core:domain:test` con `RegexPortabilityTest` | 176/176 superadas; la prueba nueva falla si se vuelve a poner la expresión antigua (comprobado). |
 | 2026-10-10 | Contenedor | Inspección del entorno | JDK 21 y Gradle 8.14.3; sin Android SDK; `dl.google.com` y `downloads.gradle.org` bloqueados; Maven Central con límite de peticiones (429). |
 | 2026-10-10 | Contenedor | `:core:domain:test` (modo solo dominio, Gradle 8.14.3 local, réplica `repo1.maven.org` mediante *init script* fuera del repositorio) | **7/7 superadas** |
 | 2026-10-10 | CI #1–#2 | Compilación completa | **Fallo** de configuración: el plugin de Kotlin no veía las clases de AGP (`NoClassDefFoundError: BaseVariant`). Corregido declarando los plugins en la raíz. |
@@ -645,6 +694,7 @@ En cada ejercicio se muestra **qué objetivo se practica**.
 
 ## Errores conocidos
 
+- **Corregido (2026-10-15):** la app se cerraba al abrirla en Android real por una expresión regular que ICU no acepta. Ver «Corrección del cierre al abrir y fase visual — Detalle».
 - **Según el responsable, resuelto** (2026-10-13; la causa no consta en este registro): las pruebas de Room fallaban en su equipo Windows con `UnsatisfiedLinkError` (SQLite nativo de Robolectric), aunque pasan en Windows y Linux de CI. Causa sin confirmar; pendiente de `gradlew --version` (JDK y arquitectura usados por la terminal).
 - **Según el responsable, resuelto** (2026-10-13): el emulador no arrancaba ("failed to connect within 5 minutes"); pendiente de comprobar la virtualización.
 - **Corregido:** fallo de la prueba de DataStore en la JVM de Windows (ver tabla de pruebas).
@@ -660,13 +710,13 @@ En cada ejercicio se muestra **qué objetivo se practica**.
 
 ## Acciones pendientes del responsable
 
-1. Verificar la Fase 7 en Android Studio y con TalkBack siguiendo `docs/CONFIGURACION_ENTORNO.md` §9.
-2. Revisar el contenido en borrador del módulo `java.m01` (7 lecciones, las variantes de la lección 1, la evaluación, el proyecto guiado y las 7 misiones) y aprobarlo o pedir cambios (D7).
-3. Decidir P7 (versión de Java), los logros, el avatar y la propuesta de monedas (ver «Fase 5 — Detalle»). La misión de refuerzo queda cubierta por las recomendaciones de la Fase 7.
-4. Responder las decisiones F3-D1 a F3-D5 que siguen abiertas.
-5. Revisar y fusionar el *pull request* #1 (contiene las fases 2 a 7).
+1. Instalar el nuevo APK en tu teléfono y confirmar que ya no se cierra; revisar el nuevo aspecto y decir si el tema oscuro de neón debe ser el predeterminado.
+2. Verificar la Fase 7 en Android Studio y con TalkBack siguiendo `docs/CONFIGURACION_ENTORNO.md` §9.
+3. Revisar el contenido en borrador del módulo `java.m01` (7 lecciones, las variantes de la lección 1, la evaluación, el proyecto guiado y las 7 misiones) y aprobarlo o pedir cambios (D7).
+4. Decidir P7 (versión de Java), los logros, el avatar y la propuesta de monedas (ver «Fase 5 — Detalle»). La misión de refuerzo queda cubierta por las recomendaciones de la Fase 7.
+5. Responder las decisiones F3-D1 a F3-D5 que siguen abiertas.
 6. Borrar la rama `Main` duplicada y cambiar la rama por defecto a `main` (`docs/FLUJO_DE_TRABAJO.md`).
 
 ## Próximos pasos autorizados
 
-Ninguno. La Fase 8 espera autorización explícita.
+Solo el paso 1 de la Fase 9: revisar este *pull request*. Ni la Fase 7 ni la fase visual están aprobadas. No se fusiona sin tu aprobación y no se empieza otra fase hasta nuevas instrucciones.

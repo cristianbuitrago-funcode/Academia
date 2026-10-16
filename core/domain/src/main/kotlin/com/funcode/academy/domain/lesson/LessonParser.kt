@@ -40,7 +40,13 @@ object LessonParser {
 
     private val json = Json { ignoreUnknownKeys = false }
     private val ID_PATTERN = Regex("[a-z0-9]+([.-][a-z0-9]+)*")
-    private val BLANK_PATTERN = Regex("""\{\{(\d+)}}""")
+
+    /**
+     * Marcador de hueco `{{n}}` en las plantillas de rellenar huecos.
+     * Las llaves van escapadas (`\{` y `\}`): el motor de expresiones de Android (ICU)
+     * rechaza una `}` sin escapar, aunque la JVM la acepte. Ver [RegexPortabilityTest].
+     */
+    val BLANK_MARKER = Regex("""\{\{(\d+)\}\}""")
 
     fun parse(text: String): LessonParseResult {
         val raw = try {
@@ -355,7 +361,7 @@ object LessonParser {
             "fillInBlanks" -> {
                 val template = text("$p.template", e.template)
                 val blanks = e.blanks.orEmpty()
-                val markers = template?.let { BLANK_PATTERN.findAll(it).map { m -> m.groupValues[1].toInt() }.toList() }.orEmpty()
+                val markers = template?.let { BLANK_MARKER.findAll(it).map { m -> m.groupValues[1].toInt() }.toList() }.orEmpty()
                 if (blanks.isEmpty()) errors += "$p.blanks no puede estar vacío"
                 if (markers != blanks.indices.toList()) {
                     errors += "$p.template debe contener los marcadores {{0}}…{{${blanks.size - 1}}} una vez y en orden"

@@ -1,5 +1,7 @@
 package com.funcode.academy.ui.screens.home
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,20 +10,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.funcode.academy.R
+import com.funcode.academy.ui.components.NeonCard
+import com.funcode.academy.ui.components.SectionTitle
+import com.funcode.academy.ui.components.neonBrush
 import com.funcode.academy.domain.lesson.ContentRepository
 import com.funcode.academy.domain.learning.Recommendation
 import com.funcode.academy.domain.mission.MissionProgress
@@ -75,23 +83,18 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Text(
-            text = stringResource(R.string.home_title),
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.semantics { heading() },
-        )
-        Text(text = stringResource(R.string.home_intro), style = MaterialTheme.typography.bodyLarge)
+        HeroHeader()
         level?.let { LevelProgressCard(it) }
-        Text(text = stringResource(R.string.home_xp_explanation), style = MaterialTheme.typography.bodyMedium)
-
         Text(
-            text = stringResource(R.string.home_continue_title),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.semantics { heading() },
+            text = stringResource(R.string.home_xp_explanation),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+
+        SectionTitle(stringResource(R.string.home_continue_title))
         when {
             modules == null -> Unit
             modules.isEmpty() -> Text(stringResource(R.string.content_unavailable), style = MaterialTheme.typography.bodyLarge)
@@ -106,14 +109,10 @@ fun HomeScreen(
 /** Recomendaciones de repaso: solo con resultados reales; nunca bloquean ni dan XP. */
 @Composable
 private fun RecommendationsCard(recommendations: List<Recommendation>, onOpenLesson: (String) -> Unit) {
-    Text(
-        text = stringResource(R.string.home_recommendations_title),
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.semantics { heading() },
-    )
+    SectionTitle(stringResource(R.string.home_recommendations_title))
     Text(stringResource(R.string.home_recommendations_note), style = MaterialTheme.typography.bodyMedium)
     recommendations.take(MAX_RECOMMENDATIONS).forEach { r ->
-        Card(modifier = Modifier.fillMaxWidth()) {
+        NeonCard(modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 when (r) {
                     is Recommendation.ResumeLesson -> {
@@ -150,12 +149,8 @@ private const val MAX_RECOMMENDATIONS = 3
 private fun MissionHomeCard(missions: List<MissionProgress>, onOpenMissions: () -> Unit, onOpenMission: (String) -> Unit) {
     val current = missions.firstOrNull { it.status == MissionStatus.IN_PROGRESS }
         ?: missions.firstOrNull { it.status == MissionStatus.AVAILABLE }
-    Text(
-        text = stringResource(R.string.home_missions_title),
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.semantics { heading() },
-    )
-    Card(modifier = Modifier.fillMaxWidth()) {
+    SectionTitle(stringResource(R.string.home_missions_title))
+    NeonCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
                 stringResource(R.string.home_missions_progress, missions.count { it.status == MissionStatus.COMPLETED }, missions.size),
@@ -172,9 +167,39 @@ private fun MissionHomeCard(missions: List<MissionProgress>, onOpenMissions: () 
     }
 }
 
+/** Cabecera de bienvenida: etiqueta «terminal», título y presentación sobre un panel de neón. */
+@Composable
+private fun HeroHeader() {
+    val colors = MaterialTheme.colorScheme
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .background(Brush.linearGradient(listOf(colors.primaryContainer, colors.surfaceContainer, colors.secondaryContainer)))
+            .border(1.dp, neonBrush(), MaterialTheme.shapes.large)
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.home_hero_tag),
+            style = MaterialTheme.typography.labelLarge.copy(fontFamily = FontFamily.Monospace),
+            color = colors.onSecondaryContainer,
+            // Decorativa: el título siguiente ya presenta la pantalla.
+            modifier = Modifier.clearAndSetSemantics { },
+        )
+        Text(
+            text = stringResource(R.string.home_title),
+            style = MaterialTheme.typography.headlineSmall,
+            color = colors.onSurface,
+            modifier = Modifier.semantics { heading() },
+        )
+        Text(text = stringResource(R.string.home_intro), style = MaterialTheme.typography.bodyLarge, color = colors.onSurface)
+    }
+}
+
 @Composable
 private fun ContinueCard(progress: ModuleProgress, onOpenLesson: (String) -> Unit, onOpenModule: (String) -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    NeonCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(progress.module.title, style = MaterialTheme.typography.titleMedium)
             Text(

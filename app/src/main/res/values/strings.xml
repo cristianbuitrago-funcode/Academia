@@ -9,6 +9,8 @@
     <string name="nav_settings">Ajustes</string>
 
     <!-- Inicio -->
+    <!-- Etiqueta decorativa de la cabecera de Inicio, en estilo «terminal». -->
+    <string name="home_hero_tag">&gt; ACADEMIA JAVA · MODO APRENDIZAJE</string>
     <string name="home_title">Te damos la bienvenida a Funcode Academy</string>
     <string name="home_intro">Aprende a programar en Java desde cero, paso a paso.</string>
     <string name="home_total_xp">XP total: %1$d</string>
@@ -127,7 +129,7 @@
     <string name="audience_adults">Persona adulta</string>
     <string name="settings_privacy_note">Tus preferencias se guardan solo en este dispositivo. No pedimos tu edad ni ningún dato personal.</string>
     <string name="settings_theme_title">Tema</string>
-    <string name="settings_theme_description">Colores claros u oscuros. «Como el sistema» sigue el ajuste del teléfono.</string>
+    <string name="settings_theme_description">«Oscuro» es el estilo neón de la academia (predeterminado). «Claro» usa fondos claros y «Como el sistema» sigue el ajuste del teléfono.</string>
     <string name="theme_system">Como el sistema</string>
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Oscuro</string>

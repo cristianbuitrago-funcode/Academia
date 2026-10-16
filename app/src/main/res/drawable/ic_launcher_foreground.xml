@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Símbolo "</>" centrado en la zona segura (66 dp) del icono adaptable. -->
+<!-- Símbolo "</>" centrado en la zona segura (66 dp) del icono adaptable:
+     corchetes en azul neón y barra en verde neón sobre fondo azul marino. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
@@ -8,18 +9,18 @@
     <path
         android:pathData="M44,40 L32,54 L44,68"
         android:strokeWidth="6"
-        android:strokeColor="#FFFFFF"
+        android:strokeColor="#29B6FF"
         android:strokeLineCap="round"
         android:strokeLineJoin="round" />
     <path
         android:pathData="M64,40 L76,54 L64,68"
         android:strokeWidth="6"
-        android:strokeColor="#FFFFFF"
+        android:strokeColor="#29B6FF"
         android:strokeLineCap="round"
         android:strokeLineJoin="round" />
     <path
         android:pathData="M58,36 L50,72"
         android:strokeWidth="6"
-        android:strokeColor="#FFFFFF"
+        android:strokeColor="#39FF8E"
         android:strokeLineCap="round" />
 </vector>
